@@ -16,34 +16,121 @@
         <p>全港深山 GPS 離線集章冊</p>
     </div>
 
-    <!-- Part 2: Radar Section Embedded Template -->
+    <!-- Layout Mounting Containers -->
     <div id="radar-component"></div>
-
-    <!-- Part 3: Progress & Simulator Embedded Template -->
     <div id="progress-component"></div>
-
-    <!-- Part 4: Data Sync & Backup Actions Template -->
     <div id="backup-component"></div>
-
-    <!-- Part 5: Layout Filtration Controls Template -->
     <div id="filter-component"></div>
 
     <div class="grid-count-tag" id="grid-count-text">當前篩選符合項目: 0 座山峰</div>
     <div class="grid" id="peaks-grid"></div>
 
-    <!-- Hidden native hardware API interfaces -->
+    <!-- Hidden Native Hardware Routing APIs -->
     <input type="file" id="camera-input" accept="image/*" capture="camera" style="display: none;">
     <input type="file" id="replace-input" accept="image/*" style="display: none;">
     <input type="file" id="import-file-input" accept=".json" style="display: none;">
     
-    <!-- Render Layers Layout Canvases -->
+    <!-- Render Layers Canvas Frameworks -->
     <canvas id="filter-canvas" style="display: none;"></canvas>
     <canvas id="poster-canvas" style="display: none;"></canvas>
 
-    <!-- Part 6: Modals Overlay Infrastructure Template -->
     <div id="modal-component"></div>
 
-    <!-- Application Execution Pipeline Script Hooks -->
+    <!-- ========================================== -->
+    <!-- 9-PART MODULAR CODE SPLIT HTML TEMPLATES   -->
+    <!-- ========================================== -->
+
+    <!-- Template Part 2: Radar Element -->
+    <template id="template-radar">
+        <div class="radar-card">
+            <strong style="display: block; text-align: left;">雷達掃描：附近 50 米內的攀登目標</strong>
+            <div class="radar-canvas-container">
+                <canvas id="radar-canvas" width="220" height="220"></canvas>
+            </div>
+            <div id="radar-list" style="margin-top: 5px; font-size: 13px; color: #555; text-align: left;">
+                正在獲取您的定位資訊並尋找山峰...
+            </div>
+        </div>
+    </template>
+
+    <!-- Template Part 3: Progress & Simulator Component -->
+    <template id="template-progress">
+        <div class="progress-card">
+            <strong>我的 160 全港巔峰進度</strong>
+            <div style="font-size: 22px; color: var(--secondary); font-weight: bold; margin: 5px 0;" id="progress-text">0 / 160 已解鎖</div>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-fill"></div>
+            </div>
+            <select id="mock-selector" class="select-filter" style="margin-top: 15px; width: 100%;"></select>
+            <button class="btn" style="background: #555; margin-top: 8px;" id="btn-simulate">虛擬模擬到此山峰定位</button>
+        </div>
+    </template>
+
+    <!-- Template Part 4: Synchronization Backup Sync Panel -->
+    <template id="template-backup">
+        <div class="backup-card">
+            <button class="btn-backup" id="btn-export">備份集章數據 (JSON)</button>
+            <button class="btn-restore" id="btn-import-trigger">匯入備份數據</button>
+            <button class="btn-poster" id="btn-generate-poster">生成全港 160 巔峰解鎖成就海報 (分享至 IG)</button>
+        </div>
+    </template>
+
+    <!-- Template Part 5: Multi-Level Filters -->
+    <template id="template-filters">
+        <div class="filter-section">
+            <div class="filter-row">
+                <select id="filter-region" class="select-filter">
+                    <option value="all">全港區域 (160座)</option>
+                    <option value="lantau">大嶼山及離島群峰</option>
+                    <option value="saikung">西貢、清水灣及將軍澳</option>
+                    <option value="hki-kln">香港島與九龍市區山脈</option>
+                    <option value="nt-west">新界西及中西部 (屯門/元朗/荃灣)</option>
+                    <option value="nt-east">新界東及東北部 (沙田/大埔/北區)</option>
+                </select>
+            </div>
+            <div class="filter-row">
+                <select id="filter-level" class="select-filter">
+                    <option value="all">所有山峰難度/高度等級</option>
+                    <option value="lvl5">終極神獸級 (700米以上極高山)</option>
+                    <option value="lvl4">高階難度山峰 (500米 - 700米)</option>
+                    <option value="lvl3">中量級挑戰 (300米 - 500米)</option>
+                    <option value="lvl2">新手入門健行 (150米 - 300米)</option>
+                    <option value="lvl1">基礎休閒步道 (150米以下郊遊嶺)</option>
+                </select>
+                <select id="filter-status" class="select-filter">
+                    <option value="all">顯示全部山峰</option>
+                    <option value="unlocked">查看已打卡解鎖</option>
+                    <option value="locked">查看未解鎖山頭</option>
+                </select>
+            </div>
+        </div>
+    </template>
+
+    <!-- Template Part 6: Overlays And Loading Modals -->
+    <template id="template-modals">
+        <div id="loading">
+            <div style="border: 4px solid #f3f3f3; border-top: 4px solid var(--primary); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto;"></div>
+            <p id="loading-text" style="margin-top: 15px; font-weight: bold;">照片與印章生成中...</p>
+        </div>
+
+        <div class="modal" id="result-modal">
+            <div class="modal-content">
+                <h3 id="modal-title">山峰印章生成成功</h3>
+                <div style="margin-bottom: 10px;">
+                    <select id="stamp-style-select" class="select-filter" style="min-height: 34px; padding: 6px; font-size: 12px;">
+                        <option value="classic">經典寫實風 (保留照片原色細節)</option>
+                        <option value="retro">復古集章風 (仿懷舊紅色油印刻章)</option>
+                        <option value="japanese">浮世繪日系風 (簡約清新線條邊框)</option>
+                    </select>
+                </div>
+                <img id="modal-img" class="preview-img" src="" alt="Stamp">
+                <div id="modal-action-bar" style="margin-top: 10px;"></div>
+                <button class="btn" id="btn-close-modal">保存印章並返回列表</button>
+            </div>
+        </div>
+    </template>
+
+    <!-- App Script Processing Execution Sequences -->
     <script src="peaks.js"></script>
     <script src="db.js"></script>
     <script src="geo.js"></script>
