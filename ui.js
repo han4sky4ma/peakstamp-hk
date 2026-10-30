@@ -1,43 +1,59 @@
-﻿// Optimized UI Rendering Layer Configuration
-// Native Template Content Injection Routing Engine
-document.getElementById('radar-component').appendChild(
-    document.getElementById('template-radar').content.cloneNode(true)
-);
-document.getElementById('progress-component').appendChild(
-    document.getElementById('template-progress').content.cloneNode(true)
-);
-document.getElementById('backup-component').appendChild(
-    document.getElementById('template-backup').content.cloneNode(true)
-);
-document.getElementById('filter-component').appendChild(
-    document.getElementById('template-filters').content.cloneNode(true)
-);
-document.getElementById('modal-component').appendChild(
-    document.getElementById('template-modals').content.cloneNode(true)
-);
+﻿ // Native Template Content Injection Routing Engine
+document.addEventListener("DOMContentLoaded", () => {
+    // CRASH FIX: Wrap structural initialization in DOMContentLoaded to prevent execution race conditions
+    const radarComp = document.getElementById('radar-component');
+    const progressComp = document.getElementById('progress-component');
+    const backupComp = document.getElementById('backup-component');
+    const filterComp = document.getElementById('filter-component');
+    const modalComp = document.getElementById('modal-component');
+
+    if (radarComp && document.getElementById('template-radar')) {
+        radarComp.appendChild(document.getElementById('template-radar').content.cloneNode(true));
+    }
+    if (progressComp && document.getElementById('template-progress')) {
+        progressComp.appendChild(document.getElementById('template-progress').content.cloneNode(true));
+    }
+    if (backupComp && document.getElementById('template-backup')) {
+        backupComp.appendChild(document.getElementById('template-backup').content.cloneNode(true));
+    }
+    if (filterComp && document.getElementById('template-filters')) {
+        filterComp.appendChild(document.getElementById('template-filters').content.cloneNode(true));
+    }
+    if (modalComp && document.getElementById('template-modals')) {
+        modalComp.appendChild(document.getElementById('template-modals').content.cloneNode(true));
+    }
+
+    // Initialize event listeners hook binding after layouts are mounted cleanly
+    if (typeof initAppUIListeners === "function") {
+        initAppUIListeners();
+    }
+});
 
 // High-Performance Batch Rendering Grid Engine
 async function renderPeaksGrid() {
     const grid = document.getElementById("peaks-grid");
+    if (!grid) return;
     
-    // Get filter states
-    const regionFilter = document.getElementById("filter-region").value;
-    const levelFilter = document.getElementById("filter-level").value;
-    const statusFilter = document.getElementById("filter-status").value;
+    // Get filter states safely
+    const regionEl = document.getElementById("filter-region");
+    const levelEl = document.getElementById("filter-level");
+    const statusEl = document.getElementById("filter-status");
+    
+    const regionFilter = regionEl ? regionEl.value : "all";
+    const levelFilter = levelEl ? levelEl.value : "all";
+    const statusFilter = statusEl ? statusEl.value : "all";
     
     // Fetch unlocked database keys
     const unlockedIds = await getAllUnlockedIds();
     const totalUnlockedCount = unlockedIds.length;
     let renderedCount = 0;
 
-    // PERFORMANCE FIX: Build structural content inside an off-screen virtual memory chunk
+    // Build structural content inside an off-screen virtual memory chunk
     const fragment = document.createDocumentFragment();
-    
-    // Pre-calculate array length to optimize looping structures
-    const peakLength = peaks.length;
+    const peakLength = window.peaks ? window.peaks.length : 0;
 
     for (let i = 0; i < peakLength; i++) {
-        const peak = peaks[i];
+        const peak = window.peaks[i];
         const isUnlocked = unlockedIds.includes(peak.id);
         
         // Evaluate filter matrices instantly
@@ -48,44 +64,45 @@ async function renderPeaksGrid() {
         if (matchRegion && matchLevel && matchStatus) {
             renderedCount++;
             
-            // Build the card element container shell
             const card = document.createElement("div");
             card.className = isUnlocked ? "card unlocked" : "card locked";
-            
-            // Inject structural template parameters cleanly
             card.innerHTML = `
                 <div class="badge-icon">⛰️</div>
                 <strong style="font-size: 13px; display: block; min-height: 36px;">#${i + 1} ${peak.name}</strong>
                 <div style="font-size: 11px; color: #666; margin: 4px 0;">海拔高度: ${peak.elev}米</div>
                 ${isUnlocked ? `<button class="btn" style="background: #2E5A44; padding: 6px;" onclick="viewStamp('${peak.id}')">檢視印章</button>` : `<div style="font-size: 11px; color: #999; margin-top: 10px;">尚未攀登解鎖</div>`}
             `;
-            
             fragment.appendChild(card);
         }
     }
 
-    // PERFORMANCE FIX: Wipe old content and insert the new virtual layout exactly *once*
+    // Wipe old layout contents out completely and append memory cache block
     grid.textContent = ""; 
     grid.appendChild(fragment);
 
-    // Synchronize administrative stat metrics labels
-    document.getElementById("progress-text").textContent = `${totalUnlockedCount} / ${peakLength} 已解鎖`;
-    document.getElementById("progress-fill").style.width = `${(totalUnlockedCount / peakLength) * 100}%`;
-    document.getElementById("grid-count-text").textContent = `當前篩選符合項目: ${renderedCount} 座山峰`;
+    // Synchronize administrative stat metrics labels safely
+    const progTextEl = document.getElementById("progress-text");
+    const progFillEl = document.getElementById("progress-fill");
+    const gridCountEl = document.getElementById("grid-count-text");
+
+    if (progTextEl) progTextEl.textContent = `${totalUnlockedCount} / ${peakLength} 已解鎖`;
+    if (progFillEl) progFillEl.style.width = `${(totalUnlockedCount / (peakLength || 1)) * 100}%`;
+    if (gridCountEl) gridCountEl.textContent = `當前篩選符合項目: ${renderedCount} 座山峰`;
 }
 
 // Optimized Radar List Text Generation Interface
 function updateRadarList(userLat, userLng) {
-    lastUserLat = userLat; 
-    lastUserLng = userLng;
+    window.lastUserLat = userLat; 
+    window.lastUserLng = userLng;
     
+    if (!window.peaks) return;
+
     getAllUnlockedIds().then(unlockedIds => {
-        const peakLength = peaks.length;
+        const peakLength = window.peaks.length;
         const peaksWithDistance = new Array(peakLength);
         
-        // Pre-map geospatial calculations across data sets
         for (let i = 0; i < peakLength; i++) {
-            const peak = peaks[i];
+            const peak = window.peaks[i];
             peaksWithDistance[i] = { 
                 ...peak, 
                 distance: calculateHaversineDistance(userLat, userLng, peak.lat, peak.lng), 
@@ -93,14 +110,15 @@ function updateRadarList(userLat, userLng) {
             };
         }
         
-        // Sort closest items
         peaksWithDistance.sort((a, b) => a.distance - b.distance);
-        nearestFiveCache = peaksWithDistance.slice(0, 5);
+        window.nearestFiveCache = peaksWithDistance.slice(0, 5);
 
         const radarListDiv = document.getElementById("radar-list");
+        if (!radarListDiv) return;
+        
         const listFragment = document.createDocumentFragment();
 
-        nearestFiveCache.forEach(peak => {
+        window.nearestFiveCache.forEach(peak => {
             const item = document.createElement("div");
             item.className = "radar-item";
             const isUnlocked = unlockedIds.includes(peak.id);
@@ -121,3 +139,4 @@ function updateRadarList(userLat, userLng) {
         radarListDiv.appendChild(listFragment);
     });
 }
+
