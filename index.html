@@ -1,234 +1,19 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-Hant-HK">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="theme-color" content="#2E5A44">
     <link rel="manifest" href="manifest.json">
-    <title>山印</title>
-    <style>
-        :root { 
-            --primary: #2E5A44; 
-            --secondary: #8B5A2B; 
-            --bg: #F4F4F0; 
-        }
-        body { 
-            font-family: -apple-system, BlinkMacSystemFont, sans-serif; 
-            background: var(--bg); 
-            margin: 0; 
-            padding: 15px; 
-            color: #333; 
-        }
-        .header { 
-            background: var(--primary); 
-            color: white; 
-            padding: 15px; 
-            border-radius: 12px; 
-            text-align: center; 
-            margin-bottom: 15px; 
-        }
-        .radar-card { 
-            background: #e3ece4; 
-            border: 2px dashed var(--primary); 
-            padding: 15px; 
-            border-radius: 12px; 
-            margin-bottom: 15px; 
-            text-align: center; 
-        }
-        .radar-canvas-container { 
-            position: relative; 
-            width: 220px; 
-            height: 220px; 
-            margin: 15px auto; 
-            background: #1a2f24; 
-            border-radius: 50%; 
-            box-shadow: inset 0 0 20px rgba(0,0,0,0.6), 0 4px 10px rgba(0,0,0,0.15); 
-            border: 3px solid var(--primary); 
-        }
-        #radar-canvas { 
-            border-radius: 50%; 
-            display: block; 
-        }
-        .radar-item { 
-            background: white; 
-            padding: 10px; 
-            border-radius: 8px; 
-            margin-top: 8px; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            box-shadow: 0 1px 4px rgba(0,0,0,0.05); 
-            text-align: left; 
-        }
-        .radar-item strong { color: var(--primary); }
-        .distance-tag { 
-            background: var(--secondary); 
-            color: white; 
-            padding: 3px 8px; 
-            border-radius: 12px; 
-            font-size: 11px; 
-            font-weight: bold; 
-        }
-        .btn-stamp-now { 
-            background: var(--primary); 
-            color: white; 
-            border: none; 
-            padding: 6px 12px; 
-            border-radius: 6px; 
-            font-weight: bold; 
-            cursor: pointer; 
-            font-size: 12px; 
-        }
-        .progress-card { 
-            background: white; 
-            padding: 15px; 
-            border-radius: 12px; 
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05); 
-            margin-bottom: 15px; 
-            text-align: center; 
-        }
-        .progress-bar { 
-            background: #ddd; 
-            height: 12px; 
-            border-radius: 6px; 
-            overflow: hidden; 
-            margin-top: 8px; 
-        }
-        .progress-fill { 
-            background: var(--primary); 
-            height: 100%; 
-            width: 0%; 
-            transition: width 0.5s; 
-        }
-        .filter-section { 
-            background: white; 
-            padding: 12px; 
-            border-radius: 12px; 
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05); 
-            margin-bottom: 15px; 
-        }
-        .filter-row { display: flex; gap: 8px; margin-bottom: 8px; }
-        .filter-row:last-child { margin-bottom: 0; }
-        .select-filter { 
-            flex: 1; 
-            padding: 10px; 
-            border-radius: 8px; 
-            border: 1px solid #ccc; 
-            background: white; 
-            font-size: 13px; 
-            font-weight: bold; 
-            color: #444; 
-            min-height: 40px; 
-        }
-        .select-filter:focus { border-color: var(--primary); outline: none; }
-        .grid-count-tag { 
-            font-size: 12px; 
-            color: #666; 
-            margin-bottom: 8px; 
-            text-align: right; 
-            font-weight: bold; 
-        }
-        .backup-card { 
-            background: #fdfdfd; 
-            border: 1px solid #e2e2e2; 
-            padding: 12px; 
-            border-radius: 12px; 
-            margin-bottom: 15px; 
-            display: flex; 
-            flex-wrap: wrap; 
-            gap: 8px; 
-        }
-        .btn-backup { 
-            background: #34495e; 
-            color: white; 
-            border: none; 
-            padding: 10px; 
-            border-radius: 8px; 
-            font-weight: bold; 
-            flex: 1; 
-            min-width: 140px; 
-            cursor: pointer; 
-            font-size: 12px; 
-        }
-        .btn-restore { 
-            background: #7f8c8d; 
-            color: white; 
-            border: none; 
-            padding: 10px; 
-            border-radius: 8px; 
-            font-weight: bold; 
-            flex: 1; 
-            min-width: 140px; 
-            cursor: pointer; 
-            font-size: 12px; 
-        }
-        .btn-poster { 
-            background: #d35400; 
-            color: white; 
-            border: none; 
-            padding: 12px; 
-            border-radius: 8px; 
-            font-weight: bold; 
-            width: 100%; 
-            cursor: pointer; 
-            font-size: 13px; 
-            margin-top: 4px; 
-            box-shadow: 0 3px 6px rgba(211,84,0,0.2); 
-        }
-        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .card { background: white; padding: 12px; border-radius: 12px; text-align: center; border: 1px solid #e0e0e0; }
-        .card.unlocked { border-color: var(--primary); box-shadow: 0 4px 12px rgba(46,90,68,0.1); }
-        .card.locked { opacity: 0.5; background: #eaeaea; }
-        .badge-icon { font-size: 36px; margin-bottom: 6px; }
-        .btn { 
-            background: var(--secondary); 
-            color: white; 
-            border: none; 
-            padding: 10px; 
-            border-radius: 8px; 
-            font-weight: bold; 
-            width: 100%; 
-            margin-top: 8px; 
-            cursor: pointer; 
-            font-size: 13px; 
-        }
-        #loading { 
-            display: none; 
-            position: fixed; 
-            top: 0; 
-            left: 0; 
-            width: 100%; 
-            height: 100%; 
-            background: rgba(0,0,0,0.8); 
-            color: white; 
-            justify-content: center; 
-            align-items: center; 
-            flex-direction: column; 
-            z-index: 999; 
-        }
-        .modal { 
-            display: none; 
-            position: fixed; 
-            top: 0; 
-            left: 0; 
-            width: 100%; 
-            height: 100%; 
-            background: rgba(0,0,0,0.7); 
-            justify-content: center; 
-            align-items: center; 
-            z-index: 100; 
-        }
-        .modal-content { background: white; padding: 20px; border-radius: 16px; width: 85%; max-width: 400px; text-align: center; }
-        .preview-img { width: 100%; border-radius: 8px; margin-top: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-    </style>
+    <link rel="stylesheet" href="styles.css">
+    <title>PeakStamp HK</title>
 </head>
 <body>
     <div class="header">
-        <h2>🏔️ PeakStamp HK</h2>
-        <p>香港山頭集章冊</p>
+        <h2>PeakStamp HK</h2>
+        <p>全港深山 GPS 離線集章冊</p>
     </div>
     <!-- 📡 Radar Component Layout -->
     <div class="radar-card">
@@ -432,82 +217,43 @@
             return (brng + 360) % 360;
         }
         async function renderPeaksGrid() {
-    const grid = document.getElementById("peaks-grid");
-    if (!grid) return;
-
-    // Fetch live filter drop-down configuration states securely
-    const regionEl = document.getElementById("filter-region");
-    const levelEl = document.getElementById("filter-level");
-    const statusEl = document.getElementById("filter-status");
-    
-    const regionFilter = regionEl ? regionEl.value : "all";
-    const levelFilter = levelEl ? levelEl.value : "all";
-    const statusFilter = statusEl ? statusEl.value : "all";
-    
-    // SAFE FALLBACK ARRAY LOOKUP: Bypasses cross-script visibility limits on iOS Safari
-    const targetPeaks = window.peaks || (typeof peaks !== "undefined" ? peaks : []);
-    const peakLength = targetPeaks.length;
-
-    // Fetch active unlocked database keys from IndexedDB mapping parameters
-    const unlockedIds = await getAllUnlockedIds();
-    const totalUnlockedCount = unlockedIds.length;
-    let renderedCount = 0;
-
-    // PERFORMANCE FIX: Construct layout nodes inside an off-screen virtual memory chunk
-    const fragment = document.createDocumentFragment();
-
-    for (let i = 0; i < peakLength; i++) {
-        const peak = targetPeaks[i];
-        const isUnlocked = unlockedIds.includes(peak.id);
-        
-        // Evaluate multi-tier layout condition filters instantly
-        const matchRegion = (regionFilter === "all" || peak.regionTag === regionFilter);
-        const matchLevel = (levelFilter === "all" || peak.levelTag === levelFilter);
-        const matchStatus = (statusFilter === "all" || (statusFilter === "unlocked" && isUnlocked) || (statusFilter === "locked" && !isUnlocked));
-
-        if (matchRegion && matchLevel && matchStatus) {
-            renderedCount++;
+            const grid = document.getElementById("peaks-grid");
+            if (!grid) return;
+            const regionFilter = document.getElementById("filter-region").value;
+            const levelFilter = document.getElementById("filter-level").value;
+            const statusFilter = document.getElementById("filter-status").value;
             
-            // Build the card shortcut wrapper container
-            const card = document.createElement("div");
-            card.className = isUnlocked ? "card unlocked" : "card locked";
-            
-            // Inject structural template parameters cleanly
-            card.innerHTML = `
-                <div class="badge-icon">⛰️</div>
-                <strong style="font-size: 13px; display: block; min-height: 36px;">#${i + 1} ${peak.name}</strong>
-                <div style="font-size: 11px; color: #666; margin: 4px 0;">海拔高度: ${peak.elev}米</div>
-                ${isUnlocked ? 
-                    `<button class="btn" style="background: #2E5A44; padding: 6px;" onclick="viewStamp('${peak.id}')">🔍 檢視紀念章</button>` : 
-                    `<div style="font-size: 11px; color: #999; margin-top: 10px; font-weight: 500;">🔒 尚未登頂解鎖</div>`
+            const targetPeaks = window.peaks || (typeof peaks !== "undefined" ? peaks : []);
+            const unlockedIds = await getAllUnlockedIds();
+            const totalUnlockedCount = unlockedIds.length;
+            let renderedCount = 0;
+
+            const fragment = document.createDocumentFragment();
+            targetPeaks.forEach((peak, index) => {
+                const isUnlocked = unlockedIds.includes(peak.id);
+                const matchRegion = (regionFilter === "all" || peak.regionTag === regionFilter);
+                const matchLevel = (levelFilter === "all" || peak.levelTag === levelFilter);
+                const matchStatus = (statusFilter === "all" || (statusFilter === "unlocked" && isUnlocked) || (statusFilter === "locked" && !isUnlocked));
+
+                if (matchRegion && matchLevel && matchStatus) {
+                    renderedCount++;
+                    const card = document.createElement("div");
+                    card.className = `card ${isUnlocked ? 'unlocked' : 'locked'}`;
+                    card.innerHTML = `
+                        <div class="badge-icon">⛰️</div>
+                        <strong style="font-size: 13px; display: block; min-height: 36px;">#${index + 1} ${peak.name}</strong>
+                        <div style="font-size: 11px; color: #666; margin: 4px 0;">海拔高度: ${peak.elev}米</div>
+                        ${isUnlocked ? `<button class="btn" style="background: #2E5A44; padding: 6px;" onclick="viewStamp('${peak.id}')">🔍 檢視紀念章</button>` : `<div style="font-size: 11px; color: #999; margin-top: 10px;">尚未攀登解鎖</div>`}
+                    `;
+                    fragment.appendChild(card);
                 }
-            `;
-            
-            fragment.appendChild(card);
+            });
+            grid.textContent = "";
+            grid.appendChild(fragment);
+            document.getElementById("progress-text").innerText = `${totalUnlockedCount} / ${targetPeaks.length} 已解鎖`;
+            document.getElementById("progress-fill").style.width = `${(totalUnlockedCount / (targetPeaks.length || 1)) * 100}%`;
+            document.getElementById("grid-count-text").innerText = `顯示中: ${renderedCount} 座山頭`;
         }
-    }
-
-    // PERFORMANCE FIX: Wipe view container using textContent and paint the batch exactly *once*
-    grid.textContent = ""; 
-    grid.appendChild(fragment);
-
-    // Synchronize administrative progress stats trackers layout text cleanly
-    const progressTextEl = document.getElementById("progress-text");
-    const progressFillEl = document.getElementById("progress-fill");
-    const gridCountTextEl = document.getElementById("grid-count-text");
-
-    if (progressTextEl) {
-        progressTextEl.textContent = `${totalUnlockedCount} / ${peakLength} 已解鎖`;
-    }
-    if (progressFillEl) {
-        progressFillEl.style.width = `${(totalUnlockedCount / (peakLength || 1)) * 100}%`;
-    }
-    if (gridCountTextEl) {
-        gridCountTextEl.textContent = `顯示中: ${renderedCount} 座山頭`;
-    }
-}
-
-
 
         function updateRadarList(userLat, userLng) {
             lastUserLat = userLat; lastUserLng = userLng;
@@ -533,7 +279,7 @@
                     if (peak.distance <= 40 && !isUnlocked) {
                         actionContent = `
                             <div style="display:flex; flex-direction:column; gap:4px;">
-                                <button class="btn-stamp-now" style="background:#2E5A44;" onclick="unlockWithDefaultStamp('${peak.id}')">🎯 一鍵直接蓋章</button>
+                                <button class="btn-stamp-now" style="background:#2E5A44;" onclick="window.unlockWithDefaultStamp('${peak.id}')">🎯 一鍵直接蓋章</button>
                                 <button class="btn-stamp-now" style="background:#8B5A2B; padding:4px 8px; font-size:11px;" onclick="openCameraFor('${peak.id}')">📸 拍照紀錄印章</button>
                             </div>
                         `;
@@ -602,291 +348,44 @@
             reader.readAsDataURL(file); event.target.value = "";
         }
 
-        // ADVANCED COMIC STAMP ENGINE: Generates custom graphic badges matched to official photos
-function unlockWithDefaultStamp(id) {
-    const targetPeaks = window.peaks || (typeof peaks !== "undefined" ? peaks : []);
-    activePeak = targetPeaks.find(p => p.id === id);
-    if (!activePeak) return alert("未指定有效的山峰目標");
-
-    document.getElementById("loading").style.display = "flex";
-    document.getElementById("loading-text").textContent = `正在為您雕刻官方版【${activePeak.name}】微縮漫畫風印章...`;
-
-    const canvas = document.createElement("canvas");
-    canvas.width = 800; canvas.height = 800;
-    const ctx = canvas.getContext("2d");
-
-    // Standard Comic Pop-Art Sky Background Drop
-    ctx.fillStyle = "#F5D061"; // Vibrant Retro Yellow
-    ctx.fillRect(0, 0, 800, 800);
-
-    // Dynamic Color Palette Mappings
-    ctx.strokeStyle = "#000000";
-    ctx.lineWidth = 6;
-    ctx.lineJoin = "round";
-
-    const elev = activePeak.elev;
-
-        if (elev === 957) {
-        // ==========================================================
-        // 🏔️ TAI MO SHAN (957m) - OFFICIAL GRAPHIC BADGE BLUEPRINT
-        // ==========================================================
-        // 1. Sky Background Backdrop
-        ctx.fillStyle = "#A3C9E8"; // Crisp light blue sky
-        ctx.fillRect(0, 0, 800, 800);
-
-        // 2. Winding Trail and Mountain Slopes Layer
-        ctx.strokeStyle = "#000000";
-        ctx.lineWidth = 6;
-        ctx.lineJoin = "round";
-
-        // Green left hillside slope
-        ctx.fillStyle = "#4FA72A"; // Vibrant grass green
-        ctx.beginPath();
-        ctx.moveTo(0, 500);
-        ctx.quadraticCurveTo(200, 480, 400, 360); // Peak center point
-        ctx.lineTo(400, 700);
-        ctx.lineTo(0, 700);
-        ctx.closePath(); ctx.fill(); ctx.stroke();
-
-        // Blue/Teal shaded right hillside slope
-        ctx.fillStyle = "#2D689C"; // Mountain shadow teal blue
-        ctx.beginPath();
-        ctx.moveTo(400, 360);
-        ctx.quadraticCurveTo(600, 480, 800, 560);
-        ctx.lineTo(800, 700);
-        ctx.lineTo(400, 700);
-        ctx.closePath(); ctx.fill(); ctx.stroke();
-
-        // Winding trail snaking down the middle ridge line
-        ctx.strokeStyle = "#FFFFFF";
-        ctx.lineWidth = 14;
-        ctx.beginPath();
-        ctx.moveTo(400, 360);
-        ctx.quadraticCurveTo(420, 420, 390, 470);
-        ctx.quadraticCurveTo(450, 530, 480, 600);
-        ctx.quadraticCurveTo(430, 650, 520, 700);
-        ctx.stroke();
-
-        ctx.strokeStyle = "#000000";
-        ctx.lineWidth = 4;
-        ctx.stroke(); // Draw the crisp trail border lines
-
-        // 3. Landmark Weather Radar Observatory Tower Scaffolding
-        ctx.fillStyle = "#EAEAEA";
-        ctx.strokeStyle = "#000000";
-        ctx.lineWidth = 5;
-
-        // Base structural building complex blocks
-        ctx.fillRect(355, 230, 90, 130); ctx.strokeRect(355, 230, 90, 130);
-        ctx.fillStyle = "#333"; ctx.fillRect(445, 310, 40, 50); ctx.strokeRect(445, 310, 40, 50); // Side box
-
-        // Scaffolding antenna lattices criss-cross lines details
-        ctx.lineWidth = 3;
-        ctx.beginPath();
-        for (let y = 240; y <= 340; y += 25) {
-            ctx.moveTo(355, y); ctx.lineTo(445, y); // Horizontal frames
+        function triggerReplaceStamp(id) {
+            const targetPeaks = window.peaks || (typeof peaks !== "undefined" ? peaks : []);
+            activePeak = targetPeaks.find(p => p.id === id);
+            if (!activePeak) return alert("未指定有效的打卡高峰目標");
+            const replaceInput = document.getElementById("replace-input");
+            if (replaceInput) { replaceInput.click(); }
         }
-        ctx.moveTo(355, 230); ctx.lineTo(445, 350); // Diagonal brace 1
-        ctx.moveTo(445, 230); ctx.lineTo(355, 350); // Diagonal brace 2
-        ctx.stroke();
+        function unlockWithDefaultStamp(id) {
+            const targetPeaks = window.peaks || (typeof peaks !== "undefined" ? peaks : []);
+            activePeak = targetPeaks.find(p => p.id === id);
+            if (!activePeak) return alert("未指定有效的山峰目標");
 
-        // Structural satellite alignment circles dishes on tower faces
-        ctx.fillStyle = "#D6DBDF";
-        ctx.beginPath(); ctx.arc(375, 340, 15, 0, 2 * Math.PI); ctx.fill(); ctx.stroke();
-        ctx.beginPath(); ctx.arc(425, 340, 15, 0, 2 * Math.PI); ctx.fill(); ctx.stroke();
-        ctx.beginPath(); ctx.arc(400, 305, 18, 0, 2 * Math.PI); ctx.fill(); ctx.stroke();
+            document.getElementById("loading").style.display = "flex";
+            document.getElementById("loading-text").textContent = `正在為您雕刻官方版【${activePeak.name}】微縮漫畫風印章...`;
 
-        // Right skeletal thin antenna latticework structure tower
-        ctx.lineWidth = 4;
-        ctx.beginPath();
-        ctx.moveTo(470, 310); ctx.lineTo(470, 180); // Main spire pole
-        ctx.moveTo(460, 220); ctx.lineTo(480, 220);
-        ctx.moveTo(455, 260); ctx.lineTo(485, 260);
-        ctx.stroke();
+            const canvas = document.createElement("canvas");
+            canvas.width = 800; canvas.height = 800;
+            const ctx = canvas.getContext("2d");
+            ctx.fillStyle = "#F5D061"; ctx.fillRect(0, 0, 800, 800);
+            ctx.strokeStyle = "#000000"; ctx.lineWidth = 6; ctx.lineJoin = "round";
 
-        // 4. White Spherical Radar Dome ("The Giant Weather Ball")
-        ctx.lineWidth = 5;
-        ctx.fillStyle = "#FFFFFF";
-        ctx.beginPath();
-        ctx.arc(400, 220, 62, 0, 2 * Math.PI);
-        ctx.fill(); ctx.stroke();
-        
-        // Sphere top antenna tip needle pin line detail
-        ctx.beginPath(); ctx.moveTo(400, 158); ctx.lineTo(400, 140); ctx.stroke();
+            if (activePeak.elev === 957) {
+                ctx.fillStyle = "#4FA72A"; ctx.beginPath(); ctx.moveTo(0, 500); ctx.quadraticCurveTo(200, 480, 400, 360); ctx.lineTo(400, 700); ctx.lineTo(0, 700); ctx.closePath(); ctx.fill(); ctx.stroke();
+                ctx.fillStyle = "#2D689C"; ctx.beginPath(); ctx.moveTo(400, 360); ctx.quadraticCurveTo(600, 480, 800, 560); ctx.lineTo(800, 700); ctx.lineTo(400, 700); ctx.closePath(); ctx.fill(); ctx.stroke();
+                ctx.strokeStyle = "#FFFFFF"; ctx.lineWidth = 14; ctx.beginPath(); ctx.moveTo(400, 360); ctx.quadraticCurveTo(420, 420, 390, 470); ctx.quadraticCurveTo(450, 530, 480, 600); ctx.quadraticCurveTo(430, 650, 520, 700); ctx.stroke();
+                ctx.strokeStyle = "#000000"; ctx.lineWidth = 4; ctx.stroke();
+                ctx.fillStyle = "#EAEAEA"; ctx.fillRect(355, 230, 90, 130); ctx.strokeRect(355, 230, 90, 130);
+                ctx.lineWidth = 3; ctx.beginPath(); for (let y = 240; y <= 340; y += 25) { ctx.moveTo(355, y); ctx.lineTo(445, y); } ctx.moveTo(355, 230); ctx.lineTo(445, 350); ctx.stroke();
+                ctx.fillStyle = "#FFFFFF"; ctx.lineWidth = 5; ctx.beginPath(); ctx.arc(400, 220, 62, 0, 2 * Math.PI); ctx.fill(); ctx.stroke();
+            } else {
+                ctx.fillStyle = "#8B5A2B"; ctx.beginPath(); ctx.moveTo(150, 650); ctx.lineTo(400, 250); ctx.lineTo(650, 650); ctx.closePath(); ctx.fill(); ctx.stroke();
+            }
 
-        // 5. Solid Base Typographic Banner Block (Yamasta Badge Style)
-        ctx.fillStyle = "#0D0D0D"; // Dark charcoal border banner
-        ctx.fillRect(0, 670, 800, 130);
-        
-        // Clean white text overlays inside layout banner boundaries
-        ctx.fillStyle = "#FFFFFF";
-        ctx.textAlign = "center";
-        ctx.font = "bold 82px sans-serif"; // Large stylized condensed font sizing layout profile
-        ctx.fillText("TAI MO SHAN 955m", 400, 762);
-
-        // 6. Outer Stamp Silhouette Arch Shield Boundary Frame Layout
-        ctx.strokeStyle = "#000000";
-        ctx.lineWidth = 20;
-        ctx.strokeRect(10, 10, 780, 780);
-    }
-
-    else if (elev === 934) {
-        // ==========================================================
-        // 2. 鳳凰山 LANTAU PEAK (934m) - Sharp Razor Double Peak Split
-        // ==========================================================
-        ctx.fillStyle = "#1F3A3A"; // Indigo Mountain Hue
-        ctx.beginPath();
-        ctx.moveTo(50, 700);
-        ctx.lineTo(280, 280);  // High Jagged North Peak
-        ctx.lineTo(420, 450);  // Central Saddle Ridge Drop
-        ctx.lineTo(580, 320);  // South Peak Summit
-        ctx.lineTo(750, 700);
-        ctx.closePath(); ctx.fill(); ctx.stroke();
-
-        // Sunset/Sunrise speed lines in sky
-        ctx.strokeStyle = "#E67E22"; ctx.lineWidth = 4;
-        for (let i = 0; i < 6; i++) {
-            ctx.beginPath(); ctx.moveTo(400, 150); ctx.lineTo(400 + (i*40) - 100, 50); ctx.stroke();
+            const defaultEmblemSrc = canvas.toDataURL("image/jpeg", 0.75);
+            currentRawImageSrc = defaultEmblemSrc;
+            processImageAndStamp(defaultEmblemSrc, document.getElementById("stamp-style-select").value || "classic");
         }
-    }
-    else if (elev === 869) {
-        // ==========================================================
-        // 3. 大東山 SUNSET PEAK (869m) - Golden Grass & Stone Camps Huts
-        // ==========================================================
-        // Smooth golden switchback slopes
-        ctx.fillStyle = "#D4AC0D";
-        ctx.beginPath(); ctx.moveTo(0, 500); ctx.quadraticCurveTo(400, 400, 800, 600); ctx.lineTo(800, 800); ctx.lineTo(0, 800); ctx.closePath(); ctx.fill(); ctx.stroke();
 
-        // Iconic rectangular stone hut structures
-        ctx.fillStyle = "#5D6D7E"; ctx.strokeStyle = "#000000"; ctx.lineWidth = 5;
-        ctx.fillRect(320, 410, 70, 45); ctx.strokeRect(320, 410, 70, 45); // Hut 1
-        ctx.fillRect(440, 440, 65, 40); ctx.strokeRect(440, 440, 65, 40); // Hut 2
-    }
-    else if (elev === 749) {
-        // ==========================================================
-        // 4. 二東山 YI TUNG SHAN (749m) - Flat Meadow Ridge Plateau 
-        // ==========================================================
-        ctx.fillStyle = "#A0 panel"; 
-        ctx.fillStyle = "#7D6608"; // Muted plateau brush tones
-        ctx.beginPath();
-        ctx.moveTo(0, 480); ctx.lineTo(250, 460); ctx.lineTo(600, 460); ctx.lineTo(800, 520);
-        ctx.lineTo(800, 800); ctx.lineTo(0, 800); ctx.closePath(); ctx.fill(); ctx.stroke();
-        
-        // Hiker lone silhouette standing on edge
-        ctx.fillStyle = "#000000";
-        ctx.fillRect(220, 420, 12, 40); // Body
-        ctx.beginPath(); ctx.arc(226, 412, 8, 0, 2*Math.PI); ctx.fill(); // Head
-    }
-    else if (elev === 702) {
-        // ==========================================================
-        // 5. 馬鞍山 MA ON SHAN (702m) - The Deep Curved Horse Saddle
-        // ==========================================================
-        ctx.fillStyle = "#1E2F23";
-        ctx.beginPath();
-        ctx.moveTo(0, 320);
-        ctx.quadraticCurveTo(400, 620, 800, 350); // Sharp u-shape dip cliff
-        ctx.lineTo(800, 800); ctx.lineTo(0, 800);
-        ctx.closePath(); ctx.fill(); ctx.stroke();
-    }
-    else if (elev === 677) {
-        // ==========================================================
-        // 6. 牛押山 THE HUNCHBACK (677m) - Steep Stepped Crags
-        // ==========================================================
-        ctx.fillStyle = "#2C3E50";
-        ctx.beginPath();
-        ctx.moveTo(50, 750); ctx.lineTo(200, 550); ctx.lineTo(200, 500); 
-        ctx.lineTo(380, 350); ctx.lineTo(380, 290); // Blocky rock steps stair step profile
-        ctx.lineTo(550, 450); ctx.lineTo(800, 750);
-        ctx.lineTo(50, 750); ctx.closePath(); ctx.fill(); ctx.stroke();
-    }
-    else if (elev === 602) {
-        // ==========================================================
-        // 7. 飛鵝山 KOWLOON PEAK (602m) - Transmitter Tower Over City
-        // ==========================================================
-        // Sheer drop jagged mountain rock
-        ctx.fillStyle = "#34495E";
-        ctx.beginPath(); ctx.moveTo(0, 800); ctx.lineTo(350, 340); ctx.lineTo(800, 800); ctx.closePath(); ctx.fill(); ctx.stroke();
-
-        // Skeletal antenna grid tower lines
-        ctx.strokeStyle = "#000000"; ctx.lineWidth = 5;
-        ctx.beginPath(); ctx.moveTo(350, 340); ctx.lineTo(350, 160); // Mast pole
-        ctx.moveTo(330, 220); ctx.lineTo(370, 220); // Grid cross 1
-        ctx.moveTo(320, 270); ctx.lineTo(380, 270); // Grid cross 2
-        ctx.stroke();
-    }
-    else if (elev === 751) {
-        // ==========================================================
-        // 8. 彌勒山 NEI LAK SHAN (751m) - Diagonal Cable Car Track Ropeway
-        // ==========================================================
-        ctx.fillStyle = "#196F3D";
-        ctx.beginPath(); ctx.arc(400, 850, 420, Math.PI, 0); ctx.fill(); ctx.stroke();
-
-        // Slanted Ngong Ping 360 wire cables profile routes
-        ctx.strokeStyle = "#000000"; ctx.lineWidth = 4;
-        ctx.beginPath(); ctx.moveTo(0, 150); ctx.lineTo(800, 350); ctx.stroke();
-        
-        // Square hanging cable car cabin icon box
-        ctx.fillStyle = "#C0392B"; ctx.fillRect(380, 245, 45, 40); ctx.strokeRect(380, 245, 45, 40);
-        ctx.fillStyle = "#AED6F1"; ctx.fillRect(385, 250, 35, 15); // Glass windows matching profile elements
-    }
-    else if (elev === 766) {
-        // ==========================================================
-        // 9. 蓮花山 LIN FA SHAN (766m) - Granite Boulders Crags Fields
-        // ==========================================================
-        ctx.fillStyle = "#117A65";
-        ctx.beginPath(); ctx.arc(400, 800, 410, Math.PI, 0); ctx.fill(); ctx.stroke();
-
-        // Massive circular granite boulder clusters shapes fields 
-        ctx.fillStyle = "#BDC3C7";
-        ctx.beginPath(); ctx.arc(280, 410, 50, 0, 2*Math.PI); ctx.fill(); ctx.stroke();
-        ctx.beginPath(); ctx.arc(360, 390, 75, 0, 2*Math.PI); ctx.fill(); ctx.stroke();
-        ctx.beginPath(); ctx.arc(460, 430, 45, 0, 2*Math.PI); ctx.fill(); ctx.stroke();
-    }
-    else if (elev === 539) {
-        // ==========================================================
-        // 10. 狗牙嶺 KAU NGA LING (539m) - Hyper Jagged Dog's Teeth Ridge
-        // ==========================================================
-        ctx.fillStyle = "#1C2833"; // Deep dark tone shadow layer shape
-        ctx.beginPath();
-        ctx.moveTo(0, 700);
-        ctx.lineTo(120, 420); ctx.lineTo(180, 510); // Tooth peak 1
-        ctx.lineTo(310, 350); ctx.lineTo(380, 490); // Tooth peak 2
-        ctx.lineTo(520, 280); ctx.lineTo(600, 460); // Tooth peak 3 (Summit spire drop spine)
-        ctx.lineTo(800, 700);
-        ctx.lineTo(800, 800); ctx.lineTo(0, 800);
-        ctx.closePath(); ctx.fill(); ctx.stroke();
-    }
-    else {
-        // Standard General Fallback Hill Profile Design logic mapping parameters for lower ranks
-        ctx.fillStyle = "#8B5A2B";
-        ctx.beginPath(); ctx.moveTo(150, 650); ctx.lineTo(400, 250); ctx.lineTo(650, 650); ctx.closePath(); ctx.fill(); ctx.stroke();
-    }
-
-    // Export raw imagery context stream directly into core filters engine processes layer templates
-    const defaultEmblemSrc = canvas.toDataURL("image/jpeg", 0.75);
-    currentRawImageSrc = defaultEmblemSrc;
-
-    const currentStyle = document.getElementById("stamp-style-select").value || "classic";
-    processImageAndStamp(defaultEmblemSrc, currentStyle);
-}
-
-// Global scope window binding registry tracking metrics hooks
-window.unlockWithDefaultStamp = unlockWithDefaultStamp;
-
-function triggerReplaceStamp(id) {
-    const targetPeaks = window.peaks || (typeof peaks !== "undefined" ? peaks : []);
-    activePeak = targetPeaks.find(p => p.id === id);
-    if (!activePeak) return alert("未指定有效的打卡高峰目標");
-    
-    const replaceInput = document.getElementById("replace-input");
-    if (replaceInput) {
-        replaceInput.click(); // 這是真正觸發手機相簿與相機彈窗的核心驅動
-    } else {
-        alert("找不到相片置換組件，請刷新頁面重試");
-    }
-}
-        
-        
         function processImageAndStamp(imageSrc, styleName) {
             const img = new Image();
             img.onload = async function() {
@@ -916,45 +415,20 @@ function triggerReplaceStamp(id) {
 
                 try {
                     const finalDataUrl = canvas.toDataURL("image/jpeg", 0.75);
-                    
-                    // Allocate data compression pointers to base reference background images
-                    let optimizedRawSrc = imageSrc;
-                    if (imageSrc.startsWith("data:image/") && imageSrc.length > 1000000) {
-                        optimizedRawSrc = finalDataUrl; 
-                    }
                     await saveRecordToDB(activePeak.id, finalDataUrl, imageSrc, styleName);
                     document.getElementById("loading").style.display = "none";
                     document.getElementById("modal-img").src = finalDataUrl;
-// 確保這裡綁定的是全域視窗函數 window.triggerReplaceStamp
-document.getElementById("modal-action-bar").innerHTML = `
-    <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:10px;">
-        <button class="btn" style="background: #8B5A2B; margin:0; padding:12px; font-weight:bold; font-size:14px;" onclick="if(typeof window.triggerReplaceStamp === 'function'){ window.triggerReplaceStamp('${activePeak.id}'); } else { alert('系統載入中，請稍候重試'); }">📸 重新上傳相片覆蓋印章圖層</button>
-        <p style="font-size:11px; color:#666; margin:0; text-align:center;">提示：您可以隨時使用手機相簿中的登山實景照，來覆蓋紀念章的底圖。</p>
-    </div>
-`;
-
-
-                    document.getElementById("stamp-style-select").value = styleName;
+                    document.getElementById("modal-action-bar").innerHTML = `
+                        <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:10px;">
+                            <button class="btn" style="background: #8B5A2B; margin:0;" onclick="window.triggerReplaceStamp('${activePeak.id}')">📸 重新上傳相片覆蓋印章圖層</button>
+                        </div>
+                    `;
                     document.getElementById("result-modal").style.display = "flex";
-            
-                    if (typeof renderPeaksGrid === "function") {
-                        await renderPeaksGrid();
-                    }
-                } catch(e) {
-                    console.error("IndexedDB write tracking fault exception:", e);
-                    alert("資料庫寫入空間不足或處理異常。請重試。");
-                    document.getElementById("loading").style.display = "none";
-                }
+                    await renderPeaksGrid();
+                } catch(e) { alert("資料儲存失敗"); document.getElementById("loading").style.display = "none"; }
             };
-            
-            img.onerror = function() {
-                alert("讀取底圖資源失敗，請檢查權限或重新操作。");
-                document.getElementById("loading").style.display = "none";
-            };
-
             img.src = imageSrc;
         }
-
         function switchStampStyle(newStyle) {
             if (!activePeak || !currentRawImageSrc) return;
             document.getElementById("loading").style.display = "flex"; processImageAndStamp(currentRawImageSrc, newStyle);
@@ -974,7 +448,7 @@ document.getElementById("modal-action-bar").innerHTML = `
             if (record) {
                 document.getElementById("modal-title").innerText = `${activePeak.name} 登頂足跡`; document.getElementById("modal-img").src = record.dataUrl; currentRawImageSrc = record.rawImg;
                 document.getElementById("stamp-style-select").value = record.style || "classic";
-                document.getElementById("modal-action-bar").innerHTML = `<button class="btn" style="background: #555; margin-bottom: 10px;" onclick="triggerReplaceStamp('${activePeak.id}')">更換基底相片</button>`;
+                document.getElementById("modal-action-bar").innerHTML = `<button class="btn" style="background: #555; margin-bottom: 10px;" onclick="window.triggerReplaceStamp('${activePeak.id}')">更換基底相片</button>`;
                 document.getElementById("result-modal").style.display = "flex";
             }
         }
@@ -999,19 +473,16 @@ document.getElementById("modal-action-bar").innerHTML = `
             };
             reader.readAsText(file);
         }
+
         async function generateAchievementPoster() {
             const canvas = document.getElementById("poster-canvas"); const ctx = canvas.getContext("2d");
             canvas.width = 800; canvas.height = 1250; ctx.fillStyle = "#F4F4F0"; ctx.fillRect(0, 0, 800, 1250);
             ctx.fillStyle = "#2E5A44"; ctx.fillRect(20, 20, 760, 150);
-
             const targetPeaks = window.peaks || (typeof peaks !== "undefined" ? peaks : []);
             const unlockedIds = await getAllUnlockedIds(); const rate = ((unlockedIds.length / (targetPeaks.length || 1)) * 100).toFixed(1);
-
             ctx.fillStyle = "#FFFFFF"; ctx.textAlign = "center"; ctx.font = "bold 32px sans-serif"; ctx.fillText("香港 160 考山成就集章榜", 400, 85);
             ctx.font = "600 20px monospace"; ctx.fillStyle = "#E67E22"; ctx.fillText(`已解鎖: ${unlockedIds.length} / 160 | 制霸率: ${rate}%`, 400, 130);
-
             const cols = 16; const startX = 42; const startY = 210; const boxW = 40; const boxH = 48; const gapX = 5; const gapY = 12;
-
             for (let i = 0; i < targetPeaks.length; i++) {
                 const isUnlocked = unlockedIds.includes(targetPeaks[i].id);
                 const col = i % cols; const row = Math.floor(i / cols); const x = startX + col * (boxW + gapX); const y = startY + row * (boxH + gapY);
@@ -1022,53 +493,38 @@ document.getElementById("modal-action-bar").innerHTML = `
             }
             const posterDataUrl = canvas.toDataURL("image/png");
             document.getElementById("modal-title").innerText = "登頂海報生成成功"; document.getElementById("modal-img").src = posterDataUrl;
-            document.getElementById("modal-action-bar").innerHTML = `<p style="font-size:12px;color:#e67e22;">提示：長按上方圖片即可儲存到相簿！</p>`;
+            document.getElementById("modal-action-bar").innerHTML = `<p style="font-size:12px;color:#e67e22;">提示：長按圖儲存到相簿！</p>`;
             document.getElementById("result-modal").style.display = "flex";
         }
 
-        // ==========================================================
-        // 🔒 PROTECTED INITIALIZATION RUNTIME FOR IPHONE SAFARI
-        // ==========================================================
-        window.addEventListener("load", async () => {
-            console.log("[PeakStamp Engine] Document complete. Initializing secure execution threads.");
-            
+        async function runApplicationBoot() {
             await initDB();
-            
-            const targetPeaks = window.peaks || (typeof peaks !== "undefined" ? peaks : []);
+            let targetPeaks = window.peaks || (typeof peaks !== "undefined" ? peaks : []);
+            if (!targetPeaks || targetPeaks.length === 0) { setTimeout(runApplicationBoot, 150); return; }
             targetPeaks.forEach(peak => assignPeakFilters(peak));
-
             const selector = document.getElementById("mock-selector");
             if (selector && selector.options.length === 0) {
                 const selectFragment = document.createDocumentFragment();
                 targetPeaks.forEach((peak, index) => {
-                    const opt = document.createElement("option");
-                    opt.value = peak.id; opt.innerText = `#${index + 1} ${peak.name}`;
-                    selectFragment.appendChild(opt);
+                    const opt = document.createElement("option"); opt.value = peak.id; opt.innerText = `#${index + 1} ${peak.name}`; selectFragment.appendChild(opt);
                 });
                 selector.appendChild(selectFragment);
             }
-
-            await renderPeaksGrid();
-            drawRadarGrid();
-
-            // Precise hardware GPS positioning watcher configuration matrix
+            await renderPeaksGrid(); drawRadarGrid();
             if (navigator.geolocation) {
                 navigator.geolocation.watchPosition(
                     pos => updateRadarList(pos.coords.latitude, pos.coords.longitude),
                     err => {
                         const radarListDiv = document.getElementById("radar-list");
-                        if (radarListDiv && err.code === 1) {
-                            radarListDiv.innerHTML = `<span style="color:#c0392b; font-weight:bold;">⚠️ 請開啟 iPhone 「設定」➔「隱私權與安全性」➔「定位服務」➔ 確保 Safari 權限勾選「使用期間」並打開「準確位置」開關。</span>`;
-                        }
-                    },
-                    { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
+                        if (radarListDiv && err.code === 1) { radarListDiv.innerHTML = `<span style="color:#c0392b; font-weight:bold;">⚠️ 請開啟 iPhone 「設定」➔「隱私權與安全性」➔「定位服務」➔ 確保 Safari 權限勾選「使用期間」並打開「準確位置」開關。</span>`; }
+                    }, { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
                 );
             }
-        });
+        }
 
+        if (document.readyState === "complete" || document.readyState === "interactive") { runApplicationBoot(); } else { window.addEventListener("load", runApplicationBoot); }
         window.viewStamp = viewStamp;
         window.triggerReplaceStamp = triggerReplaceStamp;
-        window.openCameraFor = openCameraFor;
         window.unlockWithDefaultStamp = unlockWithDefaultStamp;
     </script>
 </body>
