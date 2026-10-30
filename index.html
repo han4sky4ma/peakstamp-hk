@@ -873,7 +873,18 @@ function unlockWithDefaultStamp(id) {
 // Global scope window binding registry tracking metrics hooks
 window.unlockWithDefaultStamp = unlockWithDefaultStamp;
 
-
+function triggerReplaceStamp(id) {
+    const targetPeaks = window.peaks || (typeof peaks !== "undefined" ? peaks : []);
+    activePeak = targetPeaks.find(p => p.id === id);
+    if (!activePeak) return alert("未指定有效的打卡高峰目標");
+    
+    const replaceInput = document.getElementById("replace-input");
+    if (replaceInput) {
+        replaceInput.click(); // 這是真正觸發手機相簿與相機彈窗的核心驅動
+    } else {
+        alert("找不到相片置換組件，請刷新頁面重試");
+    }
+}
         
         
         function processImageAndStamp(imageSrc, styleName) {
@@ -914,12 +925,14 @@ window.unlockWithDefaultStamp = unlockWithDefaultStamp;
                     await saveRecordToDB(activePeak.id, finalDataUrl, imageSrc, styleName);
                     document.getElementById("loading").style.display = "none";
                     document.getElementById("modal-img").src = finalDataUrl;
+// 確保這裡綁定的是全域視窗函數 window.triggerReplaceStamp
 document.getElementById("modal-action-bar").innerHTML = `
     <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:10px;">
-        <button class="btn" style="background: #8B5A2B; margin:0;" onclick="window.triggerReplaceStamp('${activePeak.id}')">📸 重新上傳相片覆蓋印章圖層</button>
-        <p style="font-size:11px; color:#666; margin:0;">提示：您可以隨時使用手機相簿中的登山實景照，來覆蓋此時產生的紀念章底圖。</p>
+        <button class="btn" style="background: #8B5A2B; margin:0; padding:12px; font-weight:bold; font-size:14px;" onclick="if(typeof window.triggerReplaceStamp === 'function'){ window.triggerReplaceStamp('${activePeak.id}'); } else { alert('系統載入中，請稍候重試'); }">📸 重新上傳相片覆蓋印章圖層</button>
+        <p style="font-size:11px; color:#666; margin:0; text-align:center;">提示：您可以隨時使用手機相簿中的登山實景照，來覆蓋紀念章的底圖。</p>
     </div>
 `;
+
 
                     document.getElementById("stamp-style-select").value = styleName;
                     document.getElementById("result-modal").style.display = "flex";
@@ -1055,6 +1068,8 @@ document.getElementById("modal-action-bar").innerHTML = `
 
         window.viewStamp = viewStamp;
         window.triggerReplaceStamp = triggerReplaceStamp;
+        window.openCameraFor = openCameraFor;
+        window.unlockWithDefaultStamp = unlockWithDefaultStamp;
     </script>
 </body>
 </html>
