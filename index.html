@@ -432,43 +432,82 @@
             return (brng + 360) % 360;
         }
         async function renderPeaksGrid() {
-            const grid = document.getElementById("peaks-grid");
-            if (!grid) return;
-            const regionFilter = document.getElementById("filter-region").value;
-            const levelFilter = document.getElementById("filter-level").value;
-            const statusFilter = document.getElementById("filter-status").value;
+    const grid = document.getElementById("peaks-grid");
+    if (!grid) return;
+
+    // Fetch live filter drop-down configuration states securely
+    const regionEl = document.getElementById("filter-region");
+    const levelEl = document.getElementById("filter-level");
+    const statusEl = document.getElementById("filter-status");
+    
+    const regionFilter = regionEl ? regionEl.value : "all";
+    const levelFilter = levelEl ? levelEl.value : "all";
+    const statusFilter = statusEl ? statusEl.value : "all";
+    
+    // SAFE FALLBACK ARRAY LOOKUP: Bypasses cross-script visibility limits on iOS Safari
+    const targetPeaks = window.peaks || (typeof peaks !== "undefined" ? peaks : []);
+    const peakLength = targetPeaks.length;
+
+    // Fetch active unlocked database keys from IndexedDB mapping parameters
+    const unlockedIds = await getAllUnlockedIds();
+    const totalUnlockedCount = unlockedIds.length;
+    let renderedCount = 0;
+
+    // PERFORMANCE FIX: Construct layout nodes inside an off-screen virtual memory chunk
+    const fragment = document.createDocumentFragment();
+
+    for (let i = 0; i < peakLength; i++) {
+        const peak = targetPeaks[i];
+        const isUnlocked = unlockedIds.includes(peak.id);
+        
+        // Evaluate multi-tier layout condition filters instantly
+        const matchRegion = (regionFilter === "all" || peak.regionTag === regionFilter);
+        const matchLevel = (levelFilter === "all" || peak.levelTag === levelFilter);
+        const matchStatus = (statusFilter === "all" || (statusFilter === "unlocked" && isUnlocked) || (statusFilter === "locked" && !isUnlocked));
+
+        if (matchRegion && matchLevel && matchStatus) {
+            renderedCount++;
             
-            const targetPeaks = window.peaks || (typeof peaks !== "undefined" ? peaks : []);
-            const unlockedIds = await getAllUnlockedIds();
-            const totalUnlockedCount = unlockedIds.length;
-            let renderedCount = 0;
-
-            const fragment = document.createDocumentFragment();
-            targetPeaks.forEach((peak, index) => {
-                const isUnlocked = unlockedIds.includes(peak.id);
-                const matchRegion = (regionFilter === "all" || peak.regionTag === regionFilter);
-                const matchLevel = (levelFilter === "all" || peak.levelTag === levelFilter);
-                const matchStatus = (statusFilter === "all" || (statusFilter === "unlocked" && isUnlocked) || (statusFilter === "locked" && !isUnlocked));
-
-                if (matchRegion && matchLevel && matchStatus) {
-                    renderedCount++;
-                    const card = document.createElement("div");
-                    card.className = `card ${isUnlocked ? 'unlocked' : 'locked'}`;
-                    card.innerHTML = `
-                        <div class="badge-icon">⛰️</div>
-                        <strong style="font-size: 13px; display: block; min-height: 36px;">#${index + 1} ${peak.name}</strong>
-                        <div style="font-size: 11px; color: #666; margin: 4px 0;">海拔高度: ${peak.elev}米</div>
-                        ${isUnlocked ? `<button class="btn" style="background: #2E5A44; padding: 6px;" onclick="viewStamp('${peak.id}')">檢視印章</button>` : `<div style="font-size: 11px; color: #999; margin-top: 10px;">尚未攀登解鎖</div>`}
-                    `;
-                    fragment.appendChild(card);
+            // Build the card shortcut wrapper container
+            const card = document.createElement("div");
+            card.className = isUnlocked ? "card unlocked" : "card locked";
+            
+            // Inject structural template parameters cleanly
+            card.innerHTML = `
+                <div class="badge-icon">⛰️</div>
+                <strong style="font-size: 13px; display: block; min-height: 36px;">#${i + 1} ${peak.name}</strong>
+                <div style="font-size: 11px; color: #666; margin: 4px 0;">海拔高度: ${peak.elev}米</div>
+                ${isUnlocked ? 
+                    `<button class="btn" style="background: #2E5A44; padding: 6px;" onclick="viewStamp('${peak.id}')">🔍 檢視紀念章</button>` : 
+                    `<div style="font-size: 11px; color: #999; margin-top: 10px; font-weight: 500;">🔒 尚未登頂解鎖</div>`
                 }
-            });
-            grid.textContent = "";
-            grid.appendChild(fragment);
-            document.getElementById("progress-text").innerText = `${totalUnlockedCount} / ${targetPeaks.length} 已解鎖`;
-            document.getElementById("progress-fill").style.width = `${(totalUnlockedCount / (targetPeaks.length || 1)) * 100}%`;
-            document.getElementById("grid-count-text").innerText = `當前篩選符合項目: ${renderedCount} 座山峰`;
+            `;
+            
+            fragment.appendChild(card);
         }
+    }
+
+    // PERFORMANCE FIX: Wipe view container using textContent and paint the batch exactly *once*
+    grid.textContent = ""; 
+    grid.appendChild(fragment);
+
+    // Synchronize administrative progress stats trackers layout text cleanly
+    const progressTextEl = document.getElementById("progress-text");
+    const progressFillEl = document.getElementById("progress-fill");
+    const gridCountTextEl = document.getElementById("grid-count-text");
+
+    if (progressTextEl) {
+        progressTextEl.textContent = `${totalUnlockedCount} / ${peakLength} 已解鎖`;
+    }
+    if (progressFillEl) {
+        progressFillEl.style.width = `${(totalUnlockedCount / (peakLength || 1)) * 100}%`;
+    }
+    if (gridCountTextEl) {
+        gridCountTextEl.textContent = `顯示中: ${renderedCount} 座山頭`;
+    }
+}
+
+
 
         function updateRadarList(userLat, userLng) {
             lastUserLat = userLat; lastUserLng = userLng;
@@ -681,6 +720,12 @@
                     document.getElementById("loading").style.display = "none";
                 }
             };
+            
+            img.onerror = function() {
+                alert("讀取底圖資源失敗，請檢查權限或重新操作。");
+                document.getElementById("loading").style.display = "none";
+            };
+
             img.src = imageSrc;
         }
 
