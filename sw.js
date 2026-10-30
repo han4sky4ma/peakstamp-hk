@@ -1,5 +1,5 @@
 ﻿// 定義離線快取版本與快取清單檔名
-const CACHE_NAME = "peakstamp-v1.0.1";
+const CACHE_NAME = "peakstamp-v1.0.2";
 const ASSETS_TO_CACHE = [
   "/",
   "index.html",
