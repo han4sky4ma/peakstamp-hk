@@ -1,12 +1,24 @@
-﻿// Main Event Router Hub & Bootstrapper Routing Engine
+// Synchronized Core Bootstrapper Engine
 async function initApp() {
+    // 1. Critical Safeguard: If DOMContentLoaded inside ui.js hasn't fired yet, force template injection now
+    if (!document.getElementById('radar-canvas') && typeof injectAppTemplates === "function") {
+        injectAppTemplates();
+    }
+    
+    // 2. Initialize UI Action listeners
+    if (typeof initAppUIListeners === "function") {
+        initAppUIListeners();
+    }
+
+    // 3. Mount and connect local transactional persistence database
     await initDB();
     
+    // 4. Clean up raw peak coordinates layout filters
     if (window.peaks) {
         window.peaks.forEach(peak => assignPeakFilters(peak));
     }
     
-    // Bind Selector Options to Mock Dropdown Element container
+    // 5. Populate developer simulation panel selectors
     const selector = document.getElementById("mock-selector");
     if (selector && selector.options.length === 0 && window.peaks) {
         const selectFragment = document.createDocumentFragment();
@@ -19,8 +31,10 @@ async function initApp() {
         selector.appendChild(selectFragment);
     }
 
+    // 6. Draw 160 cards grid instantly
     await renderPeaksGrid();
     
+    // 7. Initialize GPS Geolocation Watch Loop
     if (navigator.geolocation) {
         navigator.geolocation.watchPosition(pos => updateRadarList(pos.coords.latitude, pos.coords.longitude), null, { enableHighAccuracy: true });
     }
@@ -127,3 +141,5 @@ window.viewStamp = viewStamp;
 window.initAppUIListeners = initAppUIListeners;
 window.onload = initApp;
 
+// Use DOMContentLoaded instead of raw window.onload to ensure full layout availability
+document.addEventListener("DOMContentLoaded", initApp);
