@@ -602,65 +602,277 @@
             reader.readAsDataURL(file); event.target.value = "";
         }
 
-        // NEW ENGINE: Generates a beautiful vector background emblem when the user skips taking a picture
-        function unlockWithDefaultStamp(id) {
-            const targetPeaks = window.peaks || (typeof peaks !== "undefined" ? peaks : []);
-            activePeak = targetPeaks.find(p => p.id === id);
-            if (!activePeak) return alert("未指定有效的山峰目標");
+        // ADVANCED COMIC STAMP ENGINE: Generates custom graphic badges matched to official photos
+function unlockWithDefaultStamp(id) {
+    const targetPeaks = window.peaks || (typeof peaks !== "undefined" ? peaks : []);
+    activePeak = targetPeaks.find(p => p.id === id);
+    if (!activePeak) return alert("未指定有效的山峰目標");
 
-            document.getElementById("loading").style.display = "flex";
-            document.getElementById("loading-text").textContent = "正在為您雕刻官方版登頂紀念印章...";
+    document.getElementById("loading").style.display = "flex";
+    document.getElementById("loading-text").textContent = `正在為您雕刻官方版【${activePeak.name}】微縮漫畫風印章...`;
 
-            // Create an internal off-screen canvas canvas block to paint the default graphic background vector
-            const offCanvas = document.createElement("canvas");
-            offCanvas.width = 800;
-            offCanvas.height = 800;
-            const ctx = offCanvas.getContext("2d");
+    const canvas = document.createElement("canvas");
+    canvas.width = 800; canvas.height = 800;
+    const ctx = canvas.getContext("2d");
 
-            // 1. Paint textured background layout layers matching your theme palette
-            ctx.fillStyle = "#2E5A44"; // Deep forest background tone color mapping
-            ctx.fillRect(0, 0, 800, 800);
+    // Standard Comic Pop-Art Sky Background Drop
+    ctx.fillStyle = "#F5D061"; // Vibrant Retro Yellow
+    ctx.fillRect(0, 0, 800, 800);
 
-            // 2. Decorative concentric aesthetic geometry guidelines circles structures
-            ctx.strokeStyle = "rgba(244, 244, 240, 0.15)";
-            ctx.lineWidth = 4;
-            ctx.beginPath(); ctx.arc(400, 400, 320, 0, 2 * Math.PI); ctx.stroke();
-            ctx.beginPath(); ctx.arc(400, 400, 290, 0, 2 * Math.PI); ctx.stroke();
+    // Dynamic Color Palette Mappings
+    ctx.strokeStyle = "#000000";
+    ctx.lineWidth = 6;
+    ctx.lineJoin = "round";
 
-            // 3. Vector path mapping painting standard stylized high peak graphic shapes silhouettes
-            ctx.fillStyle = "#8B5A2B"; // Secondary earth mountain peak layout layer
-            ctx.beginPath();
-            ctx.moveTo(150, 600);
-            ctx.lineTo(450, 250);
-            ctx.lineTo(700, 600);
-            ctx.closePath();
-            ctx.fill();
+    const elev = activePeak.elev;
 
-            ctx.fillStyle = "#467355"; // Front overlapping stylized mountain peak layer foreground shape
-            ctx.beginPath();
-            ctx.moveTo(250, 600);
-            ctx.lineTo(550, 300);
-            ctx.lineTo(750, 600);
-            ctx.closePath();
-            ctx.fill();
+        if (elev === 957) {
+        // ==========================================================
+        // 🏔️ TAI MO SHAN (957m) - OFFICIAL GRAPHIC BADGE BLUEPRINT
+        // ==========================================================
+        // 1. Sky Background Backdrop
+        ctx.fillStyle = "#A3C9E8"; // Crisp light blue sky
+        ctx.fillRect(0, 0, 800, 800);
 
-            // 4. Stylized sun layout accent emblem decoration rules mapping coordinates
-            ctx.fillStyle = "#E67E22";
-            ctx.beginPath();
-            ctx.arc(400, 260, 45, 0, 2 * Math.PI);
-            ctx.fill();
+        // 2. Winding Trail and Mountain Slopes Layer
+        ctx.strokeStyle = "#000000";
+        ctx.lineWidth = 6;
+        ctx.lineJoin = "round";
 
-            // Export vector emblem base layout data track directly into your styles composition matrix engine
-            const defaultEmblemSrc = offCanvas.toDataURL("image/jpeg", 0.8);
-            currentRawImageSrc = defaultEmblemSrc;
+        // Green left hillside slope
+        ctx.fillStyle = "#4FA72A"; // Vibrant grass green
+        ctx.beginPath();
+        ctx.moveTo(0, 500);
+        ctx.quadraticCurveTo(200, 480, 400, 360); // Peak center point
+        ctx.lineTo(400, 700);
+        ctx.lineTo(0, 700);
+        ctx.closePath(); ctx.fill(); ctx.stroke();
 
-            // Send it straight into your existing filters framework pipeline smoothly
-            const currentStyle = document.getElementById("stamp-style-select").value || "classic";
-            processImageAndStamp(defaultEmblemSrc, currentStyle);
+        // Blue/Teal shaded right hillside slope
+        ctx.fillStyle = "#2D689C"; // Mountain shadow teal blue
+        ctx.beginPath();
+        ctx.moveTo(400, 360);
+        ctx.quadraticCurveTo(600, 480, 800, 560);
+        ctx.lineTo(800, 700);
+        ctx.lineTo(400, 700);
+        ctx.closePath(); ctx.fill(); ctx.stroke();
+
+        // Winding trail snaking down the middle ridge line
+        ctx.strokeStyle = "#FFFFFF";
+        ctx.lineWidth = 14;
+        ctx.beginPath();
+        ctx.moveTo(400, 360);
+        ctx.quadraticCurveTo(420, 420, 390, 470);
+        ctx.quadraticCurveTo(450, 530, 480, 600);
+        ctx.quadraticCurveTo(430, 650, 520, 700);
+        ctx.stroke();
+
+        ctx.strokeStyle = "#000000";
+        ctx.lineWidth = 4;
+        ctx.stroke(); // Draw the crisp trail border lines
+
+        // 3. Landmark Weather Radar Observatory Tower Scaffolding
+        ctx.fillStyle = "#EAEAEA";
+        ctx.strokeStyle = "#000000";
+        ctx.lineWidth = 5;
+
+        // Base structural building complex blocks
+        ctx.fillRect(355, 230, 90, 130); ctx.strokeRect(355, 230, 90, 130);
+        ctx.fillStyle = "#333"; ctx.fillRect(445, 310, 40, 50); ctx.strokeRect(445, 310, 40, 50); // Side box
+
+        // Scaffolding antenna lattices criss-cross lines details
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        for (let y = 240; y <= 340; y += 25) {
+            ctx.moveTo(355, y); ctx.lineTo(445, y); // Horizontal frames
         }
+        ctx.moveTo(355, 230); ctx.lineTo(445, 350); // Diagonal brace 1
+        ctx.moveTo(445, 230); ctx.lineTo(355, 350); // Diagonal brace 2
+        ctx.stroke();
 
-        // Bind to global window scope so buttons inside templates can access it securely on iOS devices
-        window.unlockWithDefaultStamp = unlockWithDefaultStamp;
+        // Structural satellite alignment circles dishes on tower faces
+        ctx.fillStyle = "#D6DBDF";
+        ctx.beginPath(); ctx.arc(375, 340, 15, 0, 2 * Math.PI); ctx.fill(); ctx.stroke();
+        ctx.beginPath(); ctx.arc(425, 340, 15, 0, 2 * Math.PI); ctx.fill(); ctx.stroke();
+        ctx.beginPath(); ctx.arc(400, 305, 18, 0, 2 * Math.PI); ctx.fill(); ctx.stroke();
+
+        // Right skeletal thin antenna latticework structure tower
+        ctx.lineWidth = 4;
+        ctx.beginPath();
+        ctx.moveTo(470, 310); ctx.lineTo(470, 180); // Main spire pole
+        ctx.moveTo(460, 220); ctx.lineTo(480, 220);
+        ctx.moveTo(455, 260); ctx.lineTo(485, 260);
+        ctx.stroke();
+
+        // 4. White Spherical Radar Dome ("The Giant Weather Ball")
+        ctx.lineWidth = 5;
+        ctx.fillStyle = "#FFFFFF";
+        ctx.beginPath();
+        ctx.arc(400, 220, 62, 0, 2 * Math.PI);
+        ctx.fill(); ctx.stroke();
+        
+        // Sphere top antenna tip needle pin line detail
+        ctx.beginPath(); ctx.moveTo(400, 158); ctx.lineTo(400, 140); ctx.stroke();
+
+        // 5. Solid Base Typographic Banner Block (Yamasta Badge Style)
+        ctx.fillStyle = "#0D0D0D"; // Dark charcoal border banner
+        ctx.fillRect(0, 670, 800, 130);
+        
+        // Clean white text overlays inside layout banner boundaries
+        ctx.fillStyle = "#FFFFFF";
+        ctx.textAlign = "center";
+        ctx.font = "bold 82px sans-serif"; // Large stylized condensed font sizing layout profile
+        ctx.fillText("TAI MO SHAN 955m", 400, 762);
+
+        // 6. Outer Stamp Silhouette Arch Shield Boundary Frame Layout
+        ctx.strokeStyle = "#000000";
+        ctx.lineWidth = 20;
+        ctx.strokeRect(10, 10, 780, 780);
+    }
+
+    else if (elev === 934) {
+        // ==========================================================
+        // 2. 鳳凰山 LANTAU PEAK (934m) - Sharp Razor Double Peak Split
+        // ==========================================================
+        ctx.fillStyle = "#1F3A3A"; // Indigo Mountain Hue
+        ctx.beginPath();
+        ctx.moveTo(50, 700);
+        ctx.lineTo(280, 280);  // High Jagged North Peak
+        ctx.lineTo(420, 450);  // Central Saddle Ridge Drop
+        ctx.lineTo(580, 320);  // South Peak Summit
+        ctx.lineTo(750, 700);
+        ctx.closePath(); ctx.fill(); ctx.stroke();
+
+        // Sunset/Sunrise speed lines in sky
+        ctx.strokeStyle = "#E67E22"; ctx.lineWidth = 4;
+        for (let i = 0; i < 6; i++) {
+            ctx.beginPath(); ctx.moveTo(400, 150); ctx.lineTo(400 + (i*40) - 100, 50); ctx.stroke();
+        }
+    }
+    else if (elev === 869) {
+        // ==========================================================
+        // 3. 大東山 SUNSET PEAK (869m) - Golden Grass & Stone Camps Huts
+        // ==========================================================
+        // Smooth golden switchback slopes
+        ctx.fillStyle = "#D4AC0D";
+        ctx.beginPath(); ctx.moveTo(0, 500); ctx.quadraticCurveTo(400, 400, 800, 600); ctx.lineTo(800, 800); ctx.lineTo(0, 800); ctx.closePath(); ctx.fill(); ctx.stroke();
+
+        // Iconic rectangular stone hut structures
+        ctx.fillStyle = "#5D6D7E"; ctx.strokeStyle = "#000000"; ctx.lineWidth = 5;
+        ctx.fillRect(320, 410, 70, 45); ctx.strokeRect(320, 410, 70, 45); // Hut 1
+        ctx.fillRect(440, 440, 65, 40); ctx.strokeRect(440, 440, 65, 40); // Hut 2
+    }
+    else if (elev === 749) {
+        // ==========================================================
+        // 4. 二東山 YI TUNG SHAN (749m) - Flat Meadow Ridge Plateau 
+        // ==========================================================
+        ctx.fillStyle = "#A0 panel"; 
+        ctx.fillStyle = "#7D6608"; // Muted plateau brush tones
+        ctx.beginPath();
+        ctx.moveTo(0, 480); ctx.lineTo(250, 460); ctx.lineTo(600, 460); ctx.lineTo(800, 520);
+        ctx.lineTo(800, 800); ctx.lineTo(0, 800); ctx.closePath(); ctx.fill(); ctx.stroke();
+        
+        // Hiker lone silhouette standing on edge
+        ctx.fillStyle = "#000000";
+        ctx.fillRect(220, 420, 12, 40); // Body
+        ctx.beginPath(); ctx.arc(226, 412, 8, 0, 2*Math.PI); ctx.fill(); // Head
+    }
+    else if (elev === 702) {
+        // ==========================================================
+        // 5. 馬鞍山 MA ON SHAN (702m) - The Deep Curved Horse Saddle
+        // ==========================================================
+        ctx.fillStyle = "#1E2F23";
+        ctx.beginPath();
+        ctx.moveTo(0, 320);
+        ctx.quadraticCurveTo(400, 620, 800, 350); // Sharp u-shape dip cliff
+        ctx.lineTo(800, 800); ctx.lineTo(0, 800);
+        ctx.closePath(); ctx.fill(); ctx.stroke();
+    }
+    else if (elev === 677) {
+        // ==========================================================
+        // 6. 牛押山 THE HUNCHBACK (677m) - Steep Stepped Crags
+        // ==========================================================
+        ctx.fillStyle = "#2C3E50";
+        ctx.beginPath();
+        ctx.moveTo(50, 750); ctx.lineTo(200, 550); ctx.lineTo(200, 500); 
+        ctx.lineTo(380, 350); ctx.lineTo(380, 290); // Blocky rock steps stair step profile
+        ctx.lineTo(550, 450); ctx.lineTo(800, 750);
+        ctx.lineTo(50, 750); ctx.closePath(); ctx.fill(); ctx.stroke();
+    }
+    else if (elev === 602) {
+        // ==========================================================
+        // 7. 飛鵝山 KOWLOON PEAK (602m) - Transmitter Tower Over City
+        // ==========================================================
+        // Sheer drop jagged mountain rock
+        ctx.fillStyle = "#34495E";
+        ctx.beginPath(); ctx.moveTo(0, 800); ctx.lineTo(350, 340); ctx.lineTo(800, 800); ctx.closePath(); ctx.fill(); ctx.stroke();
+
+        // Skeletal antenna grid tower lines
+        ctx.strokeStyle = "#000000"; ctx.lineWidth = 5;
+        ctx.beginPath(); ctx.moveTo(350, 340); ctx.lineTo(350, 160); // Mast pole
+        ctx.moveTo(330, 220); ctx.lineTo(370, 220); // Grid cross 1
+        ctx.moveTo(320, 270); ctx.lineTo(380, 270); // Grid cross 2
+        ctx.stroke();
+    }
+    else if (elev === 751) {
+        // ==========================================================
+        // 8. 彌勒山 NEI LAK SHAN (751m) - Diagonal Cable Car Track Ropeway
+        // ==========================================================
+        ctx.fillStyle = "#196F3D";
+        ctx.beginPath(); ctx.arc(400, 850, 420, Math.PI, 0); ctx.fill(); ctx.stroke();
+
+        // Slanted Ngong Ping 360 wire cables profile routes
+        ctx.strokeStyle = "#000000"; ctx.lineWidth = 4;
+        ctx.beginPath(); ctx.moveTo(0, 150); ctx.lineTo(800, 350); ctx.stroke();
+        
+        // Square hanging cable car cabin icon box
+        ctx.fillStyle = "#C0392B"; ctx.fillRect(380, 245, 45, 40); ctx.strokeRect(380, 245, 45, 40);
+        ctx.fillStyle = "#AED6F1"; ctx.fillRect(385, 250, 35, 15); // Glass windows matching profile elements
+    }
+    else if (elev === 766) {
+        // ==========================================================
+        // 9. 蓮花山 LIN FA SHAN (766m) - Granite Boulders Crags Fields
+        // ==========================================================
+        ctx.fillStyle = "#117A65";
+        ctx.beginPath(); ctx.arc(400, 800, 410, Math.PI, 0); ctx.fill(); ctx.stroke();
+
+        // Massive circular granite boulder clusters shapes fields 
+        ctx.fillStyle = "#BDC3C7";
+        ctx.beginPath(); ctx.arc(280, 410, 50, 0, 2*Math.PI); ctx.fill(); ctx.stroke();
+        ctx.beginPath(); ctx.arc(360, 390, 75, 0, 2*Math.PI); ctx.fill(); ctx.stroke();
+        ctx.beginPath(); ctx.arc(460, 430, 45, 0, 2*Math.PI); ctx.fill(); ctx.stroke();
+    }
+    else if (elev === 539) {
+        // ==========================================================
+        // 10. 狗牙嶺 KAU NGA LING (539m) - Hyper Jagged Dog's Teeth Ridge
+        // ==========================================================
+        ctx.fillStyle = "#1C2833"; // Deep dark tone shadow layer shape
+        ctx.beginPath();
+        ctx.moveTo(0, 700);
+        ctx.lineTo(120, 420); ctx.lineTo(180, 510); // Tooth peak 1
+        ctx.lineTo(310, 350); ctx.lineTo(380, 490); // Tooth peak 2
+        ctx.lineTo(520, 280); ctx.lineTo(600, 460); // Tooth peak 3 (Summit spire drop spine)
+        ctx.lineTo(800, 700);
+        ctx.lineTo(800, 800); ctx.lineTo(0, 800);
+        ctx.closePath(); ctx.fill(); ctx.stroke();
+    }
+    else {
+        // Standard General Fallback Hill Profile Design logic mapping parameters for lower ranks
+        ctx.fillStyle = "#8B5A2B";
+        ctx.beginPath(); ctx.moveTo(150, 650); ctx.lineTo(400, 250); ctx.lineTo(650, 650); ctx.closePath(); ctx.fill(); ctx.stroke();
+    }
+
+    // Export raw imagery context stream directly into core filters engine processes layer templates
+    const defaultEmblemSrc = canvas.toDataURL("image/jpeg", 0.75);
+    currentRawImageSrc = defaultEmblemSrc;
+
+    const currentStyle = document.getElementById("stamp-style-select").value || "classic";
+    processImageAndStamp(defaultEmblemSrc, currentStyle);
+}
+
+// Global scope window binding registry tracking metrics hooks
+window.unlockWithDefaultStamp = unlockWithDefaultStamp;
+
 
         
         
