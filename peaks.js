@@ -166,5 +166,10 @@ const remainingPeaks = [
     { id: "p160", name: "嘉頓山 Garden Hill", lat: 22.3358, lng: 114.1639, elev: 91 }
 ];
 
-// 將剩餘數據與主陣列合併
+// Combine part 1 and part 2 mountain blocks
 peaks.push(...remainingPeaks);
+
+// CRASH FIX: Explicitly expose the full array globally to index.html/app.js
+window.peaks = peaks;
+
+console.log("PeakStamp Engine successfully loaded hills count:", window.peaks.length);
