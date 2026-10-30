@@ -1,33 +1,34 @@
-﻿ // Native Template Content Injection Routing Engine
-document.addEventListener("DOMContentLoaded", () => {
-    // CRASH FIX: Wrap structural initialization in DOMContentLoaded to prevent execution race conditions
+// Globalized Template Component Builder Interface
+function injectAppTemplates() {
     const radarComp = document.getElementById('radar-component');
     const progressComp = document.getElementById('progress-component');
     const backupComp = document.getElementById('backup-component');
     const filterComp = document.getElementById('filter-component');
     const modalComp = document.getElementById('modal-component');
 
-    if (radarComp && document.getElementById('template-radar')) {
+    // Only append if target container is empty to avoid double-rendering artifacts
+    if (radarComp && !radarComp.children.length && document.getElementById('template-radar')) {
         radarComp.appendChild(document.getElementById('template-radar').content.cloneNode(true));
     }
-    if (progressComp && document.getElementById('template-progress')) {
+    if (progressComp && !progressComp.children.length && document.getElementById('template-progress')) {
         progressComp.appendChild(document.getElementById('template-progress').content.cloneNode(true));
     }
-    if (backupComp && document.getElementById('template-backup')) {
+    if (backupComp && !backupComp.children.length && document.getElementById('template-backup')) {
         backupComp.appendChild(document.getElementById('template-backup').content.cloneNode(true));
     }
-    if (filterComp && document.getElementById('template-filters')) {
+    if (filterComp && !filterComp.children.length && document.getElementById('template-filters')) {
         filterComp.appendChild(document.getElementById('template-filters').content.cloneNode(true));
     }
-    if (modalComp && document.getElementById('template-modals')) {
+    if (modalComp && !modalComp.children.length && document.getElementById('template-modals')) {
         modalComp.appendChild(document.getElementById('template-modals').content.cloneNode(true));
     }
+}
 
-    // Initialize event listeners hook binding after layouts are mounted cleanly
-    if (typeof initAppUIListeners === "function") {
-        initAppUIListeners();
-    }
-});
+// Bind standalone helper to global layer maps scope
+window.injectAppTemplates = injectAppTemplates;
+
+// Fail-safe initialization listener hook
+document.addEventListener("DOMContentLoaded", injectAppTemplates);
 
 // High-Performance Batch Rendering Grid Engine
 async function renderPeaksGrid() {
