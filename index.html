@@ -654,18 +654,46 @@
         }
 
         requestAnimationFrame(drawRadarGrid);
+//        if (navigator.geolocation) {
+//            navigator.geolocation.watchPosition(position => {
+//                const peaksWithDistance = peaks.map(peak => {
+//                    const distInMeters = Math.sqrt(Math.pow(position.coords.latitude - peak.lat, 2) + Math.pow(position.coords.longitude - peak.lng, 2)) * 111000;
+//                    const bearing = calculateBearing(position.coords.latitude, position.coords.longitude, peak.lat, peak.lng);
+//                    return { ...peak, distance: distInMeters, bearing: bearing };
+//                });
+//                peaksWithDistance.sort((a, b) => a.distance - b.distance); 
+//                nearestFiveCache = peaksWithDistance.slice(0, 5); 
+//                updateRadarList(position.coords.latitude, position.coords.longitude);
+//            }, err => {}, { enableHighAccuracy: true });
+//        }
         if (navigator.geolocation) {
-            navigator.geolocation.watchPosition(position => {
-                const peaksWithDistance = peaks.map(peak => {
-                    const distInMeters = Math.sqrt(Math.pow(position.coords.latitude - peak.lat, 2) + Math.pow(position.coords.longitude - peak.lng, 2)) * 111000;
-                    const bearing = calculateBearing(position.coords.latitude, position.coords.longitude, peak.lat, peak.lng);
-                    return { ...peak, distance: distInMeters, bearing: bearing };
-                });
-                peaksWithDistance.sort((a, b) => a.distance - b.distance); 
-                nearestFiveCache = peaksWithDistance.slice(0, 5); 
-                updateRadarList(position.coords.latitude, position.coords.longitude);
-            }, err => {}, { enableHighAccuracy: true });
+    navigator.geolocation.watchPosition(
+        (pos) => {
+            updateRadarList(pos.coords.latitude, pos.coords.longitude);
+        }, 
+        (err) => {
+            // CRUCIAL IOS DEBUGGER: Prints the exact reason why the hardware failed
+            const radarListDiv = document.getElementById("radar-list");
+            if (radarListDiv) {
+                if (err.code === 1) {
+                    radarListDiv.innerHTML = `<span style="color:#c0392b; font-weight:bold;">⚠️ GPS 錯誤：請前往 iPhone 設定 ➔ 隱私權 ➔ 開啟「定位服務」與「準確位置」。</span>`;
+                } else if (err.code === 2) {
+                    radarListDiv.innerHTML = `<span style="color:#c0392b; font-weight:bold;">⚠️ GPS 錯誤：衛星訊號接收失敗（請走到窗邊或戶外）。</span>`;
+                } else {
+                    radarListDiv.innerHTML = `<span style="color:#c0392b; font-weight:bold;">⚠️ GPS 定位超時 (${err.message})</span>`;
+                }
+            }
+        }, 
+        { 
+            enableHighAccuracy: true, // Forces iPhone to trigger true GPS instead of Wi-Fi triangulation
+            timeout: 10000,           // Timeouts after 10 seconds of no signal
+            maximumAge: 0             // Forces fresh satellite tracking records instead of cached positions
         }
+    );
+} else {
+    alert("您的瀏覽器不支援 GPS 定位功能。");
+}
+
 
         window.onload = initApp;
 
