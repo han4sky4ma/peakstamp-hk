@@ -492,7 +492,12 @@
                     let actionContent = `<span class="distance-tag">距離 ${kmDist}</span>`;
                     
                     if (peak.distance <= 40 && !isUnlocked) {
-                        actionContent = `<button class="btn-stamp-now" onclick="openCameraFor('${peak.id}')">📸 抵達山頂！即刻解鎖集章</button>`;
+                        actionContent = `
+                            <div style="display:flex; flex-direction:column; gap:4px;">
+                                <button class="btn-stamp-now" style="background:#2E5A44;" onclick="unlockWithDefaultStamp('${peak.id}')">🎯 一鍵直接蓋章</button>
+                                <button class="btn-stamp-now" style="background:#8B5A2B; padding:4px 8px; font-size:11px;" onclick="openCameraFor('${peak.id}')">📸 拍照紀錄印章</button>
+                            </div>
+                        `;
                     } else if (isUnlocked) {
                         actionContent = `<span class="distance-tag" style="background: #2E5A44">✓ 已打卡</span>`;
                     }
@@ -557,6 +562,69 @@
             reader.onload = function(e) { currentRawImageSrc = e.target.result; processImageAndStamp(currentRawImageSrc, document.getElementById("stamp-style-select").value || "classic"); };
             reader.readAsDataURL(file); event.target.value = "";
         }
+
+        // NEW ENGINE: Generates a beautiful vector background emblem when the user skips taking a picture
+        function unlockWithDefaultStamp(id) {
+            const targetPeaks = window.peaks || (typeof peaks !== "undefined" ? peaks : []);
+            activePeak = targetPeaks.find(p => p.id === id);
+            if (!activePeak) return alert("未指定有效的山峰目標");
+
+            document.getElementById("loading").style.display = "flex";
+            document.getElementById("loading-text").textContent = "正在為您雕刻官方版登頂紀念印章...";
+
+            // Create an internal off-screen canvas canvas block to paint the default graphic background vector
+            const offCanvas = document.createElement("canvas");
+            offCanvas.width = 800;
+            offCanvas.height = 800;
+            const ctx = offCanvas.getContext("2d");
+
+            // 1. Paint textured background layout layers matching your theme palette
+            ctx.fillStyle = "#2E5A44"; // Deep forest background tone color mapping
+            ctx.fillRect(0, 0, 800, 800);
+
+            // 2. Decorative concentric aesthetic geometry guidelines circles structures
+            ctx.strokeStyle = "rgba(244, 244, 240, 0.15)";
+            ctx.lineWidth = 4;
+            ctx.beginPath(); ctx.arc(400, 400, 320, 0, 2 * Math.PI); ctx.stroke();
+            ctx.beginPath(); ctx.arc(400, 400, 290, 0, 2 * Math.PI); ctx.stroke();
+
+            // 3. Vector path mapping painting standard stylized high peak graphic shapes silhouettes
+            ctx.fillStyle = "#8B5A2B"; // Secondary earth mountain peak layout layer
+            ctx.beginPath();
+            ctx.moveTo(150, 600);
+            ctx.lineTo(450, 250);
+            ctx.lineTo(700, 600);
+            ctx.closePath();
+            ctx.fill();
+
+            ctx.fillStyle = "#467355"; // Front overlapping stylized mountain peak layer foreground shape
+            ctx.beginPath();
+            ctx.moveTo(250, 600);
+            ctx.lineTo(550, 300);
+            ctx.lineTo(750, 600);
+            ctx.closePath();
+            ctx.fill();
+
+            // 4. Stylized sun layout accent emblem decoration rules mapping coordinates
+            ctx.fillStyle = "#E67E22";
+            ctx.beginPath();
+            ctx.arc(400, 260, 45, 0, 2 * Math.PI);
+            ctx.fill();
+
+            // Export vector emblem base layout data track directly into your styles composition matrix engine
+            const defaultEmblemSrc = offCanvas.toDataURL("image/jpeg", 0.8);
+            currentRawImageSrc = defaultEmblemSrc;
+
+            // Send it straight into your existing filters framework pipeline smoothly
+            const currentStyle = document.getElementById("stamp-style-select").value || "classic";
+            processImageAndStamp(defaultEmblemSrc, currentStyle);
+        }
+
+        // Bind to global window scope so buttons inside templates can access it securely on iOS devices
+        window.unlockWithDefaultStamp = unlockWithDefaultStamp;
+
+        
+        
         function processImageAndStamp(imageSrc, styleName) {
             const img = new Image();
             img.onload = async function() {
@@ -586,13 +654,32 @@
 
                 try {
                     const finalDataUrl = canvas.toDataURL("image/jpeg", 0.75);
+                    
+                    // Allocate data compression pointers to base reference background images
+                    let optimizedRawSrc = imageSrc;
+                    if (imageSrc.startsWith("data:image/") && imageSrc.length > 1000000) {
+                        optimizedRawSrc = finalDataUrl; 
+                    }
                     await saveRecordToDB(activePeak.id, finalDataUrl, imageSrc, styleName);
                     document.getElementById("loading").style.display = "none";
                     document.getElementById("modal-img").src = finalDataUrl;
-                    document.getElementById("modal-action-bar").innerHTML = `<button class="btn" style="background: #555;" onclick="triggerReplaceStamp('${activePeak.id}')">重新拍照或更換基底相片</button>`;
+                    document.getElementById("modal-action-bar").innerHTML = `
+                        <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:10px;">
+                            <button class="btn" style="background: #8B5A2B; margin:0;" onclick="triggerReplaceStamp('${activePeak.id}')">📸 重新上傳相片覆蓋印章圖層</button>
+                            <p style="font-size:11px; color:#666; margin:0;">提示：您可以隨時使用手機相簿中的登山實景照，來覆蓋此時產生的紀念章底圖。</p>
+                        </div>
+                    `;
+                    document.getElementById("stamp-style-select").value = styleName;
                     document.getElementById("result-modal").style.display = "flex";
-                    await renderPeaksGrid();
-                } catch(e) { alert("資料持久化儲存失敗"); document.getElementById("loading").style.display = "none"; }
+            
+                    if (typeof renderPeaksGrid === "function") {
+                        await renderPeaksGrid();
+                    }
+                } catch(e) {
+                    console.error("IndexedDB write tracking fault exception:", e);
+                    alert("資料庫寫入空間不足或處理異常。請重試。");
+                    document.getElementById("loading").style.display = "none";
+                }
             };
             img.src = imageSrc;
         }
