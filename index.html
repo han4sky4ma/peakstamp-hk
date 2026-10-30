@@ -230,48 +230,49 @@
         <h2>🏔️ PeakStamp HK</h2>
         <p>香港山頭集章冊</p>
     </div>
-
-    <!-- 📡 圖形周邊山頭實時定位雷達面版 -->
+    <!-- 📡 Radar Component Layout -->
     <div class="radar-card">
         <strong style="display: block; text-align: left;">📡 周邊山頭動態雷達（實時方位掃描中）</strong>
-        <div class="radar-canvas-container">
-            <canvas id="radar-canvas" width="220" height="220"></canvas>
+        <div style="position: relative; width: 220px; height: 220px; margin: 15px auto; background: #1a2f24; border-radius: 50%; box-shadow: inset 0 0 20px rgba(0,0,0,0.6); border: 3px solid #2E5A44;">
+            <canvas id="radar-canvas" width="220" height="220" style="border-radius: 50%; display: block;"></canvas>
         </div>
         <div id="radar-list" style="margin-top: 5px; font-size: 13px; color: #555; text-align: left;">
             正在搜尋你的 GPS 位置並初始化雷達，請稍候...
         </div>
     </div>
 
-    <!-- 📊 進度面板與測試模擬器 -->
+    <!-- 📈 Progress Status Component Layout -->
     <div class="progress-card">
         <strong>我的全港 160 巔峰進度</strong>
-        <div style="font-size: 22px; color: var(--secondary); font-weight: bold; margin: 5px 0;" id="progress-text">0 / 160 已解鎖</div>
-        <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
-        
-        <select id="mock-selector" class="select-filter" style="margin-top:15px; width:100%;"></select>
-        <button class="btn" style="background:#555; margin-top:0;" onclick="simulateSelectedPeak()">測試：模擬移動到所選山頭（0米）</button>
+        <div style="font-size: 22px; color: #8B5A2B; font-weight: bold; margin: 5px 0;" id="progress-text">0 / 160 已解鎖</div>
+        <div style="background: #ddd; height: 12px; border-radius: 6px; overflow: hidden; margin-top: 8px;">
+            <div id="progress-fill" style="background: #2E5A44; height: 100%; width: 0%; transition: width 0.5s;"></div>
+        </div>
+        <div style="margin-top:15px; display:flex; gap:8px;">
+            <select id="mock-selector" style="flex:1; padding:10px; border-radius:8px; border:1px solid #ccc; font-weight:bold;"></select>
+            <button class="btn" style="background: #555; margin:0; width:auto; padding:0 12px;" onclick="simulateSelectedPeak()">測試：模擬移動</button>
+        </div>
+    </div>
+    <!-- 📤 Data Synchronization Controls Component Layout -->
+    <div style="background: #fdfdfd; border: 1px solid #e2e2e2; padding: 12px; border-radius: 12px; margin-bottom: 15px; display: flex; flex-wrap: wrap; gap: 8px;">
+        <button style="background: #34495e; color: white; border: none; padding: 10px; border-radius: 8px; font-weight: bold; flex: 1; font-size: 12px; cursor: pointer;" onclick="exportBackupJSON()">📤 匯出全自動考山備份檔</button>
+        <button style="background: #7f8c8d; color: white; border: none; padding: 10px; border-radius: 8px; font-weight: bold; flex: 1; font-size: 12px; cursor: pointer;" onclick="document.getElementById('import-file-input').click()">📥 匯入並還原考山紀錄</button>
+        <button style="background: #d35400; color: white; border: none; padding: 12px; border-radius: 8px; font-weight: bold; width: 100%; font-size: 13px; cursor: pointer; box-shadow: 0 3px 6px rgba(211, 84, 0, 0.2);" onclick="generateAchievementPoster()">🖼 匯出我的全港 160 考山成就大海報 (IG分享專用)</button>
     </div>
 
-    <!-- 💾 備份管理與海報生成面板列 -->
-    <div class="backup-card">
-        <button class="btn-backup" onclick="exportBackupJSON()">📤 匯出全自動考山備份檔</button>
-        <button class="btn-restore" onclick="document.getElementById('import-file-input').click()">📥 匯入並還原考山紀錄</button>
-        <button class="btn-poster" onclick="generateAchievementPoster()">🖼️ 匯出我的全港 160 考山成就大海報 (IG分享專用)</button>
-    </div>
-
-    <!-- 🎛️ 高級高山多維度篩選器面版 -->
+    <!-- 🔍 Filter Controls Architecture Component Layout -->
     <div class="filter-section">
         <div class="filter-row">
             <select id="filter-region" class="select-filter" onchange="renderPeaksGrid()">
                 <option value="all">🌍 全部地區 (全港 160 嶺)</option>
                 <option value="lantau">💎 大嶼山及周邊離島</option>
                 <option value="saikung">🏹 西貢、清水灣及東面離島</option>
-                <option value="hki-kln">🏙️ 香港島及九龍市區</option>
+                <option value="hki-kln">🏙 香港島及九龍市區</option>
                 <option value="nt-west">🐂 新界中西部 (荃灣/屯門/元朗)</option>
                 <option value="nt-east">🌲 新界中東部 (沙田/大埔/北區)</option>
             </select>
         </div>
-        <div class="filter-row">
+        <div class="filter-row" style="display:flex; gap:8px; margin-top:8px;">
             <select id="filter-level" class="select-filter" onchange="renderPeaksGrid()">
                 <option value="all">階級：全部高度</option>
                 <option value="lvl5">🥇 終極巔峰 (700米以上極高山)</option>
@@ -288,25 +289,26 @@
         </div>
     </div>
 
-    <div class="grid-count-tag" id="grid-count-text">顯示中: 0 座山頭</div>
+    <div class="grid-count-tag" id="grid-count-text" style="font-size: 12px; color: #666; margin-bottom: 8px; text-align: right; font-weight: bold;">顯示中: 0 座山頭</div>
     <div class="grid" id="peaks-grid"></div>
-
+    <!-- Interfaces Elements & Canvas Layers -->
     <input type="file" id="camera-input" accept="image/*" capture="camera" style="display: none;" onchange="handlePhotoUpload(event)">
     <input type="file" id="replace-input" accept="image/*" style="display: none;" onchange="handlePhotoReplace(event)">
     <input type="file" id="import-file-input" accept=".json" style="display: none;" onchange="importBackupJSON(event)">
     <canvas id="filter-canvas" style="display: none;"></canvas>
     <canvas id="poster-canvas" style="display: none;"></canvas>
 
-    <div id="loading">
-        <div style="border: 4px solid #f3f3f3; border-top: 4px solid var(--primary); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto;"></div>
+    <!-- Overlays Modals Layout Architecture -->
+    <div id="loading" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); color: white; justify-content: center; align-items: center; flex-direction: column; z-index: 999;">
+        <div style="border: 4px solid #f3f3f3; border-top: 4px solid #2E5A44; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto;"></div>
         <p id="loading-text" style="margin-top: 15px; font-weight: bold;">Canvas 正在處理中，請稍候...</p>
     </div>
 
-    <div class="modal" id="result-modal">
-        <div class="modal-content">
+    <div class="modal" id="result-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); justify-content: center; align-items: center; z-index: 100;">
+        <div class="modal-content" style="background: white; padding: 20px; border-radius: 16px; width: 85%; max-width: 400px; text-align: center;">
             <h3 id="modal-title">山頂紀念章</h3>
             <div style="margin-bottom: 10px;">
-                <select id="stamp-style-select" class="select-filter" style="min-height:34px; padding:6px; font-size:12px;" onchange="switchStampStyle(this.value)">
+                <select id="stamp-style-select" class="select-filter" style="min-height: 34px; padding: 6px; font-size: 12px;" onchange="switchStampStyle(this.value)">
                     <option value="classic">🌲 經典黑框 (預設硬核風格)</option>
                     <option value="retro">🏮 復古線圈 (手繪硃砂大紅印)</option>
                     <option value="japanese">🎌 簡約日系 (文青白框小清新)</option>
@@ -318,8 +320,10 @@
         </div>
     </div>
 
+    <!-- External Geospatial Data Stream File Link -->
     <script src="peaks.js"></script>
     <script>
+        // Global variables bound locally to cross-module scope threads
         let activePeak = null;
         let lastUserLat = null;
         let lastUserLng = null;
@@ -343,7 +347,7 @@
 
         function getRawRecordFromDB(id) {
             return new Promise((resolve) => {
-                if(!db) return resolve(null);
+                if (!db) return resolve(null);
                 const transaction = db.transaction(["stamps"], "readonly");
                 const store = transaction.objectStore("stamps");
                 const request = store.get(id);
@@ -352,20 +356,20 @@
             });
         }
 
-        fn_saveRecordToDB = function saveRecordToDB(id, dataUrl, rawImg, currentStyle) {
+        function saveRecordToDB(id, dataUrl, rawImg, currentStyle) {
             return new Promise((resolve, reject) => {
-                if(!db) return reject();
+                if (!db) return reject();
                 const transaction = db.transaction(["stamps"], "readwrite");
                 const store = transaction.objectStore("stamps");
                 const request = store.put({ id: id, dataUrl: dataUrl, rawImg: rawImg, style: currentStyle, timestamp: Date.now() });
                 request.onsuccess = function() { resolve(); };
                 request.onerror = function(e) { reject(e); };
             });
-        };
+        }
 
         function getAllUnlockedIds() {
             return new Promise((resolve) => {
-                if(!db) return resolve([]);
+                if (!db) return resolve([]);
                 const transaction = db.transaction(["stamps"], "readonly");
                 const store = transaction.objectStore("stamps");
                 const request = store.getAllKeys();
@@ -376,7 +380,7 @@
 
         function getAllStampsData() {
             return new Promise((resolve) => {
-                if(!db) return resolve([]);
+                if (!db) return resolve([]);
                 const transaction = db.transaction(["stamps"], "readonly");
                 const store = transaction.objectStore("stamps");
                 const request = store.getAll();
@@ -384,7 +388,6 @@
                 request.onerror = function() { resolve([]); };
             });
         }
-
         function assignPeakFilters(peak) {
             if (peak.elev >= 700) peak.levelTag = "lvl5";
             else if (peak.elev >= 500) peak.levelTag = "lvl4";
@@ -407,303 +410,306 @@
                 peak.regionTag = "nt-east";
             }
         }
-        async function initApp() {
-            await initDB();
-            peaks.forEach(peak => assignPeakFilters(peak));
-            
-            const selector = document.getElementById("mock-selector");
-            if (selector && selector.options.length === 0) {
-                const selectFragment = document.createDocumentFragment();
-                peaks.forEach((peak, index) => {
-                    const opt = document.createElement("option");
-                    opt.value = peak.id;
-                    opt.innerText = `#${index + 1} ${peak.name} (${peak.elev}m)`;
-                    selectFragment.appendChild(opt);
-                });
-                selector.appendChild(selectFragment);
-            }
-            
-            await renderPeaksGrid();
-            if (lastUserLat && lastUserLng) updateRadarList(lastUserLat, lastUserLng);
-        }
 
-        async function renderPeaksGrid() {
-            const grid = document.getElementById("peaks-grid");
-            grid.innerHTML = "";
-            
-            const regionFilter = document.getElementById("filter-region").value;
-            const levelFilter = document.getElementById("filter-level").value;
-            const statusFilter = document.getElementById("filter-status").value;
-            
-            const unlockedIds = await getAllUnlockedIds();
-            const totalUnlockedCount = unlockedIds.length;
-            let renderedCount = 0;
-            
-            const gridFragment = document.createDocumentFragment();
-            
-            peaks.forEach((peak, index) => {
-                const isUnlocked = unlockedIds.includes(peak.id);
-                const matchRegion = (regionFilter === "all" || peak.regionTag === regionFilter);
-                const matchLevel = (levelFilter === "all" || peak.levelTag === levelFilter);
-                const matchStatus = (statusFilter === "all" || 
-                    (statusFilter === "unlocked" && isUnlocked) || 
-                    (statusFilter === "locked" && !isUnlocked));
-                    
-                if (matchRegion && matchLevel && matchStatus) {
-                    renderedCount++;
-                    const card = document.createElement("div");
-                    card.className = `card ${isUnlocked ? 'unlocked' : 'locked'}`;
-                    
-                    card.innerHTML = `
-                        <div class="badge-icon">⛰️</div>
-                        <strong style="font-size: 13px; display: block; min-height: 36px;">#${index + 1} ${peak.name}</strong>
-                        <div style="font-size: 11px; color: #666; margin: 4px 0;">高度: ${peak.elev}米</div>
-                        ${isUnlocked ? 
-                            `<button class="btn" style="background: #2E5A44; padding: 6px;" onclick="viewStamp('${peak.id}')">查看印章</button>` : 
-                            `<div style="font-size: 11px; color: #999; margin-top: 10px;">尚未解鎖</div>`
-                        }
-                    `;
-                    gridFragment.appendChild(card);
-                }
-            });
-            
-            grid.appendChild(gridFragment);
-            
-            document.getElementById("progress-text").innerText = `${totalUnlockedCount} / ${peaks.length} 已解鎖`;
-            document.getElementById("progress-fill").style.width = `${(totalUnlockedCount / peaks.length) * 100}%`;
-            document.getElementById("grid-count-text").innerText = `目前顯示: ${renderedCount} 個山頭`;
-        }
-        async function exportBackupJSON() {
-            document.getElementById("loading-text").innerText = "正在打包提取高畫質相簿與集章數據...";
-            document.getElementById("loading").style.display = "flex";
-            const allData = await getAllStampsData();
-            if (allData.length === 0) {
-                document.getElementById("loading").style.display = "none";
-                alert("📤 匯出失敗：你目前尚未登頂解鎖任何山頭，集章冊空空如也！"); return;
-            }
-            const backupObject = { appId: "PeakStamp-HK160", version: "1.3.0", exportedAt: new Date().toISOString(), totalStamps: allData.length, stampsData: allData };
-            const jsonString = JSON.stringify(backupObject);
-            const blob = new Blob([jsonString], { type: "application/json" });
-            const url = URL.createObjectURL(blob);
-            const downloadLink = document.createElement("a"); downloadLink.href = url; downloadLink.download = `PeakStamp_HK160_Backup_${new Date().toISOString().slice(0,10)}.json`;
-            document.body.appendChild(downloadLink); downloadLink.click(); document.body.removeChild(downloadLink); URL.revokeObjectURL(url);
-            document.getElementById("loading").style.display = "none";
-        }
-
-        function importBackupJSON(event) {
-            const file = event.target.files[0]; if (!file) return;
-            document.getElementById("loading-text").innerText = "正在還原考山相簿中..."; document.getElementById("loading").style.display = "flex";
-            const reader = new FileReader();
-            reader.onload = async function(e) {
-                try {
-                    const parsedData = JSON.parse(e.target.result);
-                    if (parsedData.appId !== "PeakStamp-HK160" || !parsedData.stampsData) throw new Error("格式錯誤");
-                    const transaction = db.transaction(["stamps"], "readwrite"); const store = transaction.objectStore("stamps");
-                    for (const item of parsedData.stampsData) { store.put(item); }
-                    transaction.oncomplete = async function() {
-                        document.getElementById("loading").style.display = "none"; alert(`📥 還原成功！已還原共 ${parsedData.stampsData.length} 個紀念章！`); await initApp();
-                    };
-                } catch (err) { document.getElementById("loading").style.display = "none"; alert("❌ 還原失敗：檔案毀損！"); }
-                document.getElementById("import-file-input").value = "";
-            };
-            reader.readAsText(file);
+        function calculateHaversineDistance(lat1, lon1, lat2, lon2) {
+            const R = 6371000; 
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLon = (lon2 - lon1) * Math.PI / 180;
+            const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+                      Math.sin(dLon/2) * Math.sin(dLon/2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+            return R * c;
         }
 
         function calculateBearing(lat1, lng1, lat2, lng2) {
             const dLon = (lng2 - lng1) * Math.PI / 180;
-            const lat1Rad = lat1 * Math.PI / 180; const lat2Rad = lat2 * Math.PI / 180;
+            const lat1Rad = lat1 * Math.PI / 180;
+            const lat2Rad = lat2 * Math.PI / 180;
             const y = Math.sin(dLon) * Math.cos(lat2Rad);
             const x = Math.cos(lat1Rad) * Math.sin(lat2Rad) - Math.sin(lat1Rad) * Math.cos(lat2Rad) * Math.cos(dLon);
-            return (Math.atan2(y, x) * 180 / Math.PI + 360) % 360;
+            const brng = Math.atan2(y, x) * 180 / Math.PI;
+            return (brng + 360) % 360;
         }
-        async function updateRadarList(userLat, userLng) {
-            lastUserLat = userLat; lastUserLng = userLng;
+        async function renderPeaksGrid() {
+            const grid = document.getElementById("peaks-grid");
+            if (!grid) return;
+            const regionFilter = document.getElementById("filter-region").value;
+            const levelFilter = document.getElementById("filter-level").value;
+            const statusFilter = document.getElementById("filter-status").value;
+            
+            const targetPeaks = window.peaks || (typeof peaks !== "undefined" ? peaks : []);
             const unlockedIds = await getAllUnlockedIds();
-            const peaksWithDistance = peaks.map(peak => {
-                const distInMeters = Math.sqrt(Math.pow(userLat - peak.lat, 2) + Math.pow(userLng - peak.lng, 2)) * 111000;
-                const bearing = calculateBearing(userLat, userLng, peak.lat, peak.lng);
-                return { ...peak, distance: distInMeters, bearing: bearing };
-            });
-            peaksWithDistance.sort((a, b) => a.distance - b.distance);
-            nearestFiveCache = peaksWithDistance.slice(0, 5);
+            const totalUnlockedCount = unlockedIds.length;
+            let renderedCount = 0;
 
-            const radarListDiv = document.getElementById("radar-list"); radarListDiv.innerHTML = "";
-            nearestFiveCache.forEach(peak => {
-                const item = document.createElement("div"); item.className = "radar-item";
+            const fragment = document.createDocumentFragment();
+            targetPeaks.forEach((peak, index) => {
                 const isUnlocked = unlockedIds.includes(peak.id);
-                const kmDist = peak.distance >= 1000 ? `${(peak.distance / 1000).toFixed(2)} 公里` : `${Math.round(peak.distance)} 米`;
-                let actionContent = `<span class="distance-tag">相距 ${kmDist}</span>`;
-                if (peak.distance <= 40 && !isUnlocked) {
-                    actionContent = `<button class="btn-stamp-now" onclick="openCameraFor('${peak.id}')">🎯 進入範圍！點此拍照</button>`;
-                } else if (isUnlocked) {
-                    actionContent = `<span class="distance-tag" style="background:#2E5A44">✓ 已收集</span>`;
+                const matchRegion = (regionFilter === "all" || peak.regionTag === regionFilter);
+                const matchLevel = (levelFilter === "all" || peak.levelTag === levelFilter);
+                const matchStatus = (statusFilter === "all" || (statusFilter === "unlocked" && isUnlocked) || (statusFilter === "locked" && !isUnlocked));
+
+                if (matchRegion && matchLevel && matchStatus) {
+                    renderedCount++;
+                    const card = document.createElement("div");
+                    card.className = `card ${isUnlocked ? 'unlocked' : 'locked'}`;
+                    card.innerHTML = `
+                        <div class="badge-icon">⛰️</div>
+                        <strong style="font-size: 13px; display: block; min-height: 36px;">#${index + 1} ${peak.name}</strong>
+                        <div style="font-size: 11px; color: #666; margin: 4px 0;">海拔高度: ${peak.elev}米</div>
+                        ${isUnlocked ? `<button class="btn" style="background: #2E5A44; padding: 6px;" onclick="viewStamp('${peak.id}')">檢視印章</button>` : `<div style="font-size: 11px; color: #999; margin-top: 10px;">尚未攀登解鎖</div>`}
+                    `;
+                    fragment.appendChild(card);
                 }
-                item.innerHTML = `<div><strong>${peak.name}</strong><br><span style="font-size:11px; color:#777;">標高: ${peak.elev}m | 方位: ${Math.round(peak.bearing)}°</span></div><div>${actionContent}</div>`;
-                radarListDiv.appendChild(item);
             });
+            grid.textContent = "";
+            grid.appendChild(fragment);
+            document.getElementById("progress-text").innerText = `${totalUnlockedCount} / ${targetPeaks.length} 已解鎖`;
+            document.getElementById("progress-fill").style.width = `${(totalUnlockedCount / (targetPeaks.length || 1)) * 100}%`;
+            document.getElementById("grid-count-text").innerText = `當前篩選符合項目: ${renderedCount} 座山峰`;
         }
 
+        function updateRadarList(userLat, userLng) {
+            lastUserLat = userLat; lastUserLng = userLng;
+            const targetPeaks = window.peaks || (typeof peaks !== "undefined" ? peaks : []);
+            getAllUnlockedIds().then(unlockedIds => {
+                const peaksWithDistance = targetPeaks.map(peak => {
+                    return { ...peak, distance: calculateHaversineDistance(userLat, userLng, peak.lat, peak.lng), bearing: calculateBearing(userLat, userLng, peak.lat, peak.lng) };
+                });
+                peaksWithDistance.sort((a, b) => a.distance - b.distance);
+                nearestFiveCache = peaksWithDistance.slice(0, 5);
+
+                const radarListDiv = document.getElementById("radar-list");
+                if (!radarListDiv) return;
+                const fragment = document.createDocumentFragment();
+
+                nearestFiveCache.forEach(peak => {
+                    const item = document.createElement("div");
+                    item.className = "radar-item";
+                    const isUnlocked = unlockedIds.includes(peak.id);
+                    const kmDist = peak.distance >= 1000 ? `${(peak.distance / 1000).toFixed(2)}公里` : `${Math.round(peak.distance)}米`;
+                    let actionContent = `<span class="distance-tag">距離 ${kmDist}</span>`;
+                    
+                    if (peak.distance <= 40 && !isUnlocked) {
+                        actionContent = `<button class="btn-stamp-now" onclick="openCameraFor('${peak.id}')">📸 抵達山頂！即刻解鎖集章</button>`;
+                    } else if (isUnlocked) {
+                        actionContent = `<span class="distance-tag" style="background: #2E5A44">✓ 已打卡</span>`;
+                    }
+                    item.innerHTML = `<div><strong>${peak.name}</strong><br><span style="font-size: 11px; color: #777;">標高: ${peak.elev}米 | 方位角: ${Math.round(peak.bearing)}°</span></div><div>${actionContent}</div>`;
+                    fragment.appendChild(item);
+                });
+                radarListDiv.textContent = "";
+                radarListDiv.appendChild(fragment);
+            });
+        }
         function drawRadarGrid() {
-            const canvas = document.getElementById("radar-canvas"); if (!canvas) return; const context = canvas.getContext("2d");
-            const cx = canvas.width / 2; const cy = canvas.height / 2; const maxRadius = cx - 10; context.clearRect(0, 0, canvas.width, canvas.height);
+            const canvas = document.getElementById("radar-canvas");
+            if (!canvas) return;
+            const context = canvas.getContext("2d");
+            const cx = canvas.width / 2; const cy = canvas.height / 2; const maxRadius = cx - 10;
+            context.clearRect(0, 0, canvas.width, canvas.height);
             context.strokeStyle = "rgba(46, 90, 68, 0.4)"; context.lineWidth = 1;
-            for (let r = maxRadius / 3; r <= maxRadius; r += maxRadius / 3) { context.beginPath(); context.arc(cx, cy, r, 0, 2 * Math.PI); context.stroke(); }
-            context.beginPath(); context.moveTo(cx, 10); context.lineTo(cx, canvas.height - 10); context.stroke(); context.beginPath(); context.moveTo(10, cy); context.lineTo(canvas.width - 10, cy); context.stroke();
-            context.fillStyle = "#2e5a44"; context.font = "10px sans-serif"; context.textAlign = "center"; context.fillText("N", cx, 22);
+
+            for (let r = maxRadius / 3; r <= maxRadius; r += maxRadius / 3) {
+                context.beginPath(); context.arc(cx, cy, r, 0, 2 * Math.PI); context.stroke();
+            }
+            context.beginPath(); context.moveTo(cx, 10); context.lineTo(cx, canvas.height - 10); context.stroke();
+            context.beginPath(); context.moveTo(10, cy); context.lineTo(canvas.width - 10, cy); context.stroke();
+            context.fillStyle = "#2e5a44"; context.font = "10px sans-serif"; context.textAlign = "center";
+            context.fillText("N", cx, 22);
+
             if (nearestFiveCache.length > 0) {
                 const boundaryDist = Math.max(...nearestFiveCache.map(p => p.distance), 100);
                 nearestFiveCache.forEach(peak => {
-                    const angleRad = (peak.bearing - 90) * Math.PI / 180; const rDist = (peak.distance / boundaryDist) * maxRadius;
+                    const angleRad = (peak.bearing - 90) * Math.PI / 180;
+                    const rDist = (peak.distance / boundaryDist) * maxRadius;
                     const px = cx + rDist * Math.cos(angleRad); const py = cy + rDist * Math.sin(angleRad);
                     context.beginPath(); context.arc(px, py, 6, 0, 2 * Math.PI); context.fillStyle = peak.distance <= 40 ? "rgba(230, 126, 34, 0.4)" : "rgba(139, 90, 43, 0.3)"; context.fill();
                     context.beginPath(); context.arc(px, py, 3, 0, 2 * Math.PI); context.fillStyle = peak.distance <= 40 ? "#E67E22" : "#8B5A2B"; context.fill();
                 });
             }
-            radarSweepAngle = (radarSweepAngle + 1.5) % 360; const sweepRad = (radarSweepAngle - 90) * Math.PI / 180;
+            radarSweepAngle = (radarSweepAngle + 1.5) % 360;
+            const sweepRad = (radarSweepAngle - 90) * Math.PI / 180;
             context.beginPath(); context.moveTo(cx, cy); context.arc(cx, cy, maxRadius, sweepRad - 0.2, sweepRad, false); context.lineTo(cx, cy); context.fillStyle = "rgba(46, 90, 68, 0.15)"; context.fill();
-            context.beginPath(); context.moveTo(cx, cy); context.lineTo(cx + maxRadius * Math.cos(sweepRad), cy + maxRadius * Math.sin(sweepRad)); context.strokeStyle = "rgba(46, 90, 68, 0.6)"; context.lineWidth = 1.5; context.stroke(); requestAnimationFrame(drawRadarGrid);
+            context.beginPath(); context.moveTo(cx, cy); context.lineTo(cx + maxRadius * Math.cos(sweepRad), cy + maxRadius * Math.sin(sweepRad)); context.strokeStyle = "rgba(46, 90, 68, 0.6)"; context.lineWidth = 1.5; context.stroke();
+            requestAnimationFrame(drawRadarGrid);
         }
+
         function openCameraFor(id) {
-            activePeak = peaks.find(p => p.id === id);
-            if (!activePeak) return alert("找不到此山頭資料");
+            const targetPeaks = window.peaks || (typeof peaks !== "undefined" ? peaks : []);
+            activePeak = targetPeaks.find(p => p.id === id);
             document.getElementById("camera-input").click();
         }
 
-        function triggerReplaceStamp(id) {
-            activePeak = peaks.find(p => p.id === id);
-            if (!activePeak) return alert("找不到此山頭資料");
-            document.getElementById("replace-input").click();
-        }
-
         function handlePhotoUpload(event) {
-            const file = event.target.files[0]; if (!file) return;
-            document.getElementById("loading-text").innerText = "正在讀取手機相片並壓製登頂印章...";
+            const file = event.target.files; if (!file) return;
             document.getElementById("loading").style.display = "flex";
             const reader = new FileReader();
-            reader.onload = function(e) {
-                currentRawImageSrc = e.target.result;
-                processImageAndStamp(currentRawImageSrc, "classic");
-            };
+            reader.onload = function(e) { currentRawImageSrc = e.target.result; processImageAndStamp(currentRawImageSrc, "classic"); };
             reader.readAsDataURL(file); event.target.value = "";
         }
 
         function handlePhotoReplace(event) {
-            const file = event.target.files[0]; if (!file) return;
-            document.getElementById("loading-text").innerText = "正在覆蓋重繪印章相簿中...";
+            const file = event.target.files; if (!file) return;
             document.getElementById("loading").style.display = "flex";
             const reader = new FileReader();
-            reader.onload = function(e) {
-                currentRawImageSrc = e.target.result;
-                const currentStyle = document.getElementById("stamp-style-select").value || "classic";
-                processImageAndStamp(currentRawImageSrc, currentStyle);
-            };
+            reader.onload = function(e) { currentRawImageSrc = e.target.result; processImageAndStamp(currentRawImageSrc, document.getElementById("stamp-style-select").value || "classic"); };
             reader.readAsDataURL(file); event.target.value = "";
         }
-
         function processImageAndStamp(imageSrc, styleName) {
             const img = new Image();
             img.onload = async function() {
-                const canvas = document.getElementById("filter-canvas"); const ctx = canvas.getContext("2d"); canvas.width = 800; canvas.height = 800;
-                const minDim = Math.min(img.width, img.height); ctx.drawImage(img, (img.width - minDim) / 2, (img.height - minDim) / 2, minDim, minDim, 0, 0, 800, 800);
+                const canvas = document.getElementById("filter-canvas"); const ctx = canvas.getContext("2d");
+                canvas.width = 800; canvas.height = 800;
+                const minDim = Math.min(img.width, img.height);
+                ctx.drawImage(img, (img.width - minDim) / 2, (img.height - minDim) / 2, minDim, minDim, 0, 0, 800, 800);
+
                 if (styleName === "classic") {
-                    ctx.globalCompositeOperation = 'multiply'; ctx.fillStyle = 'rgba(240, 235, 215, 0.2)'; ctx.fillRect(0, 0, 800, 800); ctx.globalCompositeOperation = 'source-over';
-                    ctx.fillStyle = "rgba(0, 0, 0, 0.7)"; ctx.fillRect(0, 690, 800, 110); ctx.strokeStyle = "#8B5A2B"; ctx.lineWidth = 8; ctx.strokeRect(15, 15, 770, 770);
-                    ctx.fillStyle = "#FFFFFF"; ctx.font = "bold 30px sans-serif"; ctx.fillText(`📍 ${activePeak.name}`, 40, 735);
-                    ctx.fillStyle = "#E67E22"; ctx.font = "bold 20px monospace"; ctx.fillText(`HEIGHT: ${activePeak.elev}m | GOWILD 160 CERTIFIED ✓`, 40, 775);
+                    ctx.globalCompositeOperation = 'multiply'; ctx.fillStyle = 'rgba(240, 235, 215, 0.2)'; ctx.fillRect(0, 0, 800, 800);
+                    ctx.globalCompositeOperation = 'source-over'; ctx.fillStyle = "rgba(0, 0, 0, 0.7)"; ctx.fillRect(0, 690, 800, 110);
+                    ctx.strokeStyle = "#8B5A2B"; ctx.lineWidth = 8; ctx.strokeRect(15, 15, 770, 770);
+                    ctx.fillStyle = "#FFFFFF"; ctx.font = "bold 30px sans-serif"; ctx.fillText(`已登頂: ${activePeak.name}`, 40, 735);
+                    ctx.fillStyle = "#E67E22"; ctx.font = "bold 20px monospace"; ctx.fillText(`HEIGHT: ${activePeak.elev}m | GOWILD 160 CERTIFIED`, 40, 775);
                 } else if (styleName === "retro") {
-                    ctx.strokeStyle = "rgba(192, 57, 43, 0.85)"; ctx.lineWidth = 6; ctx.beginPath(); ctx.arc(660, 140, 85, 0, 2 * Math.PI); ctx.stroke(); ctx.beginPath(); ctx.arc(660, 140, 78, 0, 2 * Math.PI); ctx.stroke();
-                    ctx.fillStyle = "rgba(192, 57, 43, 0.85)"; ctx.font = "bold 24px sans-serif"; ctx.textAlign = "center"; ctx.fillText("香港巔峰", 660, 115); ctx.fillText(`${activePeak.elev}米`, 660, 150); ctx.font = "bold 14px sans-serif"; ctx.fillText("考山冊印", 660, 182); ctx.textAlign = "left";
-                    ctx.fillStyle = "rgba(0,0,0,0.5)"; ctx.fillRect(0, 750, 800, 50); ctx.fillStyle = "#FFFFFF"; ctx.font = "bold 18px monospace"; ctx.fillText(`📍 GPS: ${activePeak.lat}, ${activePeak.lng} | ${activePeak.name}`, 30, 782);
+                    ctx.strokeStyle = "rgba(192, 57, 43, 0.85)"; ctx.lineWidth = 6;
+                    ctx.beginPath(); ctx.arc(660, 140, 85, 0, 2 * Math.PI); ctx.stroke(); ctx.beginPath(); ctx.arc(660, 140, 78, 0, 2 * Math.PI); ctx.stroke();
+                    ctx.fillStyle = "rgba(192, 57, 43, 0.85)"; ctx.font = "bold 24px sans-serif"; ctx.textAlign = "center"; ctx.fillText("香港巔峰", 660, 115); ctx.fillText(`${activePeak.elev}米`, 660, 150); ctx.font = "bold 14px sans-serif"; ctx.fillText("登頂留念", 660, 182);
+                    ctx.textAlign = "left"; ctx.fillStyle = "rgba(0, 0, 0, 0.5)"; ctx.fillRect(0, 750, 800, 50);
+                    ctx.fillStyle = "#FFFFFF"; ctx.font = "bold 18px monospace"; ctx.fillText(`GPS 認證座標: ${activePeak.lat}, ${activePeak.lng} | ${activePeak.name}`, 30, 782);
                 } else if (styleName === "japanese") {
                     ctx.fillStyle = "#FFFFFF"; ctx.fillRect(0, 710, 800, 90); ctx.fillRect(0, 0, 800, 25); ctx.fillRect(0, 0, 25, 800); ctx.fillRect(775, 0, 25, 800);
-                    ctx.strokeStyle = "#333333"; ctx.lineWidth = 2; ctx.strokeRect(35, 35, 730, 730); ctx.fillStyle = "#333333"; ctx.font = "600 28px sans-serif"; ctx.fillText(activePeak.name, 50, 765); ctx.font = "300 20px monospace"; ctx.fillText(`ELEVATION: ${activePeak.elev}M / CERTIFIED STAMP`, 480, 762);
+                    ctx.strokeStyle = "#333333"; ctx.lineWidth = 2; ctx.strokeRect(35, 35, 730, 730);
+                    ctx.fillStyle = "#333333"; ctx.font = "600 28px sans-serif"; ctx.fillText(activePeak.name, 50, 765);
+                    ctx.font = "300 20px monospace"; ctx.fillText(`ELEVATION: ${activePeak.elev}M / CERTIFIED STAMP`, 440, 762);
                 }
+
                 try {
-                    const finalDataUrl = canvas.toDataURL("image/png"); await fn_saveRecordToDB(activePeak.id, finalDataUrl, imageSrc, styleName);
-                    document.getElementById("loading").style.display = "none"; document.getElementById("modal-img").src = finalDataUrl;
-                    document.getElementById("modal-action-bar").innerHTML = `<button class="btn" style="background:#555;" onclick="triggerReplaceStamp('${activePeak.id}')">🔄 更新覆蓋此登頂印章 (需比對原相 GPS)</button>`;
-                    document.getElementById("stamp-style-select").value = styleName; document.getElementById("result-modal").style.display = "flex"; await renderPeaksGrid();
-                } catch(e) { alert("壓印錯誤。"); document.getElementById("loading").style.display = "none"; }
-            }; img.src = imageSrc;
+                    const finalDataUrl = canvas.toDataURL("image/jpeg", 0.75);
+                    await saveRecordToDB(activePeak.id, finalDataUrl, imageSrc, styleName);
+                    document.getElementById("loading").style.display = "none";
+                    document.getElementById("modal-img").src = finalDataUrl;
+                    document.getElementById("modal-action-bar").innerHTML = `<button class="btn" style="background: #555;" onclick="triggerReplaceStamp('${activePeak.id}')">重新拍照或更換基底相片</button>`;
+                    document.getElementById("result-modal").style.display = "flex";
+                    await renderPeaksGrid();
+                } catch(e) { alert("資料持久化儲存失敗"); document.getElementById("loading").style.display = "none"; }
+            };
+            img.src = imageSrc;
         }
 
-        function switchStampStyle(newStyle) { if (!activePeak || !currentRawImageSrc) return; document.getElementById("loading-text").innerText = "正在即時切換客製浮水印風格..."; document.getElementById("loading").style.display = "flex"; processImageAndStamp(currentRawImageSrc, newStyle); }
-        function simulateSelectedPeak() { const selectedId = document.getElementById("mock-selector").value; const target = peaks.find(p => p.id === selectedId); updateRadarList(target.lat, target.lng); alert(`模擬成功！位置已移至【${target.name}】（相距 0 米）。`); }
-        async function viewStamp(id) { activePeak = peaks.find(p => p.id === id); const record = await getRawRecordFromDB(id); if(record) { document.getElementById("modal-title").innerText = `${activePeak.name} 登頂印章`; document.getElementById("modal-img").src = record.dataUrl; currentRawImageSrc = record.rawImg; document.getElementById("stamp-style-select").value = record.style || "classic"; document.getElementById("modal-action-bar").innerHTML = `<button class="btn" style="background:#555; margin-bottom:10px;" onclick="triggerReplaceStamp('${activePeak.id}')">🔄 更新覆蓋此登頂印章 (需比對原相 GPS)</button>`; document.getElementById("result-modal").style.display = "flex"; } else { alert("未找到該山頭的蓋章印記。"); } }
+        function switchStampStyle(newStyle) {
+            if (!activePeak || !currentRawImageSrc) return;
+            document.getElementById("loading").style.display = "flex"; processImageAndStamp(currentRawImageSrc, newStyle);
+        }
+
+        function simulateSelectedPeak() {
+            const selectedId = document.getElementById("mock-selector").value;
+            const targetPeaks = window.peaks || (typeof peaks !== "undefined" ? peaks : []);
+            const target = targetPeaks.find(p => p.id === selectedId);
+            if (target) { updateRadarList(target.lat, target.lng); alert(`模擬成功！已移動到 #${target.name}。`); }
+        }
+
+        async function viewStamp(id) {
+            const targetPeaks = window.peaks || (typeof peaks !== "undefined" ? peaks : []);
+            activePeak = targetPeaks.find(p => p.id === id);
+            const record = await getRawRecordFromDB(id);
+            if (record) {
+                document.getElementById("modal-title").innerText = `${activePeak.name} 登頂足跡`; document.getElementById("modal-img").src = record.dataUrl; currentRawImageSrc = record.rawImg;
+                document.getElementById("stamp-style-select").value = record.style || "classic";
+                document.getElementById("modal-action-bar").innerHTML = `<button class="btn" style="background: #555; margin-bottom: 10px;" onclick="triggerReplaceStamp('${activePeak.id}')">更換基底相片</button>`;
+                document.getElementById("result-modal").style.display = "flex";
+            }
+        }
+
         function closeModal() { document.getElementById("result-modal").style.display = "none"; }
+
+        async function exportBackupJSON() {
+            const allData = await getAllStampsData(); if (allData.length === 0) return alert("未找到可備份進度！");
+            const blob = new Blob([JSON.stringify({ appId: "PeakStamp-HK160", stampsData: allData })], { type: "application/json" });
+            const url = URL.createObjectURL(blob); const a = document.createElement("a"); a.href = url; a.download = `PeakStamp_Backup.json`; a.click();
+        }
+
+        function importBackupJSON(event) {
+            const file = event.target.files; if (!file) return;
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                try {
+                    const parsed = JSON.parse(e.target.result); if (parsed.appId !== "PeakStamp-HK160") throw new Error();
+                    for (const item of parsed.stampsData) { await saveRecordToDB(item.id, item.dataUrl, item.rawImg, item.style); }
+                    alert("回復成功！"); await renderPeaksGrid();
+                } catch (err) { alert("備份檔損壞或無效"); }
+            };
+            reader.readAsText(file);
+        }
         async function generateAchievementPoster() {
-            document.getElementById("loading-text").innerText = "正在撈取資料庫，重繪全港 160 高山制霸大海報...";
-            document.getElementById("loading").style.display = "flex";
-            const canvas = document.getElementById("poster-canvas"); const ctx = canvas.getContext("2d"); canvas.width = 800; canvas.height = 1250;
-            ctx.fillStyle = "#F4F4F0"; ctx.fillRect(0, 0, 800, 1250); ctx.fillStyle = "#2E5A44"; ctx.fillRect(20, 20, 760, 150); ctx.strokeStyle = "#8B5A2B"; ctx.lineWidth = 4; ctx.strokeRect(26, 26, 748, 138);
-            const unlockedIds = await getAllUnlockedIds(); const rate = ((unlockedIds.length / peaks.length) * 100).toFixed(1);
-            ctx.fillStyle = "#FFFFFF"; ctx.textAlign = "center"; ctx.font = "bold 32px sans-serif"; ctx.fillText("香港 160 座高山 GPS 考山集章冊", 400, 85); ctx.font = "600 20px monospace"; ctx.fillStyle = "#E67E22"; ctx.fillText(`解鎖進度：${unlockedIds.length} / 160  |  巔峰制霸率：${rate}%`, 400, 130);
-            const cols = 16; const startX = 42; const startY = 210; const boxW = 40; const boxH = 48; const gapX = 5; const gapY = 12; ctx.textAlign = "center";
-            for (let i = 0; i < peaks.length; i++) {
-                const peak = peaks[i]; const isUnlocked = unlockedIds.includes(peak.id); const col = i % cols; const row = Math.floor(i / cols); const x = startX + col * (boxW + gapX); const y = startY + row * (boxH + gapY);
-                if (isUnlocked) { ctx.fillStyle = "#E3ECE4"; ctx.fillRect(x, y, boxW, boxH); ctx.strokeStyle = "#2E5A44"; ctx.lineWidth = 1.5; ctx.strokeRect(x, y, boxW, boxH); ctx.fillStyle = "#2E5A44"; ctx.font = "14px sans-serif"; ctx.fillText("⛰️", x + boxW/2, y + 24); } 
-                else { ctx.fillStyle = "#EAEAEA"; ctx.fillRect(x, y, boxW, boxH); ctx.strokeStyle = "#CCCCCC"; ctx.lineWidth = 1; ctx.strokeRect(x, y, boxW, boxH); ctx.fillStyle = "#999999"; ctx.font = "11px sans-serif"; ctx.fillText("🔒", x + boxW/2, y + 24); }
-                ctx.fillStyle = isUnlocked ? "#2E5A44" : "#777777"; ctx.font = "bold 9px monospace"; ctx.fillText(`${i + 1}`, x + boxW/2, y + 42);
+            const canvas = document.getElementById("poster-canvas"); const ctx = canvas.getContext("2d");
+            canvas.width = 800; canvas.height = 1250; ctx.fillStyle = "#F4F4F0"; ctx.fillRect(0, 0, 800, 1250);
+            ctx.fillStyle = "#2E5A44"; ctx.fillRect(20, 20, 760, 150);
+
+            const targetPeaks = window.peaks || (typeof peaks !== "undefined" ? peaks : []);
+            const unlockedIds = await getAllUnlockedIds(); const rate = ((unlockedIds.length / (targetPeaks.length || 1)) * 100).toFixed(1);
+
+            ctx.fillStyle = "#FFFFFF"; ctx.textAlign = "center"; ctx.font = "bold 32px sans-serif"; ctx.fillText("香港 160 考山成就集章榜", 400, 85);
+            ctx.font = "600 20px monospace"; ctx.fillStyle = "#E67E22"; ctx.fillText(`已解鎖: ${unlockedIds.length} / 160 | 制霸率: ${rate}%`, 400, 130);
+
+            const cols = 16; const startX = 42; const startY = 210; const boxW = 40; const boxH = 48; const gapX = 5; const gapY = 12;
+
+            for (let i = 0; i < targetPeaks.length; i++) {
+                const isUnlocked = unlockedIds.includes(targetPeaks[i].id);
+                const col = i % cols; const row = Math.floor(i / cols); const x = startX + col * (boxW + gapX); const y = startY + row * (boxH + gapY);
+                ctx.fillStyle = isUnlocked ? "#E3ECE4" : "#EAEAEA"; ctx.fillRect(x, y, boxW, boxH);
+                ctx.strokeStyle = isUnlocked ? "#2E5A44" : "#CCCCCC"; ctx.strokeRect(x, y, boxW, boxH);
+                ctx.fillStyle = isUnlocked ? "#2E5A44" : "#999999"; ctx.font = "14px sans-serif"; ctx.fillText(isUnlocked ? "⛰️" : "🔒", x + boxW / 2, y + 24);
+                ctx.font = "bold 9px monospace"; ctx.fillText(`${i + 1}`, x + boxW / 2, y + 42);
             }
-            ctx.fillStyle = "#8B5A2B"; ctx.fillRect(20, 1180, 760, 4); ctx.fillStyle = "#666666"; ctx.font = "italic 13px sans-serif"; ctx.textAlign = "center"; ctx.fillText("PEAKSTAMP HK (GOWILD 160) OFFICIAL ACHIEVEMENT POSTER", 400, 1215); ctx.font = "11px monospace"; ctx.fillText(`GENERATED AT: ${new Date().toLocaleString()}`, 400, 1235);
-            try {
-                const posterDataUrl = canvas.toDataURL("image/png"); document.getElementById("loading").style.display = "none";
-                document.getElementById("modal-title").innerText = "🖼️ 大海報已重繪生成！"; document.getElementById("modal-img").src = posterDataUrl;
-                document.getElementById("modal-action-bar").innerHTML = `<p style="font-size:12px; color:#E67E22; font-weight:bold;">💡 手機山友：請長按上方海報圖片即可直接「儲存到相簿」分享至社交平台！</p>`; document.getElementById("result-modal").style.display = "flex";
-            } catch (e) { alert("海報渲染失敗。"); document.getElementById("loading").style.display = "none"; }
+            const posterDataUrl = canvas.toDataURL("image/png");
+            document.getElementById("modal-title").innerText = "登頂海報生成成功"; document.getElementById("modal-img").src = posterDataUrl;
+            document.getElementById("modal-action-bar").innerHTML = `<p style="font-size:12px;color:#e67e22;">提示：長按上方圖片即可儲存到相簿！</p>`;
+            document.getElementById("result-modal").style.display = "flex";
         }
 
-        requestAnimationFrame(drawRadarGrid);
-//        if (navigator.geolocation) {
-//            navigator.geolocation.watchPosition(position => {
-//                const peaksWithDistance = peaks.map(peak => {
-//                    const distInMeters = Math.sqrt(Math.pow(position.coords.latitude - peak.lat, 2) + Math.pow(position.coords.longitude - peak.lng, 2)) * 111000;
-//                    const bearing = calculateBearing(position.coords.latitude, position.coords.longitude, peak.lat, peak.lng);
-//                    return { ...peak, distance: distInMeters, bearing: bearing };
-//                });
-//                peaksWithDistance.sort((a, b) => a.distance - b.distance); 
-//                nearestFiveCache = peaksWithDistance.slice(0, 5); 
-//                updateRadarList(position.coords.latitude, position.coords.longitude);
-//            }, err => {}, { enableHighAccuracy: true });
-//        }
-        if (navigator.geolocation) {
-    navigator.geolocation.watchPosition(
-        (pos) => {
-            updateRadarList(pos.coords.latitude, pos.coords.longitude);
-        }, 
-        (err) => {
-            // CRUCIAL IOS DEBUGGER: Prints the exact reason why the hardware failed
-            const radarListDiv = document.getElementById("radar-list");
-            if (radarListDiv) {
-                if (err.code === 1) {
-                    radarListDiv.innerHTML = `<span style="color:#c0392b; font-weight:bold;">⚠️ GPS 錯誤：請前往 iPhone 設定 ➔ 隱私權 ➔ 開啟「定位服務」與「準確位置」。</span>`;
-                } else if (err.code === 2) {
-                    radarListDiv.innerHTML = `<span style="color:#c0392b; font-weight:bold;">⚠️ GPS 錯誤：衛星訊號接收失敗（請走到窗邊或戶外）。</span>`;
-                } else {
-                    radarListDiv.innerHTML = `<span style="color:#c0392b; font-weight:bold;">⚠️ GPS 定位超時 (${err.message})</span>`;
-                }
+        // ==========================================================
+        // 🔒 PROTECTED INITIALIZATION RUNTIME FOR IPHONE SAFARI
+        // ==========================================================
+        window.addEventListener("load", async () => {
+            console.log("[PeakStamp Engine] Document complete. Initializing secure execution threads.");
+            
+            await initDB();
+            
+            const targetPeaks = window.peaks || (typeof peaks !== "undefined" ? peaks : []);
+            targetPeaks.forEach(peak => assignPeakFilters(peak));
+
+            const selector = document.getElementById("mock-selector");
+            if (selector && selector.options.length === 0) {
+                const selectFragment = document.createDocumentFragment();
+                targetPeaks.forEach((peak, index) => {
+                    const opt = document.createElement("option");
+                    opt.value = peak.id; opt.innerText = `#${index + 1} ${peak.name}`;
+                    selectFragment.appendChild(opt);
+                });
+                selector.appendChild(selectFragment);
             }
-        }, 
-        { 
-            enableHighAccuracy: true, // Forces iPhone to trigger true GPS instead of Wi-Fi triangulation
-            timeout: 10000,           // Timeouts after 10 seconds of no signal
-            maximumAge: 0             // Forces fresh satellite tracking records instead of cached positions
-        }
-    );
-} else {
-    alert("您的瀏覽器不支援 GPS 定位功能。");
-}
 
+            await renderPeaksGrid();
+            drawRadarGrid();
 
-        window.onload = initApp;
+            // Precise hardware GPS positioning watcher configuration matrix
+            if (navigator.geolocation) {
+                navigator.geolocation.watchPosition(
+                    pos => updateRadarList(pos.coords.latitude, pos.coords.longitude),
+                    err => {
+                        const radarListDiv = document.getElementById("radar-list");
+                        if (radarListDiv && err.code === 1) {
+                            radarListDiv.innerHTML = `<span style="color:#c0392b; font-weight:bold;">⚠️ 請開啟 iPhone 「設定」➔「隱私權與安全性」➔「定位服務」➔ 確保 Safari 權限勾選「使用期間」並打開「準確位置」開關。</span>`;
+                        }
+                    },
+                    { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
+                );
+            }
+        });
 
-        if ("serviceWorker" in navigator) {
-            window.addEventListener("load", () => {
-                navigator.serviceWorker.register("sw.js")
-                    .then((registration) => { console.log("PWA 離線部署成功！註冊領域:", registration.scope); })
-                    .catch((err) => { console.log("PWA 註冊失敗:", err); });
-            });
-        }
+        window.viewStamp = viewStamp;
+        window.triggerReplaceStamp = triggerReplaceStamp;
     </script>
 </body>
 </html>
