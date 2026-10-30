@@ -166,8 +166,14 @@ const remainingPeaks = [
     { id: "p160", name: "嘉頓山 Garden Hill", lat: 22.3358, lng: 114.1639, elev: 91 }
 ];
 
-// 將剩餘數據與主陣列合併
+// ... (Scroll to the very end of your existing peaks.js file) ...
+// ... beneath your long list ending with p160: 格仔山 and 嘉頓山 ...
+
+// 1. Combine the arrays securely
 peaks.push(...remainingPeaks);
 
-// FORCE GLOBAL ACCESSIBILITY:
+// 2. CRASH FIX: Force the arrays directly into the open shared global window layout thread context
 window.peaks = peaks;
+
+console.log("[PeakStamp Engine] Successfully loaded global peak matrix count:", window.peaks.length);
+
