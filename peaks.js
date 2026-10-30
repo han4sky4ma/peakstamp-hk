@@ -168,3 +168,6 @@ const remainingPeaks = [
 
 // 將剩餘數據與主陣列合併
 peaks.push(...remainingPeaks);
+
+// FORCE GLOBAL ACCESSIBILITY:
+window.peaks = peaks;
