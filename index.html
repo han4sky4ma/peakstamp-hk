@@ -914,12 +914,13 @@ window.unlockWithDefaultStamp = unlockWithDefaultStamp;
                     await saveRecordToDB(activePeak.id, finalDataUrl, imageSrc, styleName);
                     document.getElementById("loading").style.display = "none";
                     document.getElementById("modal-img").src = finalDataUrl;
-                    document.getElementById("modal-action-bar").innerHTML = `
-                        <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:10px;">
-                            <button class="btn" style="background: #8B5A2B; margin:0;" onclick="triggerReplaceStamp('${activePeak.id}')">📸 重新上傳相片覆蓋印章圖層</button>
-                            <p style="font-size:11px; color:#666; margin:0;">提示：您可以隨時使用手機相簿中的登山實景照，來覆蓋此時產生的紀念章底圖。</p>
-                        </div>
-                    `;
+document.getElementById("modal-action-bar").innerHTML = `
+    <div style="display:flex; flex-direction:column; gap:8px; margin-bottom:10px;">
+        <button class="btn" style="background: #8B5A2B; margin:0;" onclick="window.triggerReplaceStamp('${activePeak.id}')">📸 重新上傳相片覆蓋印章圖層</button>
+        <p style="font-size:11px; color:#666; margin:0;">提示：您可以隨時使用手機相簿中的登山實景照，來覆蓋此時產生的紀念章底圖。</p>
+    </div>
+`;
+
                     document.getElementById("stamp-style-select").value = styleName;
                     document.getElementById("result-modal").style.display = "flex";
             
