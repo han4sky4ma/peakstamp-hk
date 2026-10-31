@@ -169,7 +169,7 @@
 <body>
     <div class="header">
         <h2>🏔 PeakStamp HK</h2>
-        <p>香港山頭集章冊 (v1.3.4)</p>
+        <p>香港山頭集章冊 (v1.3.5)</p>
     </div>
 
     <!-- 📡 Radar Component Layout -->
@@ -791,6 +791,14 @@
         // FIXED INITIALIZATION LOOP: Explicitly exposes peak arrays across script modules globally
         window.addEventListener("load", async () => {
             console.log("[PeakStamp Engine] Secure runtime initialization sequence fired.");
+            // NEW SAFARI GUARDRAIL: Unlocks speech synthesis engines on the first user screen tap interaction
+            document.body.addEventListener('click', () => {
+                if ('speechSynthesis' in window && window.speechSynthesis.speaking === false) {
+                    // Fires an empty voice chunk to safely wake up and authorize Safari's background audio context
+                    const initialWakeUpUtterance = new SpeechSynthesisUtterance("");
+                    window.speechSynthesis.speak(initialWakeUpUtterance);
+                }        
+            }, { once: true }); // Fires exactly once, keeping memory footprints low
             
             // Critical global binding assignment to fix "No Options" error
             if (typeof peaks !== "undefined") {
