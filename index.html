@@ -169,7 +169,7 @@
 <body>
     <div class="header">
         <h2>🏔 PeakStamp HK</h2>
-        <p>香港山頭集章冊 (v1.3.5)</p>
+        <p>香港山頭集章冊 (v1.3.6)</p>
     </div>
 
     <!-- 📡 Radar Component Layout -->
@@ -699,14 +699,15 @@
                 processImageAndStamp(dynamicIllustrationPath, "illustration_view");
                 return;
             } else if (targetMode === "gowild_photo") {
-                if (!record.userPhotoBase64) {
+                // Safe validation: Fallback check against both possible photo tracking properties
+                const photoSource = record.userPhotoBase64 || record.rawImg;
+                if (!photoSource || photoSource.startsWith("assets/illustrations/")) {
                     alert("您尚未上傳該山峰的個人相片，請點擊下方按鈕上傳！");
                     return;
                 }
                 processImageAndStamp(record.userPhotoBase64, "gowild_photo");
                 return;
             }
-            await viewStamp(activePeak.id);
         }
 
         async function collectIllustratedStamp(id) {
