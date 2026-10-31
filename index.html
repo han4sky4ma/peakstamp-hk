@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="zh-Hant-HK">
 <head>
     <meta charset="UTF-8">
@@ -9,257 +9,198 @@
     <link rel="manifest" href="manifest.json">
     <title>山印</title>
     <style>
-        :root { 
-            --primary: #2E5A44; 
-            --secondary: #8B5A2B; 
-            --bg: #F4F4F0; 
+        :root {
+            --primary: #2E5A44;
+            --secondary: #8B5A2B;
+            --bg: #F4F4F0;
         }
-        body { 
-            font-family: -apple-system, BlinkMacSystemFont, sans-serif; 
-            background: var(--bg); 
-            margin: 0; 
-            padding: 15px; 
-            color: #333; 
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg);
+            margin: 0;
+            padding: 15px;
+            color: #333;
         }
-        .header { 
-            background: var(--primary); 
-            color: white; 
-            padding: 15px; 
-            border-radius: 12px; 
-            text-align: center; 
-            margin-bottom: 15px; 
+        .header {
+            background: var(--primary);
+            color: white;
+            padding: 15px;
+            border-radius: 12px;
+            text-align: center;
+            margin-bottom: 15px;
         }
-        .radar-card { 
-            background: #e3ece4; 
-            border: 2px dashed var(--primary); 
-            padding: 15px; 
-            border-radius: 12px; 
-            margin-bottom: 15px; 
-            text-align: center; 
+        .radar-card {
+            background: #e3ece4;
+            border: 2px dashed var(--primary);
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            text-align: center;
         }
-        .radar-canvas-container { 
-            position: relative; 
-            width: 220px; 
-            height: 220px; 
-            margin: 15px auto; 
-            background: #1a2f24; 
-            border-radius: 50%; 
-            box-shadow: inset 0 0 20px rgba(0,0,0,0.6), 0 4px 10px rgba(0,0,0,0.15); 
-            border: 3px solid var(--primary); 
+        .radar-canvas-container {
+            position: relative;
+            width: 220px;
+            height: 220px;
+            margin: 15px auto;
+            background: #1a2f24;
+            border-radius: 50%;
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.6), 0 4px 10px rgba(0, 0, 0, 0.15);
+            border: 3px solid var(--primary);
         }
-        #radar-canvas { 
-            border-radius: 50%; 
-            display: block; 
+        #radar-canvas {
+            border-radius: 50%;
+            display: block;
         }
-        .radar-item { 
-            background: white; 
-            padding: 10px; 
-            border-radius: 8px; 
-            margin-top: 8px; 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            box-shadow: 0 1px 4px rgba(0,0,0,0.05); 
-            text-align: left; 
+        .radar-item {
+            background: white;
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+            text-align: left;
         }
         .radar-item strong { color: var(--primary); }
-        .distance-tag { 
-            background: var(--secondary); 
-            color: white; 
-            padding: 3px 8px; 
-            border-radius: 12px; 
-            font-size: 11px; 
-            font-weight: bold; 
+        .distance-tag {
+            background: var(--secondary);
+            color: white;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
         }
-        .btn-stamp-now { 
-            background: var(--primary); 
-            color: white; 
-            border: none; 
-            padding: 6px 12px; 
-            border-radius: 6px; 
-            font-weight: bold; 
-            cursor: pointer; 
-            font-size: 12px; 
+        .btn-stamp-now {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            font-size: 12px;
         }
-        .progress-card { 
-            background: white; 
-            padding: 15px; 
-            border-radius: 12px; 
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05); 
-            margin-bottom: 15px; 
-            text-align: center; 
+        .progress-card {
+            background: white;
+            padding: 15px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            margin-bottom: 15px;
+            text-align: center;
         }
-        .progress-bar { 
-            background: #ddd; 
-            height: 12px; 
-            border-radius: 6px; 
-            overflow: hidden; 
-            margin-top: 8px; 
+        .progress-bar {
+            background: #ddd;
+            height: 12px;
+            border-radius: 6px;
+            overflow: hidden;
+            margin-top: 8px;
         }
-        .progress-fill { 
-            background: var(--primary); 
-            height: 100%; 
-            width: 0%; 
-            transition: width 0.5s; 
+        .progress-fill {
+            background: var(--primary);
+            height: 100%;
+            width: 0%;
+            transition: width 0.5s;
         }
-        .filter-section { 
-            background: white; 
-            padding: 12px; 
-            border-radius: 12px; 
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05); 
-            margin-bottom: 15px; 
+        .filter-section {
+            background: white;
+            padding: 12px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            margin-bottom: 15px;
         }
         .filter-row { display: flex; gap: 8px; margin-bottom: 8px; }
         .filter-row:last-child { margin-bottom: 0; }
-        .select-filter { 
-            flex: 1; 
-            padding: 10px; 
-            border-radius: 8px; 
-            border: 1px solid #ccc; 
-            background: white; 
-            font-size: 13px; 
-            font-weight: bold; 
-            color: #444; 
-            min-height: 40px; 
+        .select-filter {
+            flex: 1;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            background: white;
+            font-size: 13px;
+            font-weight: bold;
+            color: #444;
+            min-height: 40px;
         }
         .select-filter:focus { border-color: var(--primary); outline: none; }
-        .grid-count-tag { 
-            font-size: 12px; 
-            color: #666; 
-            margin-bottom: 8px; 
-            text-align: right; 
-            font-weight: bold; 
-        }
-        .backup-card { 
-            background: #fdfdfd; 
-            border: 1px solid #e2e2e2; 
-            padding: 12px; 
-            border-radius: 12px; 
-            margin-bottom: 15px; 
-            display: flex; 
-            flex-wrap: wrap; 
-            gap: 8px; 
-        }
-        .btn-backup { 
-            background: #34495e; 
-            color: white; 
-            border: none; 
-            padding: 10px; 
-            border-radius: 8px; 
-            font-weight: bold; 
-            flex: 1; 
-            min-width: 140px; 
-            cursor: pointer; 
-            font-size: 12px; 
-        }
-        .btn-restore { 
-            background: #7f8c8d; 
-            color: white; 
-            border: none; 
-            padding: 10px; 
-            border-radius: 8px; 
-            font-weight: bold; 
-            flex: 1; 
-            min-width: 140px; 
-            cursor: pointer; 
-            font-size: 12px; 
-        }
-        .btn-poster { 
-            background: #d35400; 
-            color: white; 
-            border: none; 
-            padding: 12px; 
-            border-radius: 8px; 
-            font-weight: bold; 
-            width: 100%; 
-            cursor: pointer; 
-            font-size: 13px; 
-            margin-top: 4px; 
-            box-shadow: 0 3px 6px rgba(211,84,0,0.2); 
+        .grid-count-tag {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 8px;
+            text-align: right;
+            font-weight: bold;
         }
         .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
         .card { background: white; padding: 12px; border-radius: 12px; text-align: center; border: 1px solid #e0e0e0; }
-        .card.unlocked { border-color: var(--primary); box-shadow: 0 4px 12px rgba(46,90,68,0.1); }
+        .card.unlocked { border-color: var(--primary); box-shadow: 0 4px 12px rgba(46, 90, 68, 0.1); }
         .card.locked { opacity: 0.5; background: #eaeaea; }
         .badge-icon { font-size: 36px; margin-bottom: 6px; }
-        .btn { 
-            background: var(--secondary); 
-            color: white; 
-            border: none; 
-            padding: 10px; 
-            border-radius: 8px; 
-            font-weight: bold; 
-            width: 100%; 
-            margin-top: 8px; 
-            cursor: pointer; 
-            font-size: 13px; 
+        .btn {
+            background: var(--secondary);
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 8px;
+            font-weight: bold;
+            width: 100%;
+            margin-top: 8px;
+            cursor: pointer;
+            font-size: 13px;
         }
-        #loading { 
-            display: none; 
-            position: fixed; 
-            top: 0; 
-            left: 0; 
-            width: 100%; 
-            height: 100%; 
-            background: rgba(0,0,0,0.8); 
-            color: white; 
-            justify-content: center; 
-            align-items: center; 
-            flex-direction: column; 
-            z-index: 999; 
+        #loading {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            color: white; justify-content: center; align-items: center;
+            flex-direction: column; z-index: 999;
         }
-        .modal { 
-            display: none; 
-            position: fixed; 
-            top: 0; 
-            left: 0; 
-            width: 100%; 
-            height: 100%; 
-            background: rgba(0,0,0,0.7); 
-            justify-content: center; 
-            align-items: center; 
-            z-index: 100; 
+        .modal {
+            display: none; position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            justify-content: center; align-items: center; z-index: 100;
         }
         .modal-content { background: white; padding: 20px; border-radius: 16px; width: 85%; max-width: 400px; text-align: center; }
-        .preview-img { width: 100%; border-radius: 8px; margin-top: 10px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        .preview-img { width: 100%; border-radius: 8px; margin-top: 10px; box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
     </style>
 </head>
 <body>
     <div class="header">
-        <h2>🏔️ PeakStamp HK</h2>
-        <p>香港山頭集章冊 (v1.3.3)</p>
+        <h2>🏔 PeakStamp HK</h2>
+        <p>香港山頭集章冊 (v1.3.4)</p>
     </div>
+
     <!-- 📡 Radar Component Layout -->
     <div class="radar-card">
         <strong style="display: block; text-align: left;">📡 周邊山頭動態雷達（實時方位掃描中）</strong>
-        <div style="position: relative; width: 220px; height: 220px; margin: 15px auto; background: #1a2f24; border-radius: 50%; box-shadow: inset 0 0 20px rgba(0,0,0,0.6); border: 3px solid #2E5A44;">
-            <canvas id="radar-canvas" width="220" height="220" style="border-radius: 50%; display: block;"></canvas>
+        <div class="radar-canvas-container">
+            <canvas id="radar-canvas" width="220" height="220"></canvas>
         </div>
         <div id="radar-list" style="margin-top: 5px; font-size: 13px; color: #555; text-align: left;">
             正在搜尋你的 GPS 位置並初始化雷達，請稍候...
         </div>
     </div>
-
     <!-- 📈 Progress Status Component Layout -->
     <div class="progress-card">
         <strong>我的全港 160 巔峰進度</strong>
         <div style="font-size: 22px; color: #8B5A2B; font-weight: bold; margin: 5px 0;" id="progress-text">0 / 160 已解鎖</div>
-        <div style="background: #ddd; height: 12px; border-radius: 6px; overflow: hidden; margin-top: 8px;">
-            <div id="progress-fill" style="background: #2E5A44; height: 100%; width: 0%; transition: width 0.5s;"></div>
+        <div class="progress-bar">
+            <div id="progress-fill" class="progress-fill"></div>
         </div>
         <div style="margin-top:15px; display:flex; gap:8px;">
             <select id="mock-selector" style="flex:1; padding:10px; border-radius:8px; border:1px solid #ccc; font-weight:bold;"></select>
             <button class="btn" style="background: #555; margin:0; width:auto; padding:0 12px;" onclick="simulateSelectedPeak()">測試：模擬移動</button>
         </div>
     </div>
+
     <!-- 📤 Data Synchronization Controls Component Layout -->
     <div style="background: #fdfdfd; border: 1px solid #e2e2e2; padding: 12px; border-radius: 12px; margin-bottom: 15px; display: flex; flex-wrap: wrap; gap: 8px;">
         <button style="background: #34495e; color: white; border: none; padding: 10px; border-radius: 8px; font-weight: bold; flex: 1; font-size: 12px; cursor: pointer;" onclick="exportBackupJSON()">📤 匯出全自動考山備份檔</button>
         <button style="background: #7f8c8d; color: white; border: none; padding: 10px; border-radius: 8px; font-weight: bold; flex: 1; font-size: 12px; cursor: pointer;" onclick="document.getElementById('import-file-input').click()">📥 匯入並還原考山紀錄</button>
         <button style="background: #d35400; color: white; border: none; padding: 12px; border-radius: 8px; font-weight: bold; width: 100%; font-size: 13px; cursor: pointer; box-shadow: 0 3px 6px rgba(211, 84, 0, 0.2);" onclick="generateAchievementPoster()">🖼 匯出我的全港 160 考山成就大海報 (IG分享專用)</button>
     </div>
-
     <!-- 🔍 Filter Controls Architecture Component Layout -->
     <div class="filter-section">
         <div class="filter-row">
@@ -289,7 +230,7 @@
         </div>
     </div>
 
-    <div class="grid-count-tag" id="grid-count-text" style="font-size: 12px; color: #666; margin-bottom: 8px; text-align: right; font-weight: bold;">顯示中: 0 座山頭</div>
+    <div class="grid-count-tag" id="grid-count-text">顯示中: 0 座山頭</div>
     <div class="grid" id="peaks-grid"></div>
     <!-- Interfaces Elements & Canvas Layers -->
     <input type="file" id="camera-input" accept="image/*" capture="camera" style="display: none;" onchange="handlePhotoUpload(event)">
@@ -299,22 +240,14 @@
     <canvas id="poster-canvas" style="display: none;"></canvas>
 
     <!-- Overlays Modals Layout Architecture -->
-    <div id="loading" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); color: white; justify-content: center; align-items: center; flex-direction: column; z-index: 999;">
+    <div id="loading">
         <div style="border: 4px solid #f3f3f3; border-top: 4px solid #2E5A44; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto;"></div>
         <p id="loading-text" style="margin-top: 15px; font-weight: bold;">Canvas 正在處理中，請稍候...</p>
     </div>
 
-    <div class="modal" id="result-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); justify-content: center; align-items: center; z-index: 100;">
-        <div class="modal-content" style="background: white; padding: 20px; border-radius: 16px; width: 85%; max-width: 400px; text-align: center;">
+    <div class="modal" id="result-modal">
+        <div class="modal-content">
             <h3 id="modal-title">山頂紀念章</h3>
-            <div style="margin-bottom: 10px;">
-                <select id="stamp-style-select" class="select-filter" style="min-height: 34px; padding: 6px; font-size: 12px;" onchange="switchStampStyle(this.value)">
-                    <option value="classic">🌲 經典黑框 (預設硬核風格)</option>
-                    <option value="retro">🏮 復古線圈 (手繪硃砂大紅印)</option>
-                    <option value="japanese">🎌 簡約日系 (文青白框小清新)</option>
-                    <option value="default_provisional">🍁 ヤマスタ風仮発行スタンプ (Provisional)</option>
-                </select>
-            </div>
             <img id="modal-img" class="preview-img" src="" alt="Stamp">
             <div id="modal-action-bar" style="margin-top: 10px;"></div>
             <button class="btn" onclick="closeModal()">關閉並安全儲存</button>
@@ -324,682 +257,580 @@
     <!-- External Geospatial Data Stream File Link -->
     <script src="peaks.js"></script>
     <script>
-// ==========================================================
-// PART 1 OF 10: CORE FRAMEWORK ARCHITECTURE & DATABASES
-// ==========================================================
-
-// Global variable matrices bound locally to cross-module scope threads
-let activePeak = null;
-let lastUserLat = null;
-let lastUserLng = null;
-let db = null;
-let radarSweepAngle = 0;
-let nearestFiveCache = [];
-let currentRawImageSrc = null;
-
-// NEW: Throttle map to ensure audio bite doesn't trigger repeatedly in loop cycles
-let playThrottleMap = new Set(); 
-
-/**
- * NEW: Audio Notification Core Engine
- * Plays local Cantonese voice prompt cue.
- * Safe from background permission blocks on mobile Safari & iOS.
- */
-function playCheckInAudioBite() {
-    if ('speechSynthesis' in window) {
-        const utterance = new SpeechSynthesisUtterance("可以打卡啦");
-        utterance.lang = "zh-HK"; // Force Cantonese localization accent output
-        utterance.rate = 1.0;     // Normal human reading pacing velocity
-        window.speechSynthesis.speak(utterance);
-    }
-}
-        
-/**
- * Initializes the client-side IndexedDB instance ("PeakStampDB")
- * Builds structural object store arrays for offline capability.
- */
-function initDB() {
-    return new Promise((resolve, reject) => {
-        const request = indexedDB.open("PeakStampDB", 1);
-        
-        request.onupgradeneeded = function(e) {
-            const database = e.target.result;
-            if (!database.objectStoreNames.contains("stamps")) {
-                database.createObjectStore("stamps", { keyPath: "id" });
+        // ==========================================================
+        // PART 1 OF 10: CORE FRAMEWORK ARCHITECTURE & DATABASES
+        // ==========================================================
+        let activePeak = null;
+        let lastUserLat = null;
+        let lastUserLng = null;
+        let db = null;
+        let radarSweepAngle = 0;
+        let nearestFiveCache = [];
+        let currentRawImageSrc = null;
+        let playThrottleMap = new Set();
+        /**
+         * NEW: Audio Notification Core Engine
+         * Plays local Cantonese voice prompt cue.
+         * Safe from background permission blocks on mobile Safari & iOS.
+         */
+        function playCheckInAudioBite() {
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance("可以打卡啦");
+                utterance.lang = "zh-HK"; // Force Cantonese localization accent output
+                utterance.rate = 1.0;     // Normal human reading pacing velocity
+                window.speechSynthesis.speak(utterance);
             }
-        };
-        
-        request.onsuccess = function(e) { 
-            db = e.target.result; 
-            resolve(); 
-        };
-        
-        request.onerror = function() { 
-            reject(); 
-        };
-    });
-}
-// ==========================================================
-// PART 2 OF 10: DATABASE KEY-VALUE I/O TRANSACTION HANDLERS
-// ==========================================================
-
-/**
- * Retrieves a raw image stamp object entry from persistent storage.
- * @param {string} id - The specific alphanumeric identifier of the peak.
- */
-function getRawRecordFromDB(id) {
-    return new Promise((resolve) => {
-        if (!db) return resolve(null);
-        const transaction = db.transaction(["stamps"], "readonly");
-        const store = transaction.objectStore("stamps");
-        const request = store.get(id);
-        request.onsuccess = function(e) { 
-            resolve(e.target.result ? e.target.result : null); 
-        };
-        request.onerror = function() { 
-            resolve(null); 
-        };
-    });
-}
-
-/**
- * Writes or updates a custom climbing record configuration block.
- */
-function saveRecordToDB(id, dataUrl, rawImg, currentStyle) {
-    return new Promise((resolve, reject) => {
-        if (!db) return reject();
-        const transaction = db.transaction(["stamps"], "readwrite");
-        const store = transaction.objectStore("stamps");
-        const request = store.put({ 
-            id: id, 
-            dataUrl: dataUrl, 
-            rawImg: rawImg, 
-            style: currentStyle, 
-            timestamp: Date.now() 
-        });
-        request.onsuccess = function() { resolve(); };
-        request.onerror = function(e) { reject(e); };
-    });
-}
-// ==========================================================
-// PART 3 OF 10: MASS DATA QUERY & GEOSPATIAL FILTER ENGINE
-// ==========================================================
-
-/**
- * Grabs all primary primary key IDs of currently unlocked mountain summits.
- */
-function getAllUnlockedIds() {
-    return new Promise((resolve) => {
-        if (!db) return resolve([]);
-        const transaction = db.transaction(["stamps"], "readonly");
-        const store = transaction.objectStore("stamps");
-        const request = store.getAllKeys();
-        request.onsuccess = function(e) { resolve(e.target.result); };
-        request.onerror = function() { resolve([]); };
-    });
-}
-
-/**
- * Extracts the complete collection of raw photo stamp entities from storage.
- */
-function getAllStampsData() {
-    return new Promise((resolve) => {
-        if (!db) return resolve([]);
-        const transaction = db.transaction(["stamps"], "readonly");
-        const store = transaction.objectStore("stamps");
-        const request = store.getAll();
-        request.onsuccess = function(e) { resolve(e.target.result); };
-        request.onerror = function() { resolve([]); };
-    });
-}
-
-/**
- * Programmatically appends altitude and geographical zone tags to peak matrices.
- */
-function assignPeakFilters(peak) {
-    if (peak.elev >= 700) peak.levelTag = "lvl5";
-    else if (peak.elev >= 500) peak.levelTag = "lvl4";
-    else if (peak.elev >= 300) peak.levelTag = "lvl3";
-    else if (peak.elev >= 150) peak.levelTag = "lvl2";
-    else peak.levelTag = "lvl1";
-    
-    const name = peak.name.toLowerCase();
-    if (peak.lng < 114.05 && peak.lat < 22.34) {
-        peak.regionTag = "lantau";
-    } else if (peak.lng >= 114.23 && peak.lat <= 22.50) {
-        peak.regionTag = "saikung";
-    } else if (peak.lat < 22.29 && peak.lng >= 114.11 && peak.lng <= 114.26) {
-        peak.regionTag = "hki-kln";
-    } else if (name.includes("lion rock") || name.includes("kowloon peak") || name.includes("tate's") || name.includes("checkerboard") || name.includes("tung shan")) {
-        peak.regionTag = "hki-kln";
-    } else if (peak.lng < 114.15) {
-        peak.regionTag = "nt-west";
-    } else {
-        peak.regionTag = "nt-east";
-    }
-}
-// ==========================================================
-// PART 4 OF 10: HIGH-PRECISION GEOSPATIAL MATH FORMULAS
-// ==========================================================
-
-/**
- * Calculates the absolute distance between two coordinates in meters.
- * Uses the Haversine formula to maintain strict alignment over curved grids.
- */
-function calculateHaversineDistance(lat1, lon1, lat2, lon2) {
-    const R = 6371000; // Mean radius of the Earth in meters
-    const dLat = (lat2 - lat1) * Math.PI / 180;
-    const dLon = (lon2 - lon1) * Math.PI / 180;
-    const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-              Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-              Math.sin(dLon / 2) * Math.sin(dLon / 2);
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-    return R * c;
-}
-
-/**
- * Computes the forward compass bearing heading angle from point A to point B.
- * Returns a normalized value between 0° and 360° mapping clockwise from North.
- */
-function calculateBearing(lat1, lng1, lat2, lng2) {
-    const dLon = (lng2 - lng1) * Math.PI / 180;
-    const lat1Rad = lat1 * Math.PI / 180;
-    const lat2Rad = lat2 * Math.PI / 180;
-    const y = Math.sin(dLon) * Math.cos(lat2Rad);
-    const x = Math.cos(lat1Rad) * Math.sin(lat2Rad) - 
-              Math.sin(lat1Rad) * Math.cos(lat2Rad) * Math.cos(dLon);
-    const brng = Math.atan2(y, x) * 180 / Math.PI;
-    return (brng + 360) % 360;
-}
-// ==========================================================
-// PART 5 OF 10: MOUNTAIN GRID CARD RENDERING MATRIX
-// ==========================================================
-
-/**
- * Dynamically queries parameters and clears/re-renders the main card view.
- * Leverages DocumentFragments to safely minimize viewport layout thrashing.
- */
-async function renderPeaksGrid() {
-    const grid = document.getElementById("peaks-grid");
-    if (!grid) return;
-    
-    const regionFilter = document.getElementById("filter-region").value;
-    const levelFilter = document.getElementById("filter-level").value;
-    const statusFilter = document.getElementById("filter-status").value;
-    
-    const targetPeaks = window.peaks || (typeof peaks !== "undefined" ? peaks : []);
-    const unlockedIds = await getAllUnlockedIds();
-    const totalUnlockedCount = unlockedIds.length;
-    let renderedCount = 0;
-    
-    const fragment = document.createDocumentFragment();
-    
-    targetPeaks.forEach((peak, index) => {
-        const isUnlocked = unlockedIds.includes(peak.id);
-        const matchRegion = (regionFilter === "all" || peak.regionTag === regionFilter);
-        const matchLevel = (levelFilter === "all" || peak.levelTag === levelFilter);
-        const matchStatus = (statusFilter === "all" || 
-            (statusFilter === "unlocked" && isUnlocked) || 
-            (statusFilter === "locked" && !isUnlocked));
-        
-        if (matchRegion && matchLevel && matchStatus) {
-            renderedCount++;
-            const card = document.createElement("div");
-            card.className = `card ${isUnlocked ? 'unlocked' : 'locked'}`;
-            card.innerHTML = `
-                <div class="badge-icon">⛰</div>
-                <strong style="font-size: 13px; display: block; min-height: 36px;">#${index + 1} ${peak.name}</strong>
-                <div style="font-size: 11px; color: #666; margin: 4px 0;">海拔高度: ${peak.elev} 米</div>
-                ${isUnlocked ? 
-                    `<button class="btn" style="background: #2E5A44; padding: 6px;" onclick="viewStamp('${peak.id}')">檢視印章</button>` : 
-                    `<div style="font-size: 11px; color: #999; margin-top: 10px;">尚未攀登解鎖</div>`
-                }
-            `;
-            fragment.appendChild(card);
         }
-    });
-    
-    grid.textContent = "";
-    grid.appendChild(fragment);
-    
-    document.getElementById("progress-text").innerText = `${totalUnlockedCount} / ${targetPeaks.length} 已解鎖`;
-    document.getElementById("progress-fill").style.width = `${(totalUnlockedCount / (targetPeaks.length || 1)) * 100}%`;
-    document.getElementById("grid-count-text").innerText = `當前篩選符合項目: ${renderedCount} 座山峰`;
-}
-// ==========================================================
-// PART 6 OF 10: PROXIMITY VERIFIER & AUDIO UNLOCKER
-// ==========================================================
-let playThrottleMap = new Set(); // Prevents sound-bites looping constantly
 
-function updateRadarList(userLat, userLng) {
-    lastUserLat = userLat; lastUserLng = userLng;
-    const targetPeaks = window.peaks || (typeof peaks !== "undefined" ? peaks : []);
-    
-    getAllUnlockedIds().then(unlockedIds => {
-        const peaksWithDistance = targetPeaks.map(peak => {
-            return { 
-                ...peak, 
-                distance: calculateHaversineDistance(userLat, userLng, peak.lat, peak.lng), 
-                bearing: calculateBearing(userLat, userLng, peak.lat, peak.lng) 
-            };
-        });
-        
-        peaksWithDistance.sort((a, b) => a.distance - b.distance);
-        nearestFiveCache = peaksWithDistance.slice(0, 5);
-        
-        const radarListDiv = document.getElementById("radar-list");
-        if (!radarListDiv) return;
-        
-        const fragment = document.createDocumentFragment();
-        
-        nearestFiveCache.forEach(peak => {
-            const item = document.createElement("div");
-            item.className = "radar-item";
-            const isUnlocked = unlockedIds.includes(peak.id);
-            const kmDist = peak.distance >= 1000 ? `${(peak.distance / 1000).toFixed(2)} 公里` : `${Math.round(peak.distance)} 米`;
-            
-            let actionContent = `<span class="distance-tag">距離 ${kmDist}</span>`;
-            
-            if (peak.distance <= 40 && !isUnlocked) {
-                // Play notification alert precisely once per peak area arrival entry
-                if (!playThrottleMap.has(peak.id)) {
-                    playCheckInAudioBite();
-                    playThrottleMap.add(peak.id);
-                }
-                actionContent = `<button class="btn-stamp-now" style="background:#E67E22;" onclick="collectIllustratedStamp('${peak.id}')">🌟 可以打卡啦！點擊收集</button>`;
-            } else if (isUnlocked) {
-                actionContent = `<span class="distance-tag" style="background: #2E5A44">✓ 已打卡</span>`;
-            }
-            
-            item.innerHTML = `<div><strong>${peak.name}</strong><br><span style="font-size: 11px; color: #777;">標高: ${peak.elev} 米</span></div><div>${actionContent}</div>`;
-            fragment.appendChild(item);
-        });
-        radarListDiv.textContent = "";
-        radarListDiv.appendChild(fragment);
-    });
-}
-
-// Auto-collects the native system artwork asset into database instantly
-async function collectIllustratedStamp(id) {
-    const targetPeaks = window.peaks || (typeof peaks !== "undefined" ? peaks : []);
-    activePeak = targetPeaks.find(p => p.id === id);
-    const placeholderImg = activePeak.illustration || "assets/default_peak.jpg";
-    
-    // Save record containing native illustration parameters first
-    await saveRecordToDB(activePeak.id, placeholderImg, placeholderImg, "illustration_view");
-    alert(`成功收集 #${activePeak.name} 紀念插畫！可進入集章冊中查看並重拍相片。`);
-    await renderPeaksGrid();
-    viewStamp(activePeak.id);
-}
-// ==========================================================
-// PART 7 OF 10: HTML5 CANVAS RADAR ANIMATION LOOP
-// ==========================================================
-
-/**
- * Triggers consecutive canvas drawing ticks using standard display refresh synchronization.
- * Renders spatial proximity grids and maps targets based on historical GPS markers.
- */
-function drawRadarGrid() {
-    const canvas = document.getElementById("radar-canvas");
-    if (!canvas) return;
-    
-    const context = canvas.getContext("2d");
-    const cx = canvas.width / 2; 
-    const cy = canvas.height / 2; 
-    const maxRadius = cx - 10;
-    
-    context.clearRect(0, 0, canvas.width, canvas.height);
-    context.strokeStyle = "rgba(46, 90, 68, 0.4)"; 
-    context.lineWidth = 1;
-    
-    // Draw concentric radar metric range cross-rings
-    for (let r = maxRadius / 3; r <= maxRadius; r += maxRadius / 3) {
-        context.beginPath(); 
-        context.arc(cx, cy, r, 0, 2 * Math.PI); 
-        context.stroke();
-    }
-    
-    // Draw crosshair axes lines mapping horizontal and vertical points
-    context.beginPath(); context.moveTo(cx, 10); context.lineTo(cx, canvas.height - 10); context.stroke();
-    context.beginPath(); context.moveTo(10, cy); context.lineTo(canvas.width - 10, cy); context.stroke();
-    
-    // Render compass directions label anchors
-    context.fillStyle = "#2e5a44"; context.font = "10px sans-serif"; context.textAlign = "center";
-    context.fillText("N", cx, 22);
-    
-    // Map proximity locations over coordinate spaces
-    if (nearestFiveCache.length > 0) {
-        const boundaryDist = Math.max(...nearestFiveCache.map(p => p.distance), 100);
-        nearestFiveCache.forEach(peak => {
-            const angleRad = (peak.bearing - 90) * Math.PI / 180;
-            const rDist = (peak.distance / boundaryDist) * maxRadius;
-            const px = cx + rDist * Math.cos(angleRad); 
-            const py = cy + rDist * Math.sin(angleRad);
-            
-            // Outer proximity halo bloom layer
-            context.beginPath(); 
-            context.arc(px, py, 6, 0, 2 * Math.PI); 
-            context.fillStyle = peak.distance <= 40 ? "rgba(230, 126, 34, 0.4)" : "rgba(139, 90, 43, 0.3)"; 
-            context.fill();
-            
-            // Inner core target coordinate pixel point
-            context.beginPath(); 
-            context.arc(px, py, 3, 0, 2 * Math.PI); 
-            context.fillStyle = peak.distance <= 40 ? "#E67E22" : "#8B5A2B"; 
-            context.fill();
-        });
-    }
-    
-    // Advance tracking sweep angles and paint trailing glow gradients
-    radarSweepAngle = (radarSweepAngle + 1.5) % 360;
-    const sweepRad = (radarSweepAngle - 90) * Math.PI / 180;
-    
-    context.beginPath(); 
-    context.moveTo(cx, cy); 
-    context.arc(cx, cy, maxRadius, sweepRad - 0.2, sweepRad, false); 
-    context.lineTo(cx, cy); 
-    context.fillStyle = "rgba(46, 90, 68, 0.15)"; 
-    context.fill();
-    
-    // Draw leading neon telemetry edge swipe rule line
-    context.beginPath(); 
-    context.moveTo(cx, cy); 
-    context.lineTo(cx + maxRadius * Math.cos(sweepRad), cy + maxRadius * Math.sin(sweepRad)); 
-    context.strokeStyle = "rgba(46, 90, 68, 0.6)"; 
-    context.lineWidth = 1.5; 
-    context.stroke();
-    
-    requestAnimationFrame(drawRadarGrid);
-}
-// ==========================================================
-// PART 8 OF 10: CAMERA INPUT BINDINGS & REPLACEMENT ENGINES
-// ==========================================================
-/**
- * Maps the target selection structure and opens the native mobile camera interface.
- */
-function openCameraFor(id) {
-    const targetPeaks = window.peaks || (typeof peaks !== "undefined" ? peaks : []);
-    activePeak = targetPeaks.find(p => p.id === id);
-    document.getElementById("camera-input").click();
-}
-
-/**
- * FIXED: Safely extracts the target file reference item from mobile camera inputs.
- */
-function handlePhotoUpload(event) {
-    const files = event.target.files;
-    if (!files || files.length === 0) return;
-    document.getElementById("loading").style.display = "flex";
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        currentRawImageSrc = e.target.result;
-        processImageAndStamp(currentRawImageSrc, "gowild_photo"); // Default to GoWild layout on upload
-    };
-    reader.readAsDataURL(files[0]);
-    event.target.value = "";
-}
-
-/**
- * FIXED: Safely extracts the target file reference item from gallery pickers when replacing photos.
- */
-function handlePhotoReplace(event) {
-    const files = event.target.files;
-    if (!files || files.length === 0) return;
-    document.getElementById("loading").style.display = "flex";
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        currentRawImageSrc = e.target.result;
-        processImageAndStamp(currentRawImageSrc, "gowild_photo");
-    };
-    reader.readAsDataURL(files[0]);
-    event.target.value = "";
-}
-
-/**
- * Triggers the hidden system file selection input window for specific peak identifiers.
- */
-function triggerReplaceStamp(id) {
-    const targetPeaks = window.peaks || (typeof peaks !== "undefined" ? peaks : []);
-    activePeak = targetPeaks.find(p => p.id === id);
-    const replaceInput = document.getElementById("replace-input");
-    if (replaceInput) replaceInput.click();
-}
-// ==========================================================
-// PART 9 OF 10: GOWILD WATERMARK OVERLAY ENGINE
-// ==========================================================
-function processImageAndStamp(imageSrc, styleName) {
-    const img = new Image();
-    img.onload = async function() {
-        const canvas = document.getElementById("filter-canvas");
-        const ctx = canvas.getContext("2d");
-        canvas.width = 800; canvas.height = 800;
-        
-        // Centered aspect-ratio safe square cropping engine
-        const minDim = Math.min(img.width, img.height);
-        ctx.drawImage(img, (img.width - minDim) / 2, (img.height - minDim) / 2, minDim, minDim, 0, 0, 800, 800);
-        
-        ctx.textAlign = "left";
-        
-        // Render the custom clean vector illustration graphic background if no user photo exists
-        if (styleName === "illustration_view") {
-            // Draw clean geometric fallback shape for missing assets
-            ctx.fillStyle = "#2E5A44"; ctx.fillRect(40, 40, 720, 720);
-            ctx.fillStyle = "#FFFFFF"; ctx.font = "bold 32px sans-serif"; ctx.textAlign = "center";
-            ctx.fillText(activePeak.name, 400, 380);
-            ctx.font = "20px monospace"; ctx.fillStyle = "#A3CB38";
-            ctx.fillText(`OFFICIAL VECTOR ILLUSTRATION ARTWORK`, 400, 430);
-            ctx.textAlign = "left"; // Reset context
+        /**
+         * Initializes the client-side IndexedDB instance ("PeakStampDB")
+         * Builds structural object store arrays for offline capability.
+         */
+        function initDB() {
+            return new Promise((resolve, reject) => {
+                const request = indexedDB.open("PeakStampDB", 1);
+                request.onupgradeneeded = function(e) {
+                    const database = e.target.result;
+                    if (!database.objectStoreNames.contains("stamps")) {
+                        database.createObjectStore("stamps", { keyPath: "id" });
+                    }
+                };
+                request.onsuccess = function(e) {
+                    db = e.target.result;
+                    resolve();
+                };
+                request.onerror = function() {
+                    reject();
+                };
+            });
         }
-        
-        // Render the custom GOWILD-inspired tracking watermark overlay card banner
-        if (styleName === "gowild_photo" || styleName === "classic") {
-            const boxWidth = 340; const boxHeight = 85;
-            const x = 30; const y = 800 - boxHeight - 30;
-            
-            ctx.fillStyle = "rgba(16, 42, 29, 0.75)"; // GoWild signature jungle-green
-            ctx.beginPath();
-            ctx.roundRect(x, y, boxWidth, boxHeight, 8);
-            ctx.fill();
-            
-            ctx.fillStyle = "#FFFFFF"; ctx.font = "bold 24px sans-serif";
-            ctx.fillText("⛰ GOWILD OUTDOOR", x + 20, y + 38);
-            
-            ctx.fillStyle = "#A3CB38"; ctx.font = "bold 14px monospace";
-            ctx.fillText(`ALT: ${activePeak.elev}m | GPS: ${activePeak.lat.toFixed(4)}°, ${activePeak.lng.toFixed(4)}°`, x + 20, y + 66);
+
+        // ==========================================================
+        // PART 2 OF 10: DATABASE KEY-VALUE I/O TRANSACTION HANDLERS
+        // ==========================================================
+        /**
+         * Retrieves a raw image stamp object entry from persistent storage.
+         * @param {string} id - The specific alphanumeric identifier of the peak.
+         */
+        function getRawRecordFromDB(id) {
+            return new Promise((resolve) => {
+                if (!db) return resolve(null);
+                const transaction = db.transaction(["stamps"], "readonly");
+                const store = transaction.objectStore("stamps");
+                const request = store.get(id);
+                request.onsuccess = function(e) {
+                    resolve(e.target.result ? e.target.result : null);
+                };
+                request.onerror = function() {
+                    resolve(null);
+                };
+            });
         }
-        
-        try {
-            const finalDataUrl = canvas.toDataURL("image/jpeg", 0.85);
-            if (db) {
+
+        /**
+         * Writes or updates a custom climbing record configuration block.
+         */
+        function saveRecordToDB(id, dataUrl, rawImg, currentStyle) {
+            return new Promise((resolve, reject) => {
+                if (!db) return reject();
                 const transaction = db.transaction(["stamps"], "readwrite");
                 const store = transaction.objectStore("stamps");
-                const existingRecord = await getRawRecordFromDB(activePeak.id) || {};
-                
-                store.put({
-                    id: activePeak.id,
-                    dataUrl: finalDataUrl,
-                    rawImg: imageSrc,
-                    userPhotoBase64: styleName === "gowild_photo" ? imageSrc : (existingRecord.userPhotoBase64 || null),
-                    style: styleName,
+                const request = store.put({
+                    id: id,
+                    dataUrl: dataUrl,
+                    rawImg: rawImg,
+                    style: currentStyle,
                     timestamp: Date.now()
                 });
-            }
-            document.getElementById("loading").style.display = "none";
-            document.getElementById("modal-img").src = finalDataUrl;
-            await viewStamp(activePeak.id);
-            await renderPeaksGrid();
-        } catch(e) {
-            document.getElementById("loading").style.display = "none";
+                request.onsuccess = function() { resolve(); };
+                request.onerror = function(e) { reject(e); };
+            });
         }
-    };
-    img.src = imageSrc;
-}
-// ==========================================================
-// PART 10 OF 10: GALLERY MODAL CONTROLLER & MULTI-VIEW
-// ==========================================================
-async function viewStamp(id) {
-    const targetPeaks = window.peaks || (typeof peaks !== "undefined" ? peaks : []);
-    activePeak = targetPeaks.find(p => p.id === id);
-    const record = await getRawRecordFromDB(id);
-    if (!record) return;
-
-    document.getElementById("modal-title").innerText = `${activePeak.name}`;
-    document.getElementById("modal-img").src = record.dataUrl;
-    currentRawImageSrc = record.rawImg;
-
-    // Renders the twin toggle buttons to flip cleanly between artwork and camera rolls
-    document.getElementById("modal-action-bar").innerHTML = `
-        <div style="display:flex; gap:10px; margin-bottom:12px;">
-            <button class="btn" style="flex:1; background:${record.style === 'illustration_view' ? '#2E5A44' : '#777'};" onclick="switchToViewMode('illustration_view')">🖼 官方手繪原圖</button>
-            <button class="btn" style="flex:1; background:${record.style === 'gowild_photo' ? '#2E5A44' : '#777'};" onclick="switchToViewMode('gowild_photo')">📸 我的戶外相片</button>
-        </div>
-        <button class="btn" style="background: #34495e; width:100%;" onclick="triggerReplaceStamp('${activePeak.id}')">拍攝或上傳相片 (套用 GOWILD 水印)</button>
-    `;
-    document.getElementById("result-modal").style.display = "flex";
-}
-
-async function switchToViewMode(targetMode) {
-    if (!activePeak) return;
-    const record = await getRawRecordFromDB(activePeak.id);
-    if (!record) return;
-
-    if (targetMode === "illustration_view") {
-        const dynamicIllustrationPath = `assets/illustrations/${activePeak.id}.jpg`;
-        processImageAndStamp(dynamicIllustrationPath, "illustration_view");
-        return;
-    } else if (targetMode === "gowild_photo") {
-        if (!record.userPhotoBase64) {
-            alert("您尚未上傳該山峰的個人相片，請點擊下方按鈕上傳！");
-            return;
+        // ==========================================================
+        // PART 3 OF 10: MASS DATA QUERY & GEOSPATIAL FILTER ENGINE
+        // ==========================================================
+        /**
+         * Grabs all primary key IDs of currently unlocked mountain summits.
+         */
+        function getAllUnlockedIds() {
+            return new Promise((resolve) => {
+                if (!db) return resolve([]);
+                const transaction = db.transaction(["stamps"], "readonly");
+                const store = transaction.objectStore("stamps");
+                const request = store.getAllKeys();
+                request.onsuccess = function(e) { resolve(e.target.result); };
+                request.onerror = function() { resolve([]); };
+            });
         }
-        processImageAndStamp(record.userPhotoBase64, "gowild_photo");
-        return;
-    }
-    await viewStamp(activePeak.id);
-}
 
-async function collectIllustratedStamp(id) {
-    const targetPeaks = window.peaks || (typeof peaks !== "undefined" ? peaks : []);
-    activePeak = targetPeaks.find(p => p.id === id);
-    const dynamicIllustrationPath = `assets/illustrations/${activePeak.id}.jpg`;
-    
-    processImageAndStamp(dynamicIllustrationPath, "illustration_view");
-    alert(`成功收集 #${activePeak.name} 紀念插畫！可進入集章冊中查看並上傳個人相片。`);
-    await renderPeaksGrid();
-}
+        /**
+         * Extracts the complete collection of raw photo stamp entities from storage.
+         */
+        function getAllStampsData() {
+            return new Promise((resolve) => {
+                if (!db) return resolve([]);
+                const transaction = db.transaction(["stamps"], "readonly");
+                const store = transaction.objectStore("stamps");
+                const request = store.getAll();
+                request.onsuccess = function(e) { resolve(e.target.result); };
+                request.onerror = function() { resolve([]); };
+            });
+        }
 
-function closeModal() {
-    document.getElementById("result-modal").style.display = "none";
-}
-
-async function exportBackupJSON() {
-    const allData = await getAllStampsData();
-    if (allData.length === 0) return alert("未找到可備份進度！");
-    const blob = new Blob([JSON.stringify({ appId: "PeakStamp-HK160", stampsData: allData })], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a"); a.href = url; a.download = `PeakStamp_Backup.json`; a.click();
-}
-
-function importBackupJSON(event) {
-    const files = event.target.files;
-    if (!files || files.length === 0) return;
-    const reader = new FileReader();
-    reader.onload = async function(e) {
-        try {
-            const parsed = JSON.parse(e.target.result);
-            if (parsed.appId !== "PeakStamp-HK160") throw new Error();
-            for (const item of parsed.stampsData) {
-                await saveRecordToDB(item.id, item.dataUrl, item.rawImg, item.style);
+        /**
+         * Programmatically appends altitude and geographical zone tags to peak matrices.
+         */
+        function assignPeakFilters(peak) {
+            if (peak.elev >= 700) peak.levelTag = "lvl5";
+            else if (peak.elev >= 500) peak.levelTag = "lvl4";
+            else if (peak.elev >= 300) peak.levelTag = "lvl3";
+            else if (peak.elev >= 150) peak.levelTag = "lvl2";
+            else peak.levelTag = "lvl1";
+            
+            const name = peak.name.toLowerCase();
+            if (peak.lng < 114.05 && peak.lat < 22.34) {
+                peak.regionTag = "lantau";
+            } else if (peak.lng >= 114.23 && peak.lat <= 22.50) {
+                peak.regionTag = "saikung";
+            } else if (peak.lat < 22.29 && peak.lng >= 114.11 && peak.lng <= 114.26) {
+                peak.regionTag = "hki-kln";
+            } else if (name.includes("lion rock") || name.includes("kowloon peak") || name.includes("tate's") || name.includes("checkerboard") || name.includes("tung shan")) {
+                peak.regionTag = "hki-kln";
+            } else if (peak.lng < 114.15) {
+                peak.regionTag = "nt-west";
+            } else {
+                peak.regionTag = "nt-east";
             }
-            alert("回復成功！"); await renderPeaksGrid();
-        } catch (err) { alert("備份檔損壞或無效"); }
-    };
-    reader.readAsText(files[0]);
-}
+        }
 
-async function generateAchievementPoster() {
-    const canvas = document.getElementById("poster-canvas");
-    const ctx = canvas.getContext("2d");
-    canvas.width = 800; canvas.height = 1250;
-    ctx.fillStyle = "#F4F4F0"; ctx.fillRect(0, 0, 800, 1250);
-    ctx.fillStyle = "#2E5A44"; ctx.fillRect(20, 20, 760, 150);
-    const targetPeaks = window.peaks || (typeof peaks !== "undefined" ? peaks : []);
-    const unlockedIds = await getAllUnlockedIds();
-    const rate = ((unlockedIds.length / (targetPeaks.length || 1)) * 100).toFixed(1);
-    
-    ctx.fillStyle = "#FFFFFF"; ctx.textAlign = "center"; ctx.font = "bold 32px sans-serif";
-    ctx.fillText("香港 160 考山成就集章榜", 400, 85);
-    ctx.font = "600 20px monospace"; ctx.fillStyle = "#E67E22";
-    ctx.fillText(`已解鎖: ${unlockedIds.length} / 160 | 制霸率: ${rate}%`, 400, 130);
-    
-    const cols = 16; const startX = 42; const startY = 210; const boxW = 40; const boxH = 48; const gapX = 5; const gapY = 12;
-    for (let i = 0; i < targetPeaks.length; i++) {
-        const isUnlocked = unlockedIds.includes(targetPeaks[i].id);
-        const col = i % cols; const row = Math.floor(i / cols);
-        const x = startX + col * (boxW + gapX); const y = startY + row * (boxH + gapY);
-        ctx.fillStyle = isUnlocked ? "#E3ECE4" : "#EAEAEA"; ctx.fillRect(x, y, boxW, boxH);
-        ctx.strokeStyle = isUnlocked ? "#2E5A44" : "#CCCCCC"; ctx.strokeRect(x, y, boxW, boxH);
-        ctx.fillStyle = isUnlocked ? "#2E5A44" : "#999999"; ctx.font = "14px sans-serif";
-        ctx.fillText(isUnlocked ? "⛰" : "🔒", x + boxW / 2, y + 24);
-        ctx.font = "bold 9px monospace"; ctx.fillText(`${i + 1}`, x + boxW / 2, y + 42);
-    }
-    const posterDataUrl = canvas.toDataURL("image/png");
-    document.getElementById("modal-title").innerText = "登頂海報生成成功";
-    document.getElementById("modal-img").src = posterDataUrl;
-    document.getElementById("modal-action-bar").innerHTML = `<p style="font-size:12px;color:#e67e22;">提示：長按上方圖片即可儲存到相簿！</p>`;
-    document.getElementById("result-modal").style.display = "flex";
-}
+        // ==========================================================
+        // PART 4 OF 10: HIGH-PRECISION GEOSPATIAL MATH FORMULAS
+        // ==========================================================
+        /**
+         * Calculates the absolute distance between two coordinates in meters.
+         * Uses the Haversine formula to maintain strict alignment over curved grids.
+         */
+        function calculateHaversineDistance(lat1, lon1, lat2, lon2) {
+            const R = 6371000; // Mean radius of the Earth in meters
+            const dLat = (lat2 - lat1) * Math.PI / 180;
+            const dLon = (lon2 - lon1) * Math.PI / 180;
+            const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                      Math.sin(dLon / 2) * Math.sin(dLon / 2);
+            const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            return R * c;
+        }
 
-function simulateSelectedPeak() {
-    const selectedId = document.getElementById("mock-selector").value;
-    const targetPeaks = window.peaks || (typeof peaks !== "undefined" ? peaks : []);
-    const target = targetPeaks.find(p => p.id === selectedId);
-    if (target) { updateRadarList(target.lat, target.lng); alert(`模擬成功！已移動到 #${target.name}。`); }
-}
-
-// FIXED INITIALIZATION LOOP: Explicitly forces broad window-scope variables exposure
-window.addEventListener("load", async () => {
-    console.log("[PeakStamp Engine] Secure runtime initialization sequence fired.");
-    
-    // Explicit global dataset assignment fallback binding to fix "No Options" dropdown failure
-    if (typeof peaks !== "undefined") {
-        window.peaks = peaks;
-    }
-    
-    await initDB();
-    const targetPeaks = window.peaks || [];
-    targetPeaks.forEach(peak => assignPeakFilters(peak));
-    
-    const selector = document.getElementById("mock-selector");
-    if (selector && selector.options.length === 0) {
-        const selectFragment = document.createDocumentFragment();
-        targetPeaks.forEach((peak, index) => {
-            const opt = document.createElement("option");
-            opt.value = peak.id; opt.innerText = `#${index + 1} ${peak.name}`;
-            selectFragment.appendChild(opt);
-        });
-        selector.appendChild(selectFragment);
-    }
-    
-    await renderPeaksGrid();
-    drawRadarGrid();
-    
-    if (navigator.geolocation) {
-        navigator.geolocation.watchPosition(
-            pos => updateRadarList(pos.coords.latitude, pos.coords.longitude),
-            err => {
-                const radarListDiv = document.getElementById("radar-list");
-                if (radarListDiv && err.code === 1) {
-                    radarListDiv.innerHTML = `<span style="color:#c0392b; font-weight:bold;">⚠ 請開啟 iPhone 「設定」➔「隱私權與安全性」➔「定位服務」➔ 確保 Safari 權限勾選「使用期間」並打開「準確位置」開關。</span>`;
+        /**
+         * Computes the forward compass bearing heading angle from point A to point B.
+         * Returns a normalized value between 0° and 360° mapping clockwise from North.
+         */
+        function calculateBearing(lat1, lng1, lat2, lng2) {
+            const dLon = (lng2 - lng1) * Math.PI / 180;
+            const lat1Rad = lat1 * Math.PI / 180;
+            const lat2Rad = lat2 * Math.PI / 180;
+            const y = Math.sin(dLon) * Math.cos(lat2Rad);
+            const x = Math.cos(lat1Rad) * Math.sin(lat2Rad) -
+                      Math.sin(lat1Rad) * Math.cos(lat2Rad) * Math.cos(dLon);
+            const brng = Math.atan2(y, x) * 180 / Math.PI;
+            return (brng + 360) % 360;
+        }
+        // ==========================================================
+        // PART 5 OF 10: MOUNTAIN GRID CARD RENDERING MATRIX
+        // ==========================================================
+        /**
+         * Dynamically queries parameters and clears/re-renders the main card view.
+         * Leverages DocumentFragments to safely minimize viewport layout thrashing.
+         */
+        async function renderPeaksGrid() {
+            const grid = document.getElementById("peaks-grid");
+            if (!grid) return;
+            const regionFilter = document.getElementById("filter-region").value;
+            const levelFilter = document.getElementById("filter-level").value;
+            const statusFilter = document.getElementById("filter-status").value;
+            const targetPeaks = window.peaks || (typeof peaks !== "undefined" ? peaks : []);
+            const unlockedIds = await getAllUnlockedIds();
+            const totalUnlockedCount = unlockedIds.length;
+            let renderedCount = 0;
+            const fragment = document.createDocumentFragment();
+            
+            targetPeaks.forEach((peak, index) => {
+                const isUnlocked = unlockedIds.includes(peak.id);
+                const matchRegion = (regionFilter === "all" || peak.regionTag === regionFilter);
+                const matchLevel = (levelFilter === "all" || peak.levelTag === levelFilter);
+                const matchStatus = (statusFilter === "all" ||
+                    (statusFilter === "unlocked" && isUnlocked) ||
+                    (statusFilter === "locked" && !isUnlocked));
+                
+                if (matchRegion && matchLevel && matchStatus) {
+                    renderedCount++;
+                    const card = document.createElement("div");
+                    card.className = `card ${isUnlocked ? 'unlocked' : 'locked'}`;
+                    card.innerHTML = `
+                        <div class="badge-icon">⛰</div>
+                        <strong style="font-size: 13px; display: block; min-height: 36px;">#${index + 1} ${peak.name}</strong>
+                        <div style="font-size: 11px; color: #666; margin: 4px 0;">海拔高度: ${peak.elev} 米</div>
+                        ${isUnlocked ?
+                            `<button class="btn" style="background: #2E5A44; padding: 6px;" onclick="viewStamp('${peak.id}')">檢視印章</button>` :
+                            `<div style="font-size: 11px; color: #999; margin-top: 10px;">尚未攀登解鎖</div>`
+                        }
+                    `;
+                    fragment.appendChild(card);
                 }
-            },
-            { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
-        );
-    }
-});
+            });
+            grid.textContent = "";
+            grid.appendChild(fragment);
+            document.getElementById("progress-text").innerText = `${totalUnlockedCount} / ${targetPeaks.length} 已解鎖`;
+            document.getElementById("progress-fill").style.width = `${(totalUnlockedCount / (targetPeaks.length || 1)) * 100}%`;
+            document.getElementById("grid-count-text").innerText = `當前篩選符合項目: ${renderedCount} 座山峰`;
+        }
+        // ==========================================================
+        // PART 6 OF 10: PROXIMITY VERIFIER & AUDIO UNLOCKER
+        // ==========================================================
+        function updateRadarList(userLat, userLng) {
+            lastUserLat = userLat; lastUserLng = userLng;
+            const targetPeaks = window.peaks || (typeof peaks !== "undefined" ? peaks : []);
+            getAllUnlockedIds().then(unlockedIds => {
+                const peaksWithDistance = targetPeaks.map(peak => {
+                    return {
+                        ...peak,
+                        distance: calculateHaversineDistance(userLat, userLng, peak.lat, peak.lng),
+                        bearing: calculateBearing(userLat, userLng, peak.lat, peak.lng)
+                    };
+                });
+                peaksWithDistance.sort((a, b) => a.distance - b.distance);
+                nearestFiveCache = peaksWithDistance.slice(0, 5);
+                const radarListDiv = document.getElementById("radar-list");
+                if (!radarListDiv) return;
+                const fragment = document.createDocumentFragment();
+                nearestFiveCache.forEach(peak => {
+                    const item = document.createElement("div");
+                    item.className = "radar-item";
+                    const isUnlocked = unlockedIds.includes(peak.id);
+                    const kmDist = peak.distance >= 1000 ? `${(peak.distance / 1000).toFixed(2)} 公里` : `${Math.round(peak.distance)} 米`;
+                    let actionContent = `<span class="distance-tag">距離 ${kmDist}</span>`;
+                    if (peak.distance <= 40 && !isUnlocked) {
+                        // Play notification alert alert precisely once per peak zone entry
+                        if (!playThrottleMap.has(peak.id)) {
+                            playCheckInAudioBite();
+                            playThrottleMap.add(peak.id);
+                        }
+                        actionContent = `<button class="btn-stamp-now" style="background:#E67E22;" onclick="collectIllustratedStamp('${peak.id}')">🌟 可以打卡啦！點擊收集</button>`;
+                    } else if (isUnlocked) {
+                        actionContent = `<span class="distance-tag" style="background: #2E5A44">✓ 已打卡</span>`;
+                    }
+                    item.innerHTML = `<div><strong>${peak.name}</strong><br><span style="font-size: 11px; color: #777;">標高: ${peak.elev} 米</span></div><div>${actionContent}</div>`;
+                    fragment.appendChild(item);
+                });
+                radarListDiv.textContent = "";
+                radarListDiv.appendChild(fragment);
+            });
+        }
 
-window.viewStamp = viewStamp;
-window.triggerReplaceStamp = triggerReplaceStamp;
-</script>
+        // ==========================================================
+        // PART 7 OF 10: HTML5 CANVAS RADAR ANIMATION LOOP
+        // ==========================================================
+        function drawRadarGrid() {
+            const canvas = document.getElementById("radar-canvas");
+            if (!canvas) return;
+            const context = canvas.getContext("2d");
+            const cx = canvas.width / 2; const cy = canvas.height / 2; const maxRadius = cx - 10;
+            context.clearRect(0, 0, canvas.width, canvas.height);
+            context.strokeStyle = "rgba(46, 90, 68, 0.4)"; context.lineWidth = 1;
+            for (let r = maxRadius / 3; r <= maxRadius; r += maxRadius / 3) {
+                context.beginPath(); context.arc(cx, cy, r, 0, 2 * Math.PI); context.stroke();
+            }
+            context.beginPath(); context.moveTo(cx, 10); context.lineTo(cx, canvas.height - 10); context.stroke();
+            context.beginPath(); context.moveTo(10, cy); context.lineTo(canvas.width - 10, cy); context.stroke();
+            context.fillStyle = "#2e5a44"; context.font = "10px sans-serif"; context.textAlign = "center";
+            context.fillText("N", cx, 22);
+            if (nearestFiveCache.length > 0) {
+                const boundaryDist = Math.max(...nearestFiveCache.map(p => p.distance), 100);
+                nearestFiveCache.forEach(peak => {
+                    const angleRad = (peak.bearing - 90) * Math.PI / 180;
+                    const rDist = (peak.distance / boundaryDist) * maxRadius;
+                    const px = cx + rDist * Math.cos(angleRad); const py = cy + rDist * Math.sin(angleRad);
+                    context.beginPath(); context.arc(px, py, 6, 0, 2 * Math.PI); context.fillStyle = peak.distance <= 40 ? "rgba(230, 126, 34, 0.4)" : "rgba(139, 90, 43, 0.3)"; context.fill();
+                    context.beginPath(); context.arc(px, py, 3, 0, 2 * Math.PI); context.fillStyle = peak.distance <= 40 ? "#E67E22" : "#8B5A2B"; context.fill();
+                });
+            }
+            radarSweepAngle = (radarSweepAngle + 1.5) % 360;
+            const sweepRad = (radarSweepAngle - 90) * Math.PI / 180;
+            context.beginPath(); context.moveTo(cx, cy); context.arc(cx, cy, maxRadius, sweepRad - 0.2, sweepRad, false); context.lineTo(cx, cy); context.fillStyle = "rgba(46, 90, 68, 0.15)"; context.fill();
+            context.beginPath(); context.moveTo(cx, cy); context.lineTo(cx + maxRadius * Math.cos(sweepRad), cy + maxRadius * Math.sin(sweepRad)); context.strokeStyle = "rgba(46, 90, 68, 0.6)"; context.lineWidth = 1.5; context.stroke();
+            requestAnimationFrame(drawRadarGrid);
+        }
+        // ==========================================================
+        // PART 8 OF 10: CAMERA INPUT BINDINGS & REPLACEMENT ENGINES
+        // ==========================================================
+        function openCameraFor(id) {
+            const targetPeaks = window.peaks || (typeof peaks !== "undefined" ? peaks : []);
+            activePeak = targetPeaks.find(p => p.id === id);
+            document.getElementById("camera-input").click();
+        }
+
+        function handlePhotoUpload(event) {
+            const files = event.target.files;
+            if (!files || files.length === 0) return;
+            document.getElementById("loading").style.display = "flex";
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                currentRawImageSrc = e.target.result;
+                processImageAndStamp(currentRawImageSrc, "gowild_photo"); 
+            };
+            reader.readAsDataURL(files[0]);
+            event.target.value = "";
+        }
+
+        function handlePhotoReplace(event) {
+            const files = event.target.files;
+            if (!files || files.length === 0) return;
+            document.getElementById("loading").style.display = "flex";
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                currentRawImageSrc = e.target.result;
+                processImageAndStamp(currentRawImageSrc, "gowild_photo");
+            };
+            reader.readAsDataURL(files[0]);
+            event.target.value = "";
+        }
+
+        function triggerReplaceStamp(id) {
+            const targetPeaks = window.peaks || (typeof peaks !== "undefined" ? peaks : []);
+            activePeak = targetPeaks.find(p => p.id === id);
+            const replaceInput = document.getElementById("replace-input");
+            if (replaceInput) replaceInput.click();
+        }
+
+        // ==========================================================
+        // PART 9 OF 10: GOWILD WATERMARK OVERLAY ENGINE
+        // ==========================================================
+        function processImageAndStamp(imageSrc, styleName) {
+            const img = new Image();
+            img.onload = async function() {
+                const canvas = document.getElementById("filter-canvas");
+                const ctx = canvas.getContext("2d");
+                canvas.width = 800; canvas.height = 800;
+                
+                const minDim = Math.min(img.width, img.height);
+                ctx.drawImage(img, (img.width - minDim) / 2, (img.height - minDim) / 2, minDim, minDim, 0, 0, 800, 800);
+                ctx.textAlign = "left";
+                
+                if (styleName === "illustration_view") {
+                    ctx.fillStyle = "#2E5A44"; ctx.fillRect(40, 40, 720, 720);
+                    ctx.fillStyle = "#FFFFFF"; ctx.font = "bold 32px sans-serif"; ctx.textAlign = "center";
+                    ctx.fillText(activePeak.name, 400, 380);
+                    ctx.font = "20px monospace"; ctx.fillStyle = "#A3CB38";
+                    ctx.fillText(`OFFICIAL VECTOR ILLUSTRATION ARTWORK`, 400, 430);
+                    ctx.textAlign = "left"; 
+                }
+                
+                if (styleName === "gowild_photo" || styleName === "classic") {
+                    const boxWidth = 340; const boxHeight = 85;
+                    const x = 30; const y = 800 - boxHeight - 30;
+                    ctx.fillStyle = "rgba(16, 42, 29, 0.75)"; 
+                    ctx.beginPath();
+                    ctx.roundRect(x, y, boxWidth, boxHeight, 8);
+                    ctx.fill();
+                    
+                    ctx.fillStyle = "#FFFFFF"; ctx.font = "bold 24px sans-serif";
+                    ctx.fillText("⛰ GOWILD OUTDOOR", x + 20, y + 38);
+                    
+                    ctx.fillStyle = "#A3CB38"; ctx.font = "bold 14px monospace";
+                    ctx.fillText(`ALT: ${activePeak.elev}m | GPS: ${activePeak.lat.toFixed(4)}°, ${activePeak.lng.toFixed(4)}°`, x + 20, y + 66);
+                }
+                
+                try {
+                    const finalDataUrl = canvas.toDataURL("image/jpeg", 0.85);
+                    if (db) {
+                        const transaction = db.transaction(["stamps"], "readwrite");
+                        const store = transaction.objectStore("stamps");
+                        const existingRecord = await getRawRecordFromDB(activePeak.id) || {};
+                        
+                        store.put({
+                            id: activePeak.id,
+                            dataUrl: finalDataUrl,
+                            rawImg: imageSrc,
+                            userPhotoBase64: styleName === "gowild_photo" ? imageSrc : (existingRecord.userPhotoBase64 || null),
+                            style: styleName,
+                            timestamp: Date.now()
+                        });
+                    }
+                    document.getElementById("loading").style.display = "none";
+                    document.getElementById("modal-img").src = finalDataUrl;
+                    await viewStamp(activePeak.id);
+                    await renderPeaksGrid();
+                } catch(e) {
+                    document.getElementById("loading").style.display = "none";
+                }
+            };
+            img.src = imageSrc;
+        }
+        // ==========================================================
+        // PART 10 OF 10: GALLERY MODAL CONTROLLER & MULTI-VIEW
+        // ==========================================================
+        async function viewStamp(id) {
+            const targetPeaks = window.peaks || (typeof peaks !== "undefined" ? peaks : []);
+            activePeak = targetPeaks.find(p => p.id === id);
+            const record = await getRawRecordFromDB(id);
+            if (!record) return;
+
+            document.getElementById("modal-title").innerText = `${activePeak.name}`;
+            document.getElementById("modal-img").src = record.dataUrl;
+            currentRawImageSrc = record.rawImg;
+
+            document.getElementById("modal-action-bar").innerHTML = `
+                <div style="display:flex; gap:10px; margin-bottom:12px;">
+                    <button class="btn" style="flex:1; background:${record.style === 'illustration_view' ? '#2E5A44' : '#777'};" onclick="switchToViewMode('illustration_view')">🖼 官方手繪原圖</button>
+                    <button class="btn" style="flex:1; background:${record.style === 'gowild_photo' ? '#2E5A44' : '#777'};" onclick="switchToViewMode('gowild_photo')">📸 我的戶外相片</button>
+                </div>
+                <button class="btn" style="background: #34495e; width:100%;" onclick="triggerReplaceStamp('${activePeak.id}')">拍攝或上傳相片 (套用 GOWILD 水印)</button>
+            `;
+            document.getElementById("result-modal").style.display = "flex";
+        }
+
+        async function switchToViewMode(targetMode) {
+            if (!activePeak) return;
+            const record = await getRawRecordFromDB(activePeak.id);
+            if (!record) return;
+
+            if (targetMode === "illustration_view") {
+                const dynamicIllustrationPath = `assets/illustrations/${activePeak.id}.jpg`;
+                processImageAndStamp(dynamicIllustrationPath, "illustration_view");
+                return;
+            } else if (targetMode === "gowild_photo") {
+                if (!record.userPhotoBase64) {
+                    alert("您尚未上傳該山峰的個人相片，請點擊下方按鈕上傳！");
+                    return;
+                }
+                processImageAndStamp(record.userPhotoBase64, "gowild_photo");
+                return;
+            }
+            await viewStamp(activePeak.id);
+        }
+
+        async function collectIllustratedStamp(id) {
+            const targetPeaks = window.peaks || (typeof peaks !== "undefined" ? peaks : []);
+            activePeak = targetPeaks.find(p => p.id === id);
+            const dynamicIllustrationPath = `assets/illustrations/${activePeak.id}.jpg`;
+            
+            processImageAndStamp(dynamicIllustrationPath, "illustration_view");
+            alert(`成功收集 #${activePeak.name} 紀念插畫！可進入集章冊中查看並上傳個人相片。`);
+            await renderPeaksGrid();
+        }
+
+        function closeModal() {
+            document.getElementById("result-modal").style.display = "none";
+        }
+
+        async function exportBackupJSON() {
+            const allData = await getAllStampsData();
+            if (allData.length === 0) return alert("未找到可備份進度！");
+            const blob = new Blob([JSON.stringify({ appId: "PeakStamp-HK160", stampsData: allData })], { type: "application/json" });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement("a"); a.href = url; a.download = `PeakStamp_Backup.json`; a.click();
+        }
+
+        function importBackupJSON(event) {
+            const files = event.target.files;
+            if (!files || files.length === 0) return;
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                try {
+                    const parsed = JSON.parse(e.target.result);
+                    if (parsed.appId !== "PeakStamp-HK160") throw new Error();
+                    for (const item of parsed.stampsData) {
+                        await saveRecordToDB(item.id, item.dataUrl, item.rawImg, item.style);
+                    }
+                    alert("回復成功！"); await renderPeaksGrid();
+                } catch (err) { alert("備份檔損壞或無效"); }
+            };
+            reader.readAsText(files[0]);
+        }
+
+        async function generateAchievementPoster() {
+            const canvas = document.getElementById("poster-canvas");
+            const ctx = canvas.getContext("2d");
+            canvas.width = 800; canvas.height = 1250;
+            ctx.fillStyle = "#F4F4F0"; ctx.fillRect(0, 0, 800, 1250);
+            ctx.fillStyle = "#2E5A44"; ctx.fillRect(20, 20, 760, 150);
+            const targetPeaks = window.peaks || (typeof peaks !== "undefined" ? peaks : []);
+            const unlockedIds = await getAllUnlockedIds();
+            const rate = ((unlockedIds.length / (targetPeaks.length || 1)) * 100).toFixed(1);
+            
+            ctx.fillStyle = "#FFFFFF"; ctx.textAlign = "center"; ctx.font = "bold 32px sans-serif";
+            ctx.fillText("香港 160 考山成就集章榜", 400, 85);
+            ctx.font = "600 20px monospace"; ctx.fillStyle = "#E67E22";
+            ctx.fillText(`已解鎖: ${unlockedIds.length} / 160 | 制霸率: ${rate}%`, 400, 130);
+            
+            const cols = 16; const startX = 42; const startY = 210; const boxW = 40; const boxH = 48; const gapX = 5; const gapY = 12;
+            for (let i = 0; i < targetPeaks.length; i++) {
+                const isUnlocked = unlockedIds.includes(targetPeaks[i].id);
+                const col = i % cols; const row = Math.floor(i / cols);
+                const x = startX + col * (boxW + gapX); const y = startY + row * (boxH + gapY);
+                ctx.fillStyle = isUnlocked ? "#E3ECE4" : "#EAEAEA"; ctx.fillRect(x, y, boxW, boxH);
+                ctx.strokeStyle = isUnlocked ? "#2E5A44" : "#CCCCCC"; ctx.strokeRect(x, y, boxW, boxH);
+                ctx.fillStyle = isUnlocked ? "#2E5A44" : "#999999"; ctx.font = "14px sans-serif";
+                ctx.fillText(isUnlocked ? "⛰" : "🔒", x + boxW / 2, y + 24);
+                ctx.font = "bold 9px monospace"; ctx.fillText(`${i + 1}`, x + boxW / 2, y + 42);
+            }
+            const posterDataUrl = canvas.toDataURL("image/png");
+            document.getElementById("modal-title").innerText = "登頂海報生成成功";
+            document.getElementById("modal-img").src = posterDataUrl;
+            document.getElementById("modal-action-bar").innerHTML = `<p style="font-size:12px;color:#e67e22;">提示：長按上方圖片即可儲存到相簿！</p>`;
+            document.getElementById("result-modal").style.display = "flex";
+        }
+
+        function simulateSelectedPeak() {
+            const selectedId = document.getElementById("mock-selector").value;
+            const targetPeaks = window.peaks || (typeof peaks !== "undefined" ? peaks : []);
+            const target = targetPeaks.find(p => p.id === selectedId);
+            if (target) { updateRadarList(target.lat, target.lng); alert(`模擬成功！已移動到 #${target.name}。`); }
+        }
+
+        // FIXED INITIALIZATION LOOP: Explicitly exposes peak arrays across script modules globally
+        window.addEventListener("load", async () => {
+            console.log("[PeakStamp Engine] Secure runtime initialization sequence fired.");
+            
+            // Critical global binding assignment to fix "No Options" error
+            if (typeof peaks !== "undefined") {
+                window.peaks = peaks;
+            }
+            
+            await initDB();
+            const targetPeaks = window.peaks || [];
+            targetPeaks.forEach(peak => assignPeakFilters(peak));
+            
+            const selector = document.getElementById("mock-selector");
+            if (selector && selector.options.length === 0) {
+                const selectFragment = document.createDocumentFragment();
+                targetPeaks.forEach((peak, index) => {
+                    const opt = document.createElement("option");
+                    opt.value = peak.id; opt.innerText = `#${index + 1} ${peak.name}`;
+                    selectFragment.appendChild(opt);
+                });
+                selector.appendChild(selectFragment);
+            }
+            
+            await renderPeaksGrid();
+            drawRadarGrid();
+            
+            if (navigator.geolocation) {
+                navigator.geolocation.watchPosition(
+                    pos => updateRadarList(pos.coords.latitude, pos.coords.longitude),
+                    err => {
+                        const radarListDiv = document.getElementById("radar-list");
+                        if (radarListDiv && err.code === 1) {
+                            radarListDiv.innerHTML = `<span style="color:#c0392b; font-weight:bold;">⚠ 請開啟 iPhone 「設定」➔「隱私權與安全性」➔「定位服務」➔ 確保 Safari 權限勾選「使用期間」並打開「準確位置」開關。</span>`;
+                        }
+                    },
+                    { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
+                );
+            }
+        });
+
+        window.viewStamp = viewStamp;
+        window.triggerReplaceStamp = triggerReplaceStamp;
+    </script>
 </body>
 </html>
