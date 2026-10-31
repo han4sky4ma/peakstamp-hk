@@ -337,6 +337,23 @@ let radarSweepAngle = 0;
 let nearestFiveCache = [];
 let currentRawImageSrc = null;
 
+// NEW: Throttle map to ensure audio bite doesn't trigger repeatedly in loop cycles
+let playThrottleMap = new Set(); 
+
+/**
+ * NEW: Audio Notification Core Engine
+ * Plays local Cantonese voice prompt cue.
+ * Safe from background permission blocks on mobile Safari & iOS.
+ */
+function playCheckInAudioBite() {
+    if ('speechSynthesis' in window) {
+        const utterance = new SpeechSynthesisUtterance("可以打卡啦");
+        utterance.lang = "zh-HK"; // Force Cantonese localization accent output
+        utterance.rate = 1.0;     // Normal human reading pacing velocity
+        window.speechSynthesis.speak(utterance);
+    }
+}
+        
 /**
  * Initializes the client-side IndexedDB instance ("PeakStampDB")
  * Builds structural object store arrays for offline capability.
@@ -550,17 +567,12 @@ async function renderPeaksGrid() {
     document.getElementById("grid-count-text").innerText = `當前篩選符合項目: ${renderedCount} 座山峰`;
 }
 // ==========================================================
-// PART 6 OF 10: REAL-TIME RADAR LIST STREAM CONTROLLER
+// PART 6 OF 10: PROXIMITY VERIFIER & AUDIO UNLOCKER
 // ==========================================================
+let playThrottleMap = new Set(); // Prevents sound-bites looping constantly
 
-/**
- * Triggers on live GPS updates. Sorts peak datasets by geographic range 
- * and injects proximity interface context elements dynamically.
- */
 function updateRadarList(userLat, userLng) {
-    lastUserLat = userLat; 
-    lastUserLng = userLng;
-    
+    lastUserLat = userLat; lastUserLng = userLng;
     const targetPeaks = window.peaks || (typeof peaks !== "undefined" ? peaks : []);
     
     getAllUnlockedIds().then(unlockedIds => {
@@ -572,7 +584,6 @@ function updateRadarList(userLat, userLng) {
             };
         });
         
-        // Sort and cache the 5 closest peaks
         peaksWithDistance.sort((a, b) => a.distance - b.distance);
         nearestFiveCache = peaksWithDistance.slice(0, 5);
         
@@ -584,34 +595,41 @@ function updateRadarList(userLat, userLng) {
         nearestFiveCache.forEach(peak => {
             const item = document.createElement("div");
             item.className = "radar-item";
-            
             const isUnlocked = unlockedIds.includes(peak.id);
-            const kmDist = peak.distance >= 1000 ? 
-                `${(peak.distance / 1000).toFixed(2)} 公里` : 
-                `${Math.round(peak.distance)} 米`;
-                
+            const kmDist = peak.distance >= 1000 ? `${(peak.distance / 1000).toFixed(2)} 公里` : `${Math.round(peak.distance)} 米`;
+            
             let actionContent = `<span class="distance-tag">距離 ${kmDist}</span>`;
             
-            // Check if the user is within the 40-meter unlock threshold radius
             if (peak.distance <= 40 && !isUnlocked) {
-                actionContent = `<button class="btn-stamp-now" onclick="openCameraFor('${peak.id}')">📸 抵達山頂！即刻解鎖集章</button>`;
+                // Play notification alert precisely once per peak area arrival entry
+                if (!playThrottleMap.has(peak.id)) {
+                    playCheckInAudioBite();
+                    playThrottleMap.add(peak.id);
+                }
+                actionContent = `<button class="btn-stamp-now" style="background:#E67E22;" onclick="collectIllustratedStamp('${peak.id}')">🌟 可以打卡啦！點擊收集</button>`;
             } else if (isUnlocked) {
                 actionContent = `<span class="distance-tag" style="background: #2E5A44">✓ 已打卡</span>`;
             }
             
-            item.innerHTML = `
-                <div>
-                    <strong>${peak.name}</strong><br>
-                    <span style="font-size: 11px; color: #777;">標高: ${peak.elev} 米 | 方位角: ${Math.round(peak.bearing)} °</span>
-                </div>
-                <div>${actionContent}</div>
-            `;
+            item.innerHTML = `<div><strong>${peak.name}</strong><br><span style="font-size: 11px; color: #777;">標高: ${peak.elev} 米</span></div><div>${actionContent}</div>`;
             fragment.appendChild(item);
         });
-        
         radarListDiv.textContent = "";
         radarListDiv.appendChild(fragment);
     });
+}
+
+// Auto-collects the native system artwork asset into database instantly
+async function collectIllustratedStamp(id) {
+    const targetPeaks = window.peaks || (typeof peaks !== "undefined" ? peaks : []);
+    activePeak = targetPeaks.find(p => p.id === id);
+    const placeholderImg = activePeak.illustration || "assets/default_peak.jpg";
+    
+    // Save record containing native illustration parameters first
+    await saveRecordToDB(activePeak.id, placeholderImg, placeholderImg, "illustration_view");
+    alert(`成功收集 #${activePeak.name} 紀念插畫！可進入集章冊中查看並重拍相片。`);
+    await renderPeaksGrid();
+    viewStamp(activePeak.id);
 }
 // ==========================================================
 // PART 7 OF 10: HTML5 CANVAS RADAR ANIMATION LOOP
@@ -751,217 +769,111 @@ function triggerReplaceStamp(id) {
     if (replaceInput) replaceInput.click();
 }
 // ==========================================================
-// PART 9 OF 10: CANVAS MULTI-STYLE COMPOSITION FILTER ENGINE
+// PART 9 OF 10: GOWILD WATERMARK OVERLAY ENGINE
 // ==========================================================
-
-/**
- * Composites high-resolution photo data streams with selected aesthetic styles.
- * Renders borders, typography, stamps, and exports compressed payloads.
- */
 function processImageAndStamp(imageSrc, styleName) {
     const img = new Image();
     img.onload = async function() {
         const canvas = document.getElementById("filter-canvas"); 
         const ctx = canvas.getContext("2d");
+        canvas.width = 800; canvas.height = 800;
         
-        canvas.width = 800; 
-        canvas.height = 800;
-        
-        // Dynamic square cropping rule matrix centering landscape and portrait pictures
         const minDim = Math.min(img.width, img.height);
         ctx.drawImage(img, (img.width - minDim) / 2, (img.height - minDim) / 2, minDim, minDim, 0, 0, 800, 800);
         
-        // RESET GUARDRAIL: Forces alignment back to fallback default before text generation
         ctx.textAlign = "left";
         
-        if (styleName === "classic") {
-            ctx.globalCompositeOperation = 'multiply'; 
-            ctx.fillStyle = 'rgba(240, 235, 215, 0.2)'; 
-            ctx.fillRect(0, 0, 800, 800);
+        if (styleName === "gowild_photo" || styleName === "classic") {
+            // Apply a modern GOWILD-inspired tracking watermark banner badge
+            const boxWidth = 340; const boxHeight = 85;
+            const x = 30; const y = 800 - boxHeight - 30; // Positions card banner on the lower-left corner
             
-            ctx.globalCompositeOperation = 'source-over'; 
-            ctx.fillStyle = "rgba(0, 0, 0, 0.7)"; 
-            ctx.fillRect(0, 690, 800, 110);
-            
-            ctx.strokeStyle = "#8B5A2B"; ctx.lineWidth = 8; 
-            ctx.strokeRect(15, 15, 770, 770);
-            
-            ctx.fillStyle = "#FFFFFF"; ctx.font = "bold 30px sans-serif"; 
-            ctx.fillText(`已登頂: ${activePeak.name}`, 40, 735);
-            
-            ctx.fillStyle = "#E67E22"; ctx.font = "bold 20px monospace"; 
-            ctx.fillText(`HEIGHT: ${activePeak.elev} m | GOWILD 160 CERTIFIED`, 40, 775);
-            
-        } else if (styleName === "retro") {
-            ctx.strokeStyle = "rgba(192, 57, 43, 0.85)"; ctx.lineWidth = 6;
-            ctx.beginPath(); ctx.arc(660, 140, 85, 0, 2 * Math.PI); ctx.stroke(); 
-            ctx.beginPath(); ctx.arc(660, 140, 78, 0, 2 * Math.PI); ctx.stroke();
-            
-            ctx.fillStyle = "rgba(192, 57, 43, 0.85)"; ctx.font = "bold 24px sans-serif"; 
-            ctx.textAlign = "center"; 
-            ctx.fillText("香港巔峰", 660, 115); 
-            ctx.fillText(`${activePeak.elev} 米`, 660, 150); 
-            ctx.font = "bold 14px sans-serif"; 
-            ctx.fillText("登頂留念", 660, 182);
-            
-            ctx.textAlign = "left"; ctx.fillStyle = "rgba(0, 0, 0, 0.5)"; 
-            ctx.fillRect(0, 750, 800, 50);
-            
-            ctx.fillStyle = "#FFFFFF"; ctx.font = "bold 18px monospace"; 
-            ctx.fillText(`GPS 認證座標: ${activePeak.lat}, ${activePeak.lng} | ${activePeak.name}`, 30, 782);
-            
-        } else if (styleName === "japanese") {
-            ctx.fillStyle = "#FFFFFF"; 
-            ctx.fillRect(0, 710, 800, 90); ctx.fillRect(0, 0, 800, 25); 
-            ctx.fillRect(0, 0, 25, 800); ctx.fillRect(775, 0, 25, 800);
-            
-            ctx.strokeStyle = "#333333"; ctx.lineWidth = 2; 
-            ctx.strokeRect(35, 35, 730, 730);
-            
-            ctx.fillStyle = "#333333"; ctx.font = "600 28px sans-serif"; 
-            ctx.fillText(activePeak.name, 50, 765);
-            
-            ctx.font = "300 20px monospace"; 
-            ctx.fillText(`ELEVATION: ${activePeak.elev} M / CERTIFIED STAMP`, 440, 762);
-        
-        } else if (styleName === "default_provisional") {
-            // 1. 全体をかすかにレトロな風合いにするマルチプライ乗算レイヤー
-            ctx.globalCompositeOperation = 'multiply';
-            ctx.fillStyle = 'rgba(240, 235, 215, 0.15)';
-            ctx.fillRect(0, 0, 800, 800);
-            ctx.globalCompositeOperation = 'source-over';
-
-            // 2. ヤマスタ風の赤いかすれインクの再現
-            ctx.strokeStyle = "rgba(214, 48, 49, 0.85)"; // 鮮やかな朱赤色
-            ctx.lineWidth = 7;
-    
-            // 二重円のインク外枠
-            ctx.beginPath(); ctx.arc(400, 400, 320, 0, 2 * Math.PI); ctx.stroke();
-            ctx.beginPath(); ctx.arc(400, 400, 305, 0, 2 * Math.PI); ctx.stroke();
-
-            // 中央を横切る水平な仕切りライン
-            ctx.beginPath(); ctx.moveTo(95, 360); ctx.lineTo(705, 360); ctx.stroke();
-
-            // 3. 下半分のダブルマウンテン（山のアウトライン）
-            ctx.lineWidth = 8;
-            ctx.fillStyle = "rgba(214, 48, 49, 0.85)";
-    
-            // 左の山
+            // Draw clean frosted glass banner box anchor
+            ctx.fillStyle = "rgba(16, 42, 29, 0.75)"; // GoWild deep jungle-green signature profile base
             ctx.beginPath();
-            ctx.moveTo(180, 580);
-            ctx.lineTo(340, 380); // 山頂
-            ctx.lineTo(500, 580);
-            ctx.closePath();
-            ctx.fill(); ctx.stroke();
-    
-            // 右の山（少し重ねる）
-            ctx.beginPath();
-            ctx.moveTo(300, 580);
-            ctx.lineTo(460, 380); // 山頂
-            ctx.lineTo(620, 580);
-            ctx.closePath();
-            ctx.fill(); ctx.stroke();
-
-            // 4. 雪山表現（頂上部分を白抜きにしてヤマスタ風に）
-            ctx.fillStyle = "#FFFFFF";
-            ctx.globalCompositeOperation = 'source-over';
-    
-            // 左の山の冠雪
-            ctx.beginPath();
-            ctx.moveTo(340, 380); ctx.lineTo(308, 420); ctx.lineTo(324, 425);
-            ctx.lineTo(340, 415); ctx.lineTo(356, 425); ctx.lineTo(372, 420);
-            ctx.closePath(); ctx.fill();
-
-            // 右の山の冠雪
-            ctx.beginPath();
-            ctx.moveTo(460, 380); ctx.lineTo(428, 420); ctx.lineTo(444, 425);
-            ctx.lineTo(460, 415); ctx.lineTo(476, 425); ctx.lineTo(492, 420);
-            ctx.closePath(); ctx.fill();
-
-            // 5. テキストレイヤーの描画
-            ctx.fillStyle = "rgba(214, 48, 49, 0.85)";
-            ctx.textAlign = "center";
-    
-            // 上半分：アーチ状ではなく中央に大きく「PROVISIONAL」または「仮発行」
-            ctx.font = "bold 44px sans-serif";
-            ctx.fillText("仮発行のスタンプ", 400, 230);
-    
-            ctx.font = "bold 24px monospace";
-            ctx.fillText("GPS POSITION UNVERIFIED", 400, 290);
-
-            // 下半分：山岳未踏・準備中のテキスト
-            ctx.fillStyle = "#FFFFFF";
-            ctx.font = "bold 20px sans-serif";
-            ctx.fillText("山印帳・準備中", 400, 660);
-    
-            // アライメント設定を安全に左戻し
-            ctx.textAlign = "left";
+            ctx.roundRect(x, y, boxWidth, boxHeight, 8);
+            ctx.fill();
+            
+            // Draw prominent safety logo icon tag elements
+            ctx.fillStyle = "#FFFFFF"; ctx.font = "bold 24px sans-serif";
+            ctx.fillText("⛰ GOWILD OUTDOOR", x + 20, y + 38);
+            
+            // Render real-time dynamic track telemetry markers below title string
+            ctx.fillStyle = "#A3CB38"; ctx.font = "bold 14px monospace";
+            ctx.fillText(`ALT: ${activePeak.elev}m | GPS: ${activePeak.lat.toFixed(4)}°, ${activePeak.lng.toFixed(4)}°`, x + 20, y + 66);
         }
         
         try {
-            // Exports optimized JPEG representation at 75% resolution capacity
-            const finalDataUrl = canvas.toDataURL("image/jpeg", 0.75);
-            await saveRecordToDB(activePeak.id, finalDataUrl, imageSrc, styleName);
+            const finalDataUrl = canvas.toDataURL("image/jpeg", 0.85);
+            
+            // Save parameters securely. Cache the original raw image into userPhotoBase64 string
+            if (db) {
+                const transaction = db.transaction(["stamps"], "readwrite");
+                const store = transaction.objectStore("stamps");
+                store.put({
+                    id: activePeak.id,
+                    dataUrl: finalDataUrl,
+                    rawImg: imageSrc, 
+                    userPhotoBase64: imageSrc, // Retains persistent memory layer for custom photography
+                    style: "gowild_photo",
+                    timestamp: Date.now()
+                });
+            }
             
             document.getElementById("loading").style.display = "none";
             document.getElementById("modal-img").src = finalDataUrl;
-            document.getElementById("modal-action-bar").innerHTML = `
-                <button class="btn" style="background: #555;" onclick="triggerReplaceStamp('${activePeak.id}')">重新拍照或更換基底相片</button>
-            `;
-            document.getElementById("result-modal").style.display = "flex";
+            await viewStamp(activePeak.id);
             await renderPeaksGrid();
-            
-        } catch(e) { 
-            alert("資料持久化儲存失敗"); 
-            document.getElementById("loading").style.display = "none"; 
+        } catch(e) {
+            document.getElementById("loading").style.display = "none";
         }
     };
     img.src = imageSrc;
 }
 // ==========================================================
-// PART 10 OF 10: STATE SWITCHES, DATA BACKUPS & INITIALIZERS
+// PART 10 OF 10: GALLERY MODAL CONTROLLER & MULTI-VIEW
 // ==========================================================
-
-/**
- * Triggers re-composition workflows when changing stamp layout options.
- */
-function switchStampStyle(newStyle) {
-    if (!activePeak || !currentRawImageSrc) return;
-    document.getElementById("loading-text").innerText = "正在切換印章風格...";
-    document.getElementById("loading").style.display = "flex";
-    processImageAndStamp(currentRawImageSrc, newStyle);
-}
-
-/**
- * Spoofs coordinates onto a select element coordinate node for sandbox debugging.
- */
-function simulateSelectedPeak() {
-    const selectedId = document.getElementById("mock-selector").value;
-    const targetPeaks = window.peaks || (typeof peaks !== "undefined" ? peaks : []);
-    const target = targetPeaks.find(p => p.id === selectedId);
-    if (target) { 
-        updateRadarList(target.lat, target.lng); 
-        alert(`模擬成功！已移動到 #${target.name}。`); 
-    }
-}
-
-/**
- * Validates database entries and fires modal displays for previously saved records.
- */
 async function viewStamp(id) {
     const targetPeaks = window.peaks || (typeof peaks !== "undefined" ? peaks : []);
     activePeak = targetPeaks.find(p => p.id === id);
     const record = await getRawRecordFromDB(id);
-    if (record) {
-        document.getElementById("modal-title").innerText = `${activePeak.name} 登頂足跡`; 
-        document.getElementById("modal-img").src = record.dataUrl; 
-        currentRawImageSrc = record.rawImg;
-        document.getElementById("stamp-style-select").value = record.style || "classic";
-        document.getElementById("modal-action-bar").innerHTML = `
-            <button class="btn" style="background: #555; margin-bottom: 10px;" onclick="triggerReplaceStamp('${activePeak.id}')">更換基底相片</button>
-        `;
-        document.getElementById("result-modal").style.display = "flex";
+    if (!record) return;
+
+    document.getElementById("modal-title").innerText = `${activePeak.name}`;
+    
+    // Render the active asset version saved inside the IndexDB container pipeline
+    document.getElementById("modal-img").src = record.dataUrl;
+    currentRawImageSrc = record.rawImg;
+
+    // Inject dynamic template selection toggle tabs and GoWild attachment bindings
+    document.getElementById("modal-action-bar").innerHTML = `
+        <div style="display:flex; gap:10px; margin-bottom:12px;">
+            <button class="btn" style="flex:1; background:${record.style === 'illustration_view' ? '#2E5A44' : '#777'};" onclick="switchToViewMode('illustration_view')">🖼 官方手繪原圖</button>
+            <button class="btn" style="flex:1; background:${record.style === 'gowild_photo' ? '#2E5A44' : '#777'};" onclick="switchToViewMode('gowild_photo')">📸 我的戶外相片</button>
+        </div>
+        <button class="btn" style="background: #34495e; width:100%;" onclick="triggerReplaceStamp('${activePeak.id}')">拍攝或上傳相片 (套用 GOWILD 水印)</button>
+    `;
+    document.getElementById("result-modal").style.display = "flex";
+}
+
+async function switchToViewMode(targetMode) {
+    if (!activePeak) return;
+    const record = await getRawRecordFromDB(activePeak.id);
+    if (!record) return;
+
+    if (targetMode === "illustration_view") {
+        const fallbackIllustration = activePeak.illustration || "assets/default_peak.jpg";
+        await saveRecordToDB(activePeak.id, fallbackIllustration, fallbackIllustration, "illustration_view");
+    } else if (targetMode === "gowild_photo") {
+        if (!record.userPhotoBase64) {
+            alert("您尚未上傳該山峰的個人相片，請點擊下方按鈕上傳！");
+            return;
+        }
+        // If a custom photo exists, reload it through the watermark engine
+        processImageAndStamp(record.userPhotoBase64, "gowild_photo");
+        return;
     }
+    await viewStamp(activePeak.id);
 }
 
 function closeModal() { 
