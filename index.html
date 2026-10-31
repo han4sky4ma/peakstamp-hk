@@ -228,7 +228,7 @@
 <body>
     <div class="header">
         <h2>🏔️ PeakStamp HK</h2>
-        <p>香港山頭集章冊 (v1.2)</p>
+        <p>香港山頭集章冊 (v1.3)</p>
     </div>
     <!-- 📡 Radar Component Layout -->
     <div class="radar-card">
@@ -802,24 +802,27 @@ function processImageAndStamp(imageSrc, styleName) {
             ctx.fillStyle = "#A3CB38"; ctx.font = "bold 14px monospace";
             ctx.fillText(`ALT: ${activePeak.elev}m | GPS: ${activePeak.lat.toFixed(4)}°, ${activePeak.lng.toFixed(4)}°`, x + 20, y + 66);
         }
-        
+
+        // Ensure the try/catch database mapping handler at the bottom of your Part 9 engine handles the incoming style state:
         try {
             const finalDataUrl = canvas.toDataURL("image/jpeg", 0.85);
-            
-            // Save parameters securely. Cache the original raw image into userPhotoBase64 string
+    
             if (db) {
                 const transaction = db.transaction(["stamps"], "readwrite");
                 const store = transaction.objectStore("stamps");
+                const existingRecord = await getRawRecordFromDB(activePeak.id) || {};
+        
                 store.put({
                     id: activePeak.id,
                     dataUrl: finalDataUrl,
-                    rawImg: imageSrc, 
-                    userPhotoBase64: imageSrc, // Retains persistent memory layer for custom photography
-                    style: "gowild_photo",
+                    rawImg: imageSrc,
+                    // Keep user photography cached in the background even when viewing official artwork templates
+                    userPhotoBase64: styleName === "gowild_photo" ? imageSrc : (existingRecord.userPhotoBase64 || null),
+                    style: styleName, // Dynamically maps 'illustration_view' or 'gowild_photo' values
                     timestamp: Date.now()
                 });
             }
-            
+    
             document.getElementById("loading").style.display = "none";
             document.getElementById("modal-img").src = finalDataUrl;
             await viewStamp(activePeak.id);
@@ -833,6 +836,7 @@ function processImageAndStamp(imageSrc, styleName) {
 // ==========================================================
 // PART 10 OF 10: GALLERY MODAL CONTROLLER & MULTI-VIEW
 // ==========================================================
+
 async function viewStamp(id) {
     const targetPeaks = window.peaks || (typeof peaks !== "undefined" ? peaks : []);
     activePeak = targetPeaks.find(p => p.id === id);
@@ -841,7 +845,7 @@ async function viewStamp(id) {
 
     document.getElementById("modal-title").innerText = `${activePeak.name}`;
     
-    // Render the active asset version saved inside the IndexDB container pipeline
+    // Render the active asset version saved inside the IndexedDB container pipeline
     document.getElementById("modal-img").src = record.dataUrl;
     currentRawImageSrc = record.rawImg;
 
@@ -855,10 +859,11 @@ async function viewStamp(id) {
     `;
     document.getElementById("result-modal").style.display = "flex";
 }
+
 /**
- * Switches the active viewing template between the official artwork
- * and the user's watermarked climbing photography.
- * Generates the illustration asset paths dynamically from the peak ID.
+ * FIXED: Switches the active viewing template between official artwork
+ * and the user's watermarked photography.
+ * Resolves text-string assignment bugs by routing illustration graphics through the canvas compiler.
  */
 async function switchToViewMode(targetMode) {
     if (!activePeak) return;
@@ -866,51 +871,53 @@ async function switchToViewMode(targetMode) {
     if (!record) return;
 
     if (targetMode === "illustration_view") {
-        // Dynamically compute the illustration path (e.g., "p1" becomes "assets/illustrations/p1.jpg")
-        // This eliminates the need to add any attributes to peaks.js
+        // 1. Dynamically compute the clean illustration image path string asset URL
         const dynamicIllustrationPath = `assets/illustrations/${activePeak.id}.jpg`;
         
-        await saveRecordToDB(activePeak.id, dynamicIllustrationPath, dynamicIllustrationPath, "illustration_view");
+        // 2. Feed it into the canvas compositor engine with the "illustration_view" style filter
+        processImageAndStamp(dynamicIllustrationPath, "illustration_view");
+        return;
+        
     } else if (targetMode === "gowild_photo") {
         if (!record.userPhotoBase64) {
             alert("您尚未上傳該山峰的個人相片，請點擊下方按鈕上傳！");
             return;
         }
-        // Reprocess the saved raw base64 photo structure through the GoWild watermark engine
+        // 3. Reprocess the saved raw base64 photo structure through the GoWild watermark engine
         processImageAndStamp(record.userPhotoBase64, "gowild_photo");
         return;
     }
     await viewStamp(activePeak.id);
 }
+
 async function collectIllustratedStamp(id) {
     const targetPeaks = window.peaks || (typeof peaks !== "undefined" ? peaks : []);
     activePeak = targetPeaks.find(p => p.id === id);
     
-    // Dynamic generation rule to match your asset architecture
+    // Dynamic asset assignment rules path configuration
     const dynamicIllustrationPath = `assets/illustrations/${activePeak.id}.jpg`;
     
-    // Save initial record containing the native pre-generated illustration path
-    await saveRecordToDB(activePeak.id, dynamicIllustrationPath, dynamicIllustrationPath, "illustration_view");
+    // Pass the calculated file resource path straight to the canvas processor to generate initial view states
+    processImageAndStamp(dynamicIllustrationPath, "illustration_view");
     alert(`成功收集 #${activePeak.name} 紀念插畫！可進入集章冊中查看並上傳個人相片。`);
     await renderPeaksGrid();
-    viewStamp(activePeak.id);
 }
 
-function closeModal() { 
-    document.getElementById("result-modal").style.display = "none"; 
+function closeModal() {
+    document.getElementById("result-modal").style.display = "none";
 }
 
 /**
  * Serializes database records into a portable configuration blob file for distribution.
  */
 async function exportBackupJSON() {
-    const allData = await getAllStampsData(); 
+    const allData = await getAllStampsData();
     if (allData.length === 0) return alert("未找到可備份進度！");
     const blob = new Blob([JSON.stringify({ appId: "PeakStamp-HK160", stampsData: allData })], { type: "application/json" });
-    const url = URL.createObjectURL(blob); 
-    const a = document.createElement("a"); 
-    a.href = url; 
-    a.download = `PeakStamp_Backup.json`; 
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `PeakStamp_Backup.json`;
     a.click();
 }
 
@@ -918,20 +925,20 @@ async function exportBackupJSON() {
  * Unpacks distributed JSON file structures back into active client instances.
  */
 function importBackupJSON(event) {
-    const files = event.target.files; 
+    const files = event.target.files;
     if (!files || files.length === 0) return;
     const reader = new FileReader();
     reader.onload = async function(e) {
         try {
-            const parsed = JSON.parse(e.target.result); 
+            const parsed = JSON.parse(e.target.result);
             if (parsed.appId !== "PeakStamp-HK160") throw new Error();
-            for (const item of parsed.stampsData) { 
-                await saveRecordToDB(item.id, item.dataUrl, item.rawImg, item.style); 
+            for (const item of parsed.stampsData) {
+                await saveRecordToDB(item.id, item.dataUrl, item.rawImg, item.style);
             }
-            alert("回復成功！"); 
+            alert("回復成功！");
             await renderPeaksGrid();
-        } catch (err) { 
-            alert("備份檔損壞或無效"); 
+        } catch (err) {
+            alert("備份檔損壞或無效");
         }
     };
     reader.readAsText(files[0]);
@@ -941,36 +948,33 @@ function importBackupJSON(event) {
  * Renders an indexed 160-grid graphic sheet charting unlocked/locked icons.
  */
 async function generateAchievementPoster() {
-    const canvas = document.getElementById("poster-canvas"); 
+    const canvas = document.getElementById("poster-canvas");
     const ctx = canvas.getContext("2d");
-    canvas.width = 800; canvas.height = 1250; 
+    canvas.width = 800; canvas.height = 1250;
     ctx.fillStyle = "#F4F4F0"; ctx.fillRect(0, 0, 800, 1250);
     ctx.fillStyle = "#2E5A44"; ctx.fillRect(20, 20, 760, 150);
-    
     const targetPeaks = window.peaks || (typeof peaks !== "undefined" ? peaks : []);
-    const unlockedIds = await getAllUnlockedIds(); 
+    const unlockedIds = await getAllUnlockedIds();
     const rate = ((unlockedIds.length / (targetPeaks.length || 1)) * 100).toFixed(1);
     
-    ctx.fillStyle = "#FFFFFF"; ctx.textAlign = "center"; ctx.font = "bold 32px sans-serif"; 
+    ctx.fillStyle = "#FFFFFF"; ctx.textAlign = "center"; ctx.font = "bold 32px sans-serif";
     ctx.fillText("香港 160 考山成就集章榜", 400, 85);
-    ctx.font = "600 20px monospace"; ctx.fillStyle = "#E67E22"; 
+    ctx.font = "600 20px monospace"; ctx.fillStyle = "#E67E22";
     ctx.fillText(`已解鎖: ${unlockedIds.length} / 160 | 制霸率: ${rate}%`, 400, 130);
     
     const cols = 16; const startX = 42; const startY = 210; const boxW = 40; const boxH = 48; const gapX = 5; const gapY = 12;
     for (let i = 0; i < targetPeaks.length; i++) {
         const isUnlocked = unlockedIds.includes(targetPeaks[i].id);
-        const col = i % cols; const row = Math.floor(i / cols); 
+        const col = i % cols; const row = Math.floor(i / cols);
         const x = startX + col * (boxW + gapX); const y = startY + row * (boxH + gapY);
-        
         ctx.fillStyle = isUnlocked ? "#E3ECE4" : "#EAEAEA"; ctx.fillRect(x, y, boxW, boxH);
         ctx.strokeStyle = isUnlocked ? "#2E5A44" : "#CCCCCC"; ctx.strokeRect(x, y, boxW, boxH);
-        ctx.fillStyle = isUnlocked ? "#2E5A44" : "#999999"; ctx.font = "14px sans-serif"; 
+        ctx.fillStyle = isUnlocked ? "#2E5A44" : "#999999"; ctx.font = "14px sans-serif";
         ctx.fillText(isUnlocked ? "⛰" : "🔒", x + boxW / 2, y + 24);
         ctx.font = "bold 9px monospace"; ctx.fillText(`${i + 1}`, x + boxW / 2, y + 42);
     }
-    
     const posterDataUrl = canvas.toDataURL("image/png");
-    document.getElementById("modal-title").innerText = "登頂海報生成成功"; 
+    document.getElementById("modal-title").innerText = "登頂海報生成成功";
     document.getElementById("modal-img").src = posterDataUrl;
     document.getElementById("modal-action-bar").innerHTML = `
         <p style="font-size:12px;color:#e67e22;">提示：長按上方圖片即可儲存到相簿！</p>
@@ -978,13 +982,11 @@ async function generateAchievementPoster() {
     document.getElementById("result-modal").style.display = "flex";
 }
 
-// Attach secure main tracking triggers to global browser interface entry bindings
 window.addEventListener("load", async () => {
     console.log("[PeakStamp Engine] Secure runtime initialization sequence fired.");
     await initDB();
     const targetPeaks = window.peaks || (typeof peaks !== "undefined" ? peaks : []);
     targetPeaks.forEach(peak => assignPeakFilters(peak));
-    
     const selector = document.getElementById("mock-selector");
     if (selector && selector.options.length === 0) {
         const selectFragment = document.createDocumentFragment();
@@ -995,10 +997,8 @@ window.addEventListener("load", async () => {
         });
         selector.appendChild(selectFragment);
     }
-    
     await renderPeaksGrid();
     drawRadarGrid();
-    
     if (navigator.geolocation) {
         navigator.geolocation.watchPosition(
             pos => updateRadarList(pos.coords.latitude, pos.coords.longitude),
@@ -1013,7 +1013,6 @@ window.addEventListener("load", async () => {
     }
 });
 
-// Explicitly register entry threads into global scope configurations
 window.viewStamp = viewStamp;
 window.triggerReplaceStamp = triggerReplaceStamp;
 
