@@ -541,14 +541,43 @@
             activePeak = targetPeaks.find(p => p.id === id);
             document.getElementById("camera-input").click();
         }
+function handlePhotoUpload(event) {
+    // Extract the exact first file from the upload payload queue
+    const file = event.target.files[0]; 
+    if (!file) {
+        document.getElementById("loading").style.display = "none";
+        return;
+    }
+    
+    document.getElementById("loading").style.display = "flex";
+    const reader = new FileReader();
+    reader.onload = function(e) { 
+        currentRawImageSrc = e.target.result; 
+        processImageAndStamp(currentRawImageSrc, "classic"); 
+    };
+    reader.readAsDataURL(file); 
+    event.target.value = "";
+}
 
-        function handlePhotoUpload(event) {
-            const file = event.target.files; if (!file) return;
-            document.getElementById("loading").style.display = "flex";
-            const reader = new FileReader();
-            reader.onload = function(e) { currentRawImageSrc = e.target.result; processImageAndStamp(currentRawImageSrc, "classic"); };
-            reader.readAsDataURL(file); event.target.value = "";
-        }
+function handlePhotoReplace(event) {
+    // Extract the exact first file from the upload payload queue
+    const file = event.target.files[0]; 
+    if (!file) {
+        document.getElementById("loading").style.display = "none";
+        return;
+    }
+    
+    document.getElementById("loading").style.display = "flex";
+    const reader = new FileReader();
+    reader.onload = function(e) { 
+        currentRawImageSrc = e.target.result; 
+        const selectedStyle = document.getElementById("stamp-style-select").value || "classic";
+        processImageAndStamp(currentRawImageSrc, selectedStyle); 
+    };
+    reader.readAsDataURL(file); 
+    event.target.value = "";
+}
+
 
         function triggerReplaceStamp(id) {
             // 1. Double check that we have an active peak context loaded
@@ -564,13 +593,6 @@
             }
         }
 
-        function handlePhotoReplace(event) {
-            const file = event.target.files; if (!file) return;
-            document.getElementById("loading").style.display = "flex";
-            const reader = new FileReader();
-            reader.onload = function(e) { currentRawImageSrc = e.target.result; processImageAndStamp(currentRawImageSrc, document.getElementById("stamp-style-select").value || "classic"); };
-            reader.readAsDataURL(file); event.target.value = "";
-        }
         function processImageAndStamp(imageSrc, styleName) {
             const img = new Image();
             img.onload = async function() {
