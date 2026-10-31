@@ -728,16 +728,15 @@ function openCameraFor(id) {
  * Extracts the single target file from photo streams and passes it to the canvas.
  */
 function handlePhotoUpload(event) {
-    const files = event.target.files; 
+    const files = event.target.files;
     if (!files || files.length === 0) return;
-    
     document.getElementById("loading").style.display = "flex";
     const reader = new FileReader();
-    reader.onload = function(e) { 
-        currentRawImageSrc = e.target.result; 
-        processImageAndStamp(currentRawImageSrc, "classic"); 
+    reader.onload = function(e) {
+        currentRawImageSrc = e.target.result;
+        processImageAndStamp(currentRawImageSrc, "classic");
     };
-    reader.readAsDataURL(files[0]); 
+    reader.readAsDataURL(files[0]);
     event.target.value = "";
 }
 
@@ -745,32 +744,32 @@ function handlePhotoUpload(event) {
  * Safely extracts the image payload when replacing pictures on an existing stamp.
  */
 function handlePhotoReplace(event) {
-    const files = event.target.files; 
+    const files = event.target.files;
     if (!files || files.length === 0) return;
-    
     document.getElementById("loading").style.display = "flex";
     const reader = new FileReader();
-    reader.onload = function(e) { 
-        currentRawImageSrc = e.target.result; 
+    reader.onload = function(e) {
+        currentRawImageSrc = e.target.result;
         const selectedStyle = document.getElementById("stamp-style-select").value || "default_provisional";
-        processImageAndStamp(currentRawImageSrc, selectedStyle); 
+        processImageAndStamp(currentRawImageSrc, selectedStyle);
     };
-    reader.readAsDataURL(files[0]); 
+    reader.readAsDataURL(files[0]);
     event.target.value = "";
 }
 
 /**
- * Triggers the hidden system file selection input window for specific peak identifiers.
+ * FIXED: Triggers the hidden system file selection input window for specific peak identifiers.
  */
 function triggerReplaceStamp(id) {
     const targetPeaks = window.peaks || (typeof peaks !== "undefined" ? peaks : []);
     activePeak = targetPeaks.find(p => p.id === id);
     const replaceInput = document.getElementById("replace-input");
     if (replaceInput) replaceInput.click();
-}
+} // Fixed closing curly brace to prevent layout compilation crashes
 // ==========================================================
 // PART 9 OF 10: GOWILD WATERMARK OVERLAY ENGINE
 // ==========================================================
+
 function processImageAndStamp(imageSrc, styleName) {
     const img = new Image();
     img.onload = async function() {
@@ -778,6 +777,7 @@ function processImageAndStamp(imageSrc, styleName) {
         const ctx = canvas.getContext("2d");
         canvas.width = 800; canvas.height = 800;
         
+        // Centered aspect-ratio safe square cropping engine
         const minDim = Math.min(img.width, img.height);
         ctx.drawImage(img, (img.width - minDim) / 2, (img.height - minDim) / 2, minDim, minDim, 0, 0, 800, 800);
         
@@ -786,9 +786,9 @@ function processImageAndStamp(imageSrc, styleName) {
         // Render the custom GOWILD-inspired tracking watermark overlay card banner
         if (styleName === "gowild_photo" || styleName === "classic") {
             const boxWidth = 340; const boxHeight = 85;
-            const x = 30; const y = 800 - boxHeight - 30; 
+            const x = 30; const y = 800 - boxHeight - 30;
             
-            ctx.fillStyle = "rgba(16, 42, 29, 0.75)"; // GoWild jungle-green base
+            ctx.fillStyle = "rgba(16, 42, 29, 0.75)"; // GoWild signature jungle-green
             ctx.beginPath();
             ctx.roundRect(x, y, boxWidth, boxHeight, 8);
             ctx.fill();
@@ -811,9 +811,9 @@ function processImageAndStamp(imageSrc, styleName) {
                     id: activePeak.id,
                     dataUrl: finalDataUrl,
                     rawImg: imageSrc,
-                    // Keep user photo base64 cached behind illustration artwork views
+                    // Persist custom photos even if switching to official illustrations later
                     userPhotoBase64: styleName === "gowild_photo" ? imageSrc : (existingRecord.userPhotoBase64 || null),
-                    style: styleName, 
+                    style: styleName,
                     timestamp: Date.now()
                 });
             }
@@ -827,10 +827,10 @@ function processImageAndStamp(imageSrc, styleName) {
     };
     img.src = imageSrc;
 }
-
 // ==========================================================
 // PART 10 OF 10: GALLERY MODAL CONTROLLER & MULTI-VIEW
 // ==========================================================
+
 async function viewStamp(id) {
     const targetPeaks = window.peaks || (typeof peaks !== "undefined" ? peaks : []);
     activePeak = targetPeaks.find(p => p.id === id);
@@ -841,6 +841,7 @@ async function viewStamp(id) {
     document.getElementById("modal-img").src = record.dataUrl;
     currentRawImageSrc = record.rawImg;
 
+    // Renders the twin toggle buttons to flip cleanly between artwork and camera rolls
     document.getElementById("modal-action-bar").innerHTML = `
         <div style="display:flex; gap:10px; margin-bottom:12px;">
             <button class="btn" style="flex:1; background:${record.style === 'illustration_view' ? '#2E5A44' : '#777'};" onclick="switchToViewMode('illustration_view')">🖼 官方手繪原圖</button>
@@ -950,13 +951,11 @@ function simulateSelectedPeak() {
     if (target) { updateRadarList(target.lat, target.lng); alert(`模擬成功！已移動到 #${target.name}。`); }
 }
 
-// FIXED: Secure main tracking initialization sequence handler blocks fully closed
 window.addEventListener("load", async () => {
     console.log("[PeakStamp Engine] Secure runtime initialization sequence fired.");
     await initDB();
     const targetPeaks = window.peaks || (typeof peaks !== "undefined" ? peaks : []);
     targetPeaks.forEach(peak => assignPeakFilters(peak));
-    
     const selector = document.getElementById("mock-selector");
     if (selector && selector.options.length === 0) {
         const selectFragment = document.createDocumentFragment();
@@ -967,10 +966,8 @@ window.addEventListener("load", async () => {
         });
         selector.appendChild(selectFragment);
     }
-    
     await renderPeaksGrid();
     drawRadarGrid();
-    
     if (navigator.geolocation) {
         navigator.geolocation.watchPosition(
             pos => updateRadarList(pos.coords.latitude, pos.coords.longitude),
@@ -987,7 +984,6 @@ window.addEventListener("load", async () => {
 
 window.viewStamp = viewStamp;
 window.triggerReplaceStamp = triggerReplaceStamp;
-
-    </script>
+</script>
 </body>
 </html>
