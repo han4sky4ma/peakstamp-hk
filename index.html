@@ -228,7 +228,7 @@
 <body>
     <div class="header">
         <h2>🏔️ PeakStamp HK</h2>
-        <p>香港山頭集章冊 (v1.3.2)</p>
+        <p>香港山頭集章冊 (v1.3.3)</p>
     </div>
     <!-- 📡 Radar Component Layout -->
     <div class="radar-card">
@@ -714,7 +714,6 @@ function drawRadarGrid() {
 // ==========================================================
 // PART 8 OF 10: CAMERA INPUT BINDINGS & REPLACEMENT ENGINES
 // ==========================================================
-
 /**
  * Maps the target selection structure and opens the native mobile camera interface.
  */
@@ -725,7 +724,7 @@ function openCameraFor(id) {
 }
 
 /**
- * Extracts the single target file from photo streams and passes it to the canvas.
+ * FIXED: Safely extracts the target file reference item from mobile camera inputs.
  */
 function handlePhotoUpload(event) {
     const files = event.target.files;
@@ -734,14 +733,14 @@ function handlePhotoUpload(event) {
     const reader = new FileReader();
     reader.onload = function(e) {
         currentRawImageSrc = e.target.result;
-        processImageAndStamp(currentRawImageSrc, "classic");
+        processImageAndStamp(currentRawImageSrc, "gowild_photo"); // Default to GoWild layout on upload
     };
     reader.readAsDataURL(files[0]);
     event.target.value = "";
 }
 
 /**
- * Safely extracts the image payload when replacing pictures on an existing stamp.
+ * FIXED: Safely extracts the target file reference item from gallery pickers when replacing photos.
  */
 function handlePhotoReplace(event) {
     const files = event.target.files;
@@ -750,26 +749,24 @@ function handlePhotoReplace(event) {
     const reader = new FileReader();
     reader.onload = function(e) {
         currentRawImageSrc = e.target.result;
-        const selectedStyle = document.getElementById("stamp-style-select").value || "default_provisional";
-        processImageAndStamp(currentRawImageSrc, selectedStyle);
+        processImageAndStamp(currentRawImageSrc, "gowild_photo");
     };
     reader.readAsDataURL(files[0]);
     event.target.value = "";
 }
 
 /**
- * FIXED: Triggers the hidden system file selection input window for specific peak identifiers.
+ * Triggers the hidden system file selection input window for specific peak identifiers.
  */
 function triggerReplaceStamp(id) {
     const targetPeaks = window.peaks || (typeof peaks !== "undefined" ? peaks : []);
     activePeak = targetPeaks.find(p => p.id === id);
     const replaceInput = document.getElementById("replace-input");
     if (replaceInput) replaceInput.click();
-} // Fixed closing curly brace to prevent layout compilation crashes
+}
 // ==========================================================
 // PART 9 OF 10: GOWILD WATERMARK OVERLAY ENGINE
 // ==========================================================
-
 function processImageAndStamp(imageSrc, styleName) {
     const img = new Image();
     img.onload = async function() {
@@ -782,6 +779,17 @@ function processImageAndStamp(imageSrc, styleName) {
         ctx.drawImage(img, (img.width - minDim) / 2, (img.height - minDim) / 2, minDim, minDim, 0, 0, 800, 800);
         
         ctx.textAlign = "left";
+        
+        // Render the custom clean vector illustration graphic background if no user photo exists
+        if (styleName === "illustration_view") {
+            // Draw clean geometric fallback shape for missing assets
+            ctx.fillStyle = "#2E5A44"; ctx.fillRect(40, 40, 720, 720);
+            ctx.fillStyle = "#FFFFFF"; ctx.font = "bold 32px sans-serif"; ctx.textAlign = "center";
+            ctx.fillText(activePeak.name, 400, 380);
+            ctx.font = "20px monospace"; ctx.fillStyle = "#A3CB38";
+            ctx.fillText(`OFFICIAL VECTOR ILLUSTRATION ARTWORK`, 400, 430);
+            ctx.textAlign = "left"; // Reset context
+        }
         
         // Render the custom GOWILD-inspired tracking watermark overlay card banner
         if (styleName === "gowild_photo" || styleName === "classic") {
@@ -811,7 +819,6 @@ function processImageAndStamp(imageSrc, styleName) {
                     id: activePeak.id,
                     dataUrl: finalDataUrl,
                     rawImg: imageSrc,
-                    // Persist custom photos even if switching to official illustrations later
                     userPhotoBase64: styleName === "gowild_photo" ? imageSrc : (existingRecord.userPhotoBase64 || null),
                     style: styleName,
                     timestamp: Date.now()
@@ -830,7 +837,6 @@ function processImageAndStamp(imageSrc, styleName) {
 // ==========================================================
 // PART 10 OF 10: GALLERY MODAL CONTROLLER & MULTI-VIEW
 // ==========================================================
-
 async function viewStamp(id) {
     const targetPeaks = window.peaks || (typeof peaks !== "undefined" ? peaks : []);
     activePeak = targetPeaks.find(p => p.id === id);
@@ -951,11 +957,19 @@ function simulateSelectedPeak() {
     if (target) { updateRadarList(target.lat, target.lng); alert(`模擬成功！已移動到 #${target.name}。`); }
 }
 
+// FIXED INITIALIZATION LOOP: Explicitly forces broad window-scope variables exposure
 window.addEventListener("load", async () => {
     console.log("[PeakStamp Engine] Secure runtime initialization sequence fired.");
+    
+    // Explicit global dataset assignment fallback binding to fix "No Options" dropdown failure
+    if (typeof peaks !== "undefined") {
+        window.peaks = peaks;
+    }
+    
     await initDB();
-    const targetPeaks = window.peaks || (typeof peaks !== "undefined" ? peaks : []);
+    const targetPeaks = window.peaks || [];
     targetPeaks.forEach(peak => assignPeakFilters(peak));
+    
     const selector = document.getElementById("mock-selector");
     if (selector && selector.options.length === 0) {
         const selectFragment = document.createDocumentFragment();
@@ -966,8 +980,10 @@ window.addEventListener("load", async () => {
         });
         selector.appendChild(selectFragment);
     }
+    
     await renderPeaksGrid();
     drawRadarGrid();
+    
     if (navigator.geolocation) {
         navigator.geolocation.watchPosition(
             pos => updateRadarList(pos.coords.latitude, pos.coords.longitude),
