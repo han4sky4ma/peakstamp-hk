@@ -855,25 +855,45 @@ async function viewStamp(id) {
     `;
     document.getElementById("result-modal").style.display = "flex";
 }
-
+/**
+ * Switches the active viewing template between the official artwork
+ * and the user's watermarked climbing photography.
+ * Generates the illustration asset paths dynamically from the peak ID.
+ */
 async function switchToViewMode(targetMode) {
     if (!activePeak) return;
     const record = await getRawRecordFromDB(activePeak.id);
     if (!record) return;
 
     if (targetMode === "illustration_view") {
-        const fallbackIllustration = activePeak.illustration || "assets/default_peak.jpg";
-        await saveRecordToDB(activePeak.id, fallbackIllustration, fallbackIllustration, "illustration_view");
+        // Dynamically compute the illustration path (e.g., "p1" becomes "assets/illustrations/p1.jpg")
+        // This eliminates the need to add any attributes to peaks.js
+        const dynamicIllustrationPath = `assets/illustrations/${activePeak.id}.jpg`;
+        
+        await saveRecordToDB(activePeak.id, dynamicIllustrationPath, dynamicIllustrationPath, "illustration_view");
     } else if (targetMode === "gowild_photo") {
         if (!record.userPhotoBase64) {
             alert("您尚未上傳該山峰的個人相片，請點擊下方按鈕上傳！");
             return;
         }
-        // If a custom photo exists, reload it through the watermark engine
+        // Reprocess the saved raw base64 photo structure through the GoWild watermark engine
         processImageAndStamp(record.userPhotoBase64, "gowild_photo");
         return;
     }
     await viewStamp(activePeak.id);
+}
+async function collectIllustratedStamp(id) {
+    const targetPeaks = window.peaks || (typeof peaks !== "undefined" ? peaks : []);
+    activePeak = targetPeaks.find(p => p.id === id);
+    
+    // Dynamic generation rule to match your asset architecture
+    const dynamicIllustrationPath = `assets/illustrations/${activePeak.id}.jpg`;
+    
+    // Save initial record containing the native pre-generated illustration path
+    await saveRecordToDB(activePeak.id, dynamicIllustrationPath, dynamicIllustrationPath, "illustration_view");
+    alert(`成功收集 #${activePeak.name} 紀念插畫！可進入集章冊中查看並上傳個人相片。`);
+    await renderPeaksGrid();
+    viewStamp(activePeak.id);
 }
 
 function closeModal() { 
