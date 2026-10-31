@@ -169,7 +169,7 @@
 <body>
     <div class="header">
         <h2>🏔 PeakStamp HK</h2>
-        <p>香港山頭集章冊 (v1.3.6)</p>
+        <p>香港山頭集章冊 (v1.3.7)</p>
     </div>
 
     <!-- 📡 Radar Component Layout -->
@@ -611,11 +611,14 @@
                 const canvas = document.getElementById("filter-canvas");
                 const ctx = canvas.getContext("2d");
                 canvas.width = 800; canvas.height = 800;
-                
+        
+                // Centered aspect-ratio safe square cropping engine
                 const minDim = Math.min(img.width, img.height);
                 ctx.drawImage(img, (img.width - minDim) / 2, (img.height - minDim) / 2, minDim, minDim, 0, 0, 800, 800);
+        
                 ctx.textAlign = "left";
-                
+        
+                // Render the custom clean vector illustration graphic background if no user photo exists
                 if (styleName === "illustration_view") {
                     ctx.fillStyle = "#2E5A44"; ctx.fillRect(40, 40, 720, 720);
                     ctx.fillStyle = "#FFFFFF"; ctx.font = "bold 32px sans-serif"; ctx.textAlign = "center";
@@ -624,37 +627,50 @@
                     ctx.fillText(`OFFICIAL VECTOR ILLUSTRATION ARTWORK`, 400, 430);
                     ctx.textAlign = "left"; 
                 }
-                
+        
+                // Render the custom GOWILD-inspired tracking watermark overlay card banner
                 if (styleName === "gowild_photo" || styleName === "classic") {
                     const boxWidth = 340; const boxHeight = 85;
                     const x = 30; const y = 800 - boxHeight - 30;
-                    ctx.fillStyle = "rgba(16, 42, 29, 0.75)"; 
+            
+                    ctx.fillStyle = "rgba(16, 42, 29, 0.75)"; // GoWild signature jungle-green
                     ctx.beginPath();
                     ctx.roundRect(x, y, boxWidth, boxHeight, 8);
                     ctx.fill();
-                    
+            
                     ctx.fillStyle = "#FFFFFF"; ctx.font = "bold 24px sans-serif";
                     ctx.fillText("⛰ GOWILD OUTDOOR", x + 20, y + 38);
-                    
+            
                     ctx.fillStyle = "#A3CB38"; ctx.font = "bold 14px monospace";
                     ctx.fillText(`ALT: ${activePeak.elev}m | GPS: ${activePeak.lat.toFixed(4)}°, ${activePeak.lng.toFixed(4)}°`, x + 20, y + 66);
                 }
-                
+        
                 try {
                     const finalDataUrl = canvas.toDataURL("image/jpeg", 0.85);
                     if (db) {
                         const transaction = db.transaction(["stamps"], "readwrite");
                         const store = transaction.objectStore("stamps");
-                        const existingRecord = await getRawRecordFromDB(activePeak.id) || {};
-                        
-                        store.put({
-                            id: activePeak.id,
-                            dataUrl: finalDataUrl,
-                            rawImg: imageSrc,
-                            userPhotoBase64: styleName === "gowild_photo" ? imageSrc : (existingRecord.userPhotoBase64 || null),
-                            style: styleName,
-                            timestamp: Date.now()
-                        });
+                
+                        // FIXED: Direct asynchronous index retrieval to protect personal data maps
+                        const req = store.get(activePeak.id);
+                        req.onsuccess = function(e) {
+                            const existingRecord = e.target.result || {};
+                    
+                            // Determine what photo base64 payload string path to keep
+                            let savedPhoto = existingRecord.userPhotoBase64;
+                            if (styleName === "gowild_photo") {
+                                savedPhoto = imageSrc; // Update ONLY when an actual new upload occurs
+                            }
+                    
+                            store.put({
+                                id: activePeak.id,
+                                dataUrl: finalDataUrl,
+                                rawImg: imageSrc,
+                                userPhotoBase64: savedPhoto || null, // Structural protection layer
+                                style: styleName,
+                                timestamp: Date.now()
+                            });
+                        };
                     }
                     document.getElementById("loading").style.display = "none";
                     document.getElementById("modal-img").src = finalDataUrl;
@@ -699,15 +715,14 @@
                 processImageAndStamp(dynamicIllustrationPath, "illustration_view");
                 return;
             } else if (targetMode === "gowild_photo") {
-                // Safe validation: Fallback check against both possible photo tracking properties
-                const photoSource = record.userPhotoBase64 || record.rawImg;
-                if (!photoSource || photoSource.startsWith("assets/illustrations/")) {
+                if (!record.userPhotoBase64) {
                     alert("您尚未上傳該山峰的個人相片，請點擊下方按鈕上傳！");
                     return;
                 }
                 processImageAndStamp(record.userPhotoBase64, "gowild_photo");
                 return;
             }
+            await viewStamp(activePeak.id);
         }
 
         async function collectIllustratedStamp(id) {
