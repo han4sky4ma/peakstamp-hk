@@ -169,7 +169,7 @@
 <body>
     <div class="header">
         <h2>🏔 PeakStamp HK</h2>
-        <p>香港山頭集章冊 (v1.3.8)</p>
+        <p>香港山頭集章冊 (v1.3.9)</p>
     </div>
 
     <!-- 📡 Radar Component Layout -->
@@ -612,7 +612,7 @@ function processImageAndStamp(imageSrc, styleName) {
     img.onerror = function() {
         console.warn(`Illustration file missing: ${imageSrc}. Deploying live vector placeholder.`);
         // Run the processor again, but instruct it to generate a beautiful vector backup background instead of crashing
-        generateVectorPlaceholder(styleName);
+        generateVectorPlaceholder2(styleName);
     };
 
     img.onload = async function() {
@@ -690,6 +690,96 @@ async function generateVectorPlaceholder(styleName) {
     await saveAndRefreshModal(canvas, mockPath, styleName);
 }
 
+async function generateVectorPlaceholder2(styleName) {
+    const canvas = document.getElementById("filter-canvas");
+    const ctx = canvas.getContext("2d");
+    canvas.width = 800; canvas.height = 800;
+
+            // 1. Vintage multiply background tint overlay layer
+            ctx.globalCompositeOperation = 'multiply';
+            ctx.fillStyle = 'rgba(240, 235, 215, 0.15)';
+            ctx.fillRect(0, 0, 800, 800);
+            ctx.globalCompositeOperation = 'source-over';
+
+            // 2. Ink stamp frame architecture (Inspired by YAMASTA)
+            ctx.strokeStyle = "rgba(214, 48, 49, 0.85)"; // Vivid ink red-crimson
+            ctx.lineWidth = 7;
+            
+            // Outer double-ring circular frame border tracks
+            ctx.beginPath(); ctx.arc(400, 400, 320, 0, 2 * Math.PI); ctx.stroke();
+            ctx.beginPath(); ctx.arc(400, 400, 305, 0, 2 * Math.PI); ctx.stroke();
+
+            // Center horizontal splitting index guideline divider
+            ctx.beginPath(); ctx.moveTo(95, 360); ctx.lineTo(705, 360); ctx.stroke();
+
+            // 3. Lower-hemisphere dual silhouette mountain peaks peaks contours
+            ctx.lineWidth = 8;
+            ctx.fillStyle = "rgba(214, 48, 49, 0.85)";
+            
+            // Left peak plotting coordinates path
+            ctx.beginPath();
+            ctx.moveTo(180, 580);
+            ctx.lineTo(340, 380); // Summit point
+            ctx.lineTo(500, 580);
+            ctx.closePath();
+            ctx.fill(); ctx.stroke();
+            
+            // Right peak overlapping background projection tracking matrix
+            ctx.beginPath();
+            ctx.moveTo(300, 580);
+            ctx.lineTo(460, 380); // Summit point
+            ctx.lineTo(620, 580);
+            ctx.closePath();
+            ctx.fill(); ctx.stroke();
+
+            // 4. Matte white vector alpine cap snow geometric block overlays
+            ctx.fillStyle = "#FFFFFF";
+            ctx.globalCompositeOperation = 'source-over';
+            
+            // Left summit ridge snow mask mapping configuration
+            ctx.beginPath();
+            ctx.moveTo(340, 380); ctx.lineTo(308, 420); ctx.lineTo(324, 425);
+            ctx.lineTo(340, 415); ctx.lineTo(356, 425); ctx.lineTo(372, 420);
+            ctx.closePath(); ctx.fill();
+
+            // Right summit ridge snow mask mapping configuration
+            ctx.beginPath();
+            ctx.moveTo(460, 380); ctx.lineTo(428, 420); ctx.lineTo(444, 425);
+            ctx.lineTo(460, 415); ctx.lineTo(476, 425); ctx.lineTo(492, 420);
+            ctx.closePath(); ctx.fill();
+
+            // 5. Text typographic layer parameters definition
+            ctx.fillStyle = "rgba(214, 48, 49, 0.85)";
+            ctx.textAlign = "center";
+            
+            // Upper half tracking index headers setup
+            ctx.font = "bold 44px sans-serif";
+            ctx.fillText("仮発行のスタンプ", 400, 230);
+            
+            ctx.font = "bold 24px monospace";
+            ctx.fillText("GPS POSITION UNVERIFIED", 400, 290);
+
+            // Lower half mountain log identifier context layout
+            ctx.fillStyle = "#FFFFFF";
+            ctx.font = "bold 20px sans-serif";
+            ctx.fillText("山印帳・準備中", 400, 660);
+            
+            // Explicit layout state alignment structural fallback protection reset
+            ctx.textAlign = "left";
+
+    // If styleName is gowild_photo, stamp the watermark even over the placeholder
+    if (styleName === "gowild_photo") {
+        renderGoWildWatermark(ctx);
+    }
+
+    const mockPath = `assets/illustrations/${activePeak.id}.jpg`;
+    await saveAndRefreshModal(canvas, mockPath, styleName);
+}
+
+
+
+
+        
 function renderGoWildWatermark(ctx) {
     const boxWidth = 340; const boxHeight = 85;
     const x = 30; const y = 800 - boxHeight - 30;
