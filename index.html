@@ -228,7 +228,7 @@
 <body>
     <div class="header">
         <h2>🏔️ PeakStamp HK</h2>
-        <p>香港山頭集章冊 (v2)</p>
+        <p>香港山頭集章冊 (v1)</p>
     </div>
     <!-- 📡 Radar Component Layout -->
     <div class="radar-card">
@@ -548,6 +548,20 @@
             const reader = new FileReader();
             reader.onload = function(e) { currentRawImageSrc = e.target.result; processImageAndStamp(currentRawImageSrc, "classic"); };
             reader.readAsDataURL(file); event.target.value = "";
+        }
+
+        function triggerReplaceStamp(id) {
+            // 1. Double check that we have an active peak context loaded
+            const targetPeaks = window.peaks || (typeof peaks !== "undefined" ? peaks : []);
+            activePeak = targetPeaks.find(p => p.id === id);
+    
+            // 2. Programmatically fire a click event onto the hidden replacement input
+            const replaceInput = document.getElementById("replace-input");
+            if (replaceInput) {
+                replaceInput.click();
+            } else {
+                console.error("Critical: DOM element '#replace-input' was not found.");
+            }
         }
 
         function handlePhotoReplace(event) {
