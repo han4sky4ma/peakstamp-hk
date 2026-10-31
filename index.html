@@ -599,9 +599,13 @@
 
         function switchStampStyle(newStyle) {
             if (!activePeak || !currentRawImageSrc) return;
-            document.getElementById("loading").style.display = "flex"; processImageAndStamp(currentRawImageSrc, newStyle);
+            document.getElementById("loading-text").innerText = "正在切換印章風格...";
+            document.getElementById("loading").style.display = "flex";
+    
+            // Re-process the original upload with the new visual layout configuration
+            processImageAndStamp(currentRawImageSrc, newStyle);
         }
-
+        
         function simulateSelectedPeak() {
             const selectedId = document.getElementById("mock-selector").value;
             const targetPeaks = window.peaks || (typeof peaks !== "undefined" ? peaks : []);
