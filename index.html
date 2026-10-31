@@ -169,7 +169,7 @@
 <body>
     <div class="header">
         <h2>🏔 PeakStamp HK</h2>
-        <p>香港山頭集章冊 (v1.3.7)</p>
+        <p>香港山頭集章冊 (v1.3.8)</p>
     </div>
 
     <!-- 📡 Radar Component Layout -->
@@ -602,87 +602,139 @@
             if (replaceInput) replaceInput.click();
         }
 
-        // ==========================================================
-        // PART 9 OF 10: GOWILD WATERMARK OVERLAY ENGINE
-        // ==========================================================
-        function processImageAndStamp(imageSrc, styleName) {
-            const img = new Image();
-            img.onload = async function() {
-                const canvas = document.getElementById("filter-canvas");
-                const ctx = canvas.getContext("2d");
-                canvas.width = 800; canvas.height = 800;
+// ==========================================================
+// PART 9 OF 10: GOWILD WATERMARK OVERLAY ENGINE (WITH SAFETY FALLBACK)
+// ==========================================================
+function processImageAndStamp(imageSrc, styleName) {
+    const img = new Image();
+    
+    // NEW SAFARI & CHROME GUARDRAIL: Handle missing illustration assets gracefully
+    img.onerror = function() {
+        console.warn(`Illustration file missing: ${imageSrc}. Deploying live vector placeholder.`);
+        // Run the processor again, but instruct it to generate a beautiful vector backup background instead of crashing
+        generateVectorPlaceholder(styleName);
+    };
+
+    img.onload = async function() {
+        const canvas = document.getElementById("filter-canvas");
+        const ctx = canvas.getContext("2d");
+        canvas.width = 800; canvas.height = 800;
         
-                // Centered aspect-ratio safe square cropping engine
-                const minDim = Math.min(img.width, img.height);
-                ctx.drawImage(img, (img.width - minDim) / 2, (img.height - minDim) / 2, minDim, minDim, 0, 0, 800, 800);
+        const minDim = Math.min(img.width, img.height);
+        ctx.drawImage(img, (img.width - minDim) / 2, (img.height - minDim) / 2, minDim, minDim, 0, 0, 800, 800);
         
-                ctx.textAlign = "left";
+        ctx.textAlign = "left";
         
-                // Render the custom clean vector illustration graphic background if no user photo exists
-                if (styleName === "illustration_view") {
-                    ctx.fillStyle = "#2E5A44"; ctx.fillRect(40, 40, 720, 720);
-                    ctx.fillStyle = "#FFFFFF"; ctx.font = "bold 32px sans-serif"; ctx.textAlign = "center";
-                    ctx.fillText(activePeak.name, 400, 380);
-                    ctx.font = "20px monospace"; ctx.fillStyle = "#A3CB38";
-                    ctx.fillText(`OFFICIAL VECTOR ILLUSTRATION ARTWORK`, 400, 430);
-                    ctx.textAlign = "left"; 
-                }
-        
-                // Render the custom GOWILD-inspired tracking watermark overlay card banner
-                if (styleName === "gowild_photo" || styleName === "classic") {
-                    const boxWidth = 340; const boxHeight = 85;
-                    const x = 30; const y = 800 - boxHeight - 30;
-            
-                    ctx.fillStyle = "rgba(16, 42, 29, 0.75)"; // GoWild signature jungle-green
-                    ctx.beginPath();
-                    ctx.roundRect(x, y, boxWidth, boxHeight, 8);
-                    ctx.fill();
-            
-                    ctx.fillStyle = "#FFFFFF"; ctx.font = "bold 24px sans-serif";
-                    ctx.fillText("⛰ GOWILD OUTDOOR", x + 20, y + 38);
-            
-                    ctx.fillStyle = "#A3CB38"; ctx.font = "bold 14px monospace";
-                    ctx.fillText(`ALT: ${activePeak.elev}m | GPS: ${activePeak.lat.toFixed(4)}°, ${activePeak.lng.toFixed(4)}°`, x + 20, y + 66);
-                }
-        
-                try {
-                    const finalDataUrl = canvas.toDataURL("image/jpeg", 0.85);
-                    if (db) {
-                        const transaction = db.transaction(["stamps"], "readwrite");
-                        const store = transaction.objectStore("stamps");
-                
-                        // FIXED: Direct asynchronous index retrieval to protect personal data maps
-                        const req = store.get(activePeak.id);
-                        req.onsuccess = function(e) {
-                            const existingRecord = e.target.result || {};
-                    
-                            // Determine what photo base64 payload string path to keep
-                            let savedPhoto = existingRecord.userPhotoBase64;
-                            if (styleName === "gowild_photo") {
-                                savedPhoto = imageSrc; // Update ONLY when an actual new upload occurs
-                            }
-                    
-                            store.put({
-                                id: activePeak.id,
-                                dataUrl: finalDataUrl,
-                                rawImg: imageSrc,
-                                userPhotoBase64: savedPhoto || null, // Structural protection layer
-                                style: styleName,
-                                timestamp: Date.now()
-                            });
-                        };
-                    }
-                    document.getElementById("loading").style.display = "none";
-                    document.getElementById("modal-img").src = finalDataUrl;
-                    await viewStamp(activePeak.id);
-                    await renderPeaksGrid();
-                } catch(e) {
-                    document.getElementById("loading").style.display = "none";
-                }
-            };
-            img.src = imageSrc;
-            currentRawImageSrc = null; // Clears the transient variable memory footprint reference instantly
+        if (styleName === "illustration_view") {
+            ctx.fillStyle = "#2E5A44"; ctx.fillRect(40, 40, 720, 720);
+            ctx.fillStyle = "#FFFFFF"; ctx.font = "bold 32px sans-serif"; ctx.textAlign = "center";
+            ctx.fillText(activePeak.name, 400, 380);
+            ctx.font = "20px monospace"; ctx.fillStyle = "#A3CB38";
+            ctx.fillText(`OFFICIAL VECTOR ILLUSTRATION ARTWORK`, 400, 430);
+            ctx.textAlign = "left"; 
         }
+        
+        // Render watermark overlays on user photos
+        if (styleName === "gowild_photo" || styleName === "classic") {
+            renderGoWildWatermark(ctx);
+        }
+        
+        await saveAndRefreshModal(canvas, imageSrc, styleName);
+    };
+    img.src = imageSrc;
+}
+
+/**
+ * Procedural Fallback Engine: Draws an elegant mountain crest background 
+ * when local illustration files return 404.
+ */
+async function generateVectorPlaceholder(styleName) {
+    const canvas = document.getElementById("filter-canvas");
+    const ctx = canvas.getContext("2d");
+    canvas.width = 800; canvas.height = 800;
+
+    // Background Gradient (Deep Hunter Green)
+    const gradient = ctx.createLinearGradient(0, 0, 0, 800);
+    gradient.addColorStop(0, "#162a1d");
+    gradient.addColorStop(1, "#2E5A44");
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, 800, 800);
+
+    // Draw stylized minimalist geometry mountain ridges lines
+    ctx.strokeStyle = "rgba(163, 203, 56, 0.3)";
+    ctx.lineWidth = 4;
+    ctx.beginPath();
+    ctx.moveTo(100, 600); ctx.lineTo(400, 250); ctx.lineTo(700, 600);
+    ctx.stroke();
+
+    // Text Content layout metrics
+    ctx.fillStyle = "#FFFFFF";
+    ctx.textAlign = "center";
+    ctx.font = "bold 36px sans-serif";
+    ctx.fillText(activePeak.name, 400, 420);
+    
+    ctx.fillStyle = "#A3CB38";
+    ctx.font = "600 18px monospace";
+    ctx.fillText("🏔 OFFICIAL ARTWORK PENDING RELEASE 🏔", 400, 480);
+    ctx.font = "14px monospace"; ctx.fillStyle = "rgba(255,255,255,0.4)";
+    ctx.fillText(`ID: ${activePeak.id.toUpperCase()} | ALTITUDE: ${activePeak.elev}M`, 400, 520);
+    
+    ctx.textAlign = "left"; // Reset context parameter states safely
+
+    // If styleName is gowild_photo, stamp the watermark even over the placeholder
+    if (styleName === "gowild_photo") {
+        renderGoWildWatermark(ctx);
+    }
+
+    const mockPath = `assets/illustrations/${activePeak.id}.jpg`;
+    await saveAndRefreshModal(canvas, mockPath, styleName);
+}
+
+function renderGoWildWatermark(ctx) {
+    const boxWidth = 340; const boxHeight = 85;
+    const x = 30; const y = 800 - boxHeight - 30;
+    ctx.fillStyle = "rgba(16, 42, 29, 0.75)";
+    ctx.beginPath();
+    ctx.roundRect(x, y, boxWidth, boxHeight, 8);
+    ctx.fill();
+    ctx.fillStyle = "#FFFFFF"; ctx.font = "bold 24px sans-serif";
+    ctx.fillText("⛰ GOWILD OUTDOOR", x + 20, y + 38);
+    ctx.fillStyle = "#A3CB38"; ctx.font = "bold 14px monospace";
+    ctx.fillText(`ALT: ${activePeak.elev}m | GPS: ${activePeak.lat.toFixed(4)}°, ${activePeak.lng.toFixed(4)}°`, x + 20, y + 66);
+}
+
+async function saveAndRefreshModal(canvas, imageSrc, styleName) {
+    try {
+        const finalDataUrl = canvas.toDataURL("image/jpeg", 0.85);
+        if (db) {
+            const transaction = db.transaction(["stamps"], "readwrite");
+            const store = transaction.objectStore("stamps");
+            
+            const req = store.get(activePeak.id);
+            req.onsuccess = function(e) {
+                const existingRecord = e.target.result || {};
+                let savedPhoto = existingRecord.userPhotoBase64;
+                if (styleName === "gowild_photo") savedPhoto = imageSrc;
+                
+                store.put({
+                    id: activePeak.id,
+                    dataUrl: finalDataUrl,
+                    rawImg: imageSrc,
+                    userPhotoBase64: savedPhoto || null,
+                    style: styleName,
+                    timestamp: Date.now()
+                });
+            };
+        }
+        document.getElementById("loading").style.display = "none";
+        document.getElementById("modal-img").src = finalDataUrl;
+        await viewStamp(activePeak.id);
+        await renderPeaksGrid();
+    } catch(e) {
+        document.getElementById("loading").style.display = "none";
+    }
+}
+
         // ==========================================================
         // PART 10 OF 10: GALLERY MODAL CONTROLLER & MULTI-VIEW
         // ==========================================================
